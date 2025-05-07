@@ -1,8 +1,8 @@
-package com.example.demo.global.exception;
+package com.evenly.jachui.global.exception;
 
-import com.example.demo.global.ApiResponse;
-import com.example.demo.global.exception.exampleEx.ExampleException;
-import com.example.demo.global.exception.userEx.UserException;
+import com.evenly.jachui.global.ApiResponse;
+import com.evenly.jachui.global.exception.exampleEx.ExampleException;
+import com.evenly.jachui.global.exception.userEx.UserException;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;

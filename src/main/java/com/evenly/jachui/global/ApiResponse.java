@@ -1,4 +1,4 @@
-package com.example.demo.global;
+package com.evenly.jachui.global;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

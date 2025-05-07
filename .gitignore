@@ -35,3 +35,10 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### 환경변수 ###
+*.env
+.env
+
+### QueryDsl이 생성하는 코드 ###
+/src/main/generated/

@@ -1,5 +1,8 @@
 spring:
-
+  output:
+    ansi:
+      enabled:
+        ALWAYS
 
   # SwaggerUI 설정
   springdoc:

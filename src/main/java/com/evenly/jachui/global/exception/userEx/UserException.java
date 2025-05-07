@@ -1,4 +1,4 @@
-package com.example.demo.global.exception.userEx;
+package com.evenly.jachui.global.exception.userEx;
 
 public class UserException extends RuntimeException {
     public UserException(String message) {

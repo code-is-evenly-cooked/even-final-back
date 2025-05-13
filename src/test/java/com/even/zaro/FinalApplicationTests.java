@@ -1,4 +1,4 @@
-package com.evenly.jachui;
+package com.even.zaro;
 
 import org.junit.jupiter.api.Test;
 import org.springframework.boot.test.context.SpringBootTest;

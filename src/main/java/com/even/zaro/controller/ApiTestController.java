@@ -1,7 +1,7 @@
-package com.evenly.jachui.controller;
+package com.even.zaro.controller;
 
-import com.evenly.jachui.global.ApiResponse;
-import com.evenly.jachui.dto.ExDTO;
+import com.even.zaro.global.ApiResponse;
+import com.even.zaro.dto.ExDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;

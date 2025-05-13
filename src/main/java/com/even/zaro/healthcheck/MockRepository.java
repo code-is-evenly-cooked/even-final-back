@@ -1,4 +1,4 @@
-package com.evenly.jachui.healthcheck;
+package com.even.zaro.healthcheck;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

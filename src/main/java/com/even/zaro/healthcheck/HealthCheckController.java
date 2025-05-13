@@ -1,6 +1,6 @@
-package com.evenly.jachui.healthcheck;
+package com.even.zaro.healthcheck;
 
-import com.evenly.jachui.global.ApiResponse;
+import com.even.zaro.global.ApiResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;

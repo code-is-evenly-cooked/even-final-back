@@ -1,4 +1,4 @@
-package com.evenly.jachui.dto;
+package com.even.zaro.dto;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

@@ -1,4 +1,4 @@
-package com.evenly.jachui.config;
+package com.even.zaro.config;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;

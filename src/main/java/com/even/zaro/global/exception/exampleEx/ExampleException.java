@@ -1,4 +1,4 @@
-package com.evenly.jachui.global.exception.exampleEx;
+package com.even.zaro.global.exception.exampleEx;
 
 // 예시 예외
 public class ExampleException extends RuntimeException {

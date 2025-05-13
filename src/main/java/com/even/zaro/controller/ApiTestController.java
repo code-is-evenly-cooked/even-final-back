@@ -1,7 +1,7 @@
-package com.example.demo.controller;
+package com.even.zaro.controller;
 
-import com.example.demo.dto.ExDTO;
-import com.example.demo.global.ApiResponse;
+import com.even.zaro.global.ApiResponse;
+import com.even.zaro.dto.ExDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -9,10 +9,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Objects;
 
 @RestController
 @RequestMapping("/api")

@@ -39,6 +39,8 @@ out/
 ### 환경변수 ###
 *.env
 .env
+.env.dev
+.env.prod
 
 ### QueryDsl이 생성하는 코드 ###
 /src/main/generated/

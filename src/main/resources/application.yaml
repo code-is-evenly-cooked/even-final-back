@@ -1,5 +1,8 @@
 spring:
-
+  output:
+    ansi:
+      enabled:
+        ALWAYS
 
   # SwaggerUI 설정
   springdoc:
@@ -13,6 +16,7 @@ spring:
 
   config:
     import: optional:file:.env[.properties]
+    #스프링 도커 컨테이너에서 실행되면 필요 없음. 단, 로컬 개발시 필요한 사람이 있을 수 있을 것 같아 남겨둡니다.
 
   #시간 설정
   jackson:
@@ -21,16 +25,22 @@ spring:
   # JPA
   jpa:
     open-in-view: false
-    hibernate.ddl-auto: update
+    hibernate:
+      ddl-auto: update
+      naming:
+        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
     show-sql: true
     properties:
       hibernate:
         format_sql: true
         use_sql_comments: true
-    hibernate:
-      naming:
-        physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
 
+
+  sql:
+    init:
+      mode: always
+#      schema-locations:
+#        - classpath:db/schema.sql
 
 
 

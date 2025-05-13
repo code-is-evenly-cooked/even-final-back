@@ -1,0 +1,47 @@
+services:
+  app:
+    image: even-final
+    build: .
+    container_name: even_final_app
+    restart: always
+    env_file:
+      - .env
+    environment:
+      SPRING_PROFILES_ACTIVE: ${SPRING_PROFILES_ACTIVE}
+      LOCAL_DB_URL: ${LOCAL_DB_URL}
+      LOCAL_DB_USER: ${LOCAL_DB_USER}
+      LOCAL_DB_PASSWORD: ${LOCAL_DB_PASSWORD}
+      REDIS_HOST: ${REDIS_HOST}
+      REDIS_PORT: ${REDIS_PORT}
+      REDIS_PASSWORD: ${REDIS_PASSWORD}
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+      - redis
+
+  db:
+    image: mysql:8
+    container_name: even_final_mysql
+    environment:
+      MYSQL_DATABASE: ${LOCAL_DB_DATABASE}
+      MYSQL_USER: ${LOCAL_DB_USER}
+      MYSQL_PASSWORD: ${LOCAL_DB_PASSWORD}
+      MYSQL_ROOT_PASSWORD: ${LOCAL_DB_ROOT_PASSWORD}
+    ports:
+      - "3306:3306"
+    volumes:
+      - mysql_data:/var/lib/mysql
+
+  redis:
+    image: redis:latest
+    container_name: even_final_redis
+    command: [ "redis-server", "--requirepass", "${REDIS_PASSWORD}" ]
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+
+volumes:
+  mysql_data:
+  redis_data:

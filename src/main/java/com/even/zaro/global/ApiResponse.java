@@ -1,4 +1,4 @@
-package com.example.demo.global;
+package com.even.zaro.global;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;

@@ -1,8 +1,8 @@
-package com.example.demo.global.exception;
+package com.even.zaro.global.exception;
 
-import com.example.demo.global.ApiResponse;
-import com.example.demo.global.exception.exampleEx.ExampleException;
-import com.example.demo.global.exception.userEx.UserException;
+import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.exception.exampleEx.ExampleException;
+import com.even.zaro.global.exception.userEx.UserException;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;

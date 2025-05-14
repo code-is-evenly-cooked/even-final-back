@@ -34,10 +34,10 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PostCategory postCategory;
+    private Category category;
 
     @Enumerated(EnumType.STRING)
-    private PostTag postTag;
+    private Tag tag;
 
     @Column(name = "is_reported", nullable = false)
     private boolean isReported = false;
@@ -61,14 +61,14 @@ public class Post {
     private int reportCount = 0;
 
     // 카테고리 ENUM
-    public enum PostCategory {
+    public enum Category {
         TOGETHER, // 같이쓰자
         DAILY_LIFE, // 자취일상
         RANDOM_BUY // 아무거나샀어요
     }
 
     // 태그 ENUM
-    public enum PostTag {
+    public enum Tag {
         // 자취일상
         TIPS, QUESTIONS,
         // 같이쓰자

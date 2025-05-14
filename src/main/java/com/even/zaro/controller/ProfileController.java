@@ -60,12 +60,17 @@ public class ProfileController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userID, pageRequest);
+        try {
+            PageRequest pageRequest = PageRequest.of(page, size);
+            Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userID, pageRequest);
 
-        return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", Map.of(
-                "content", likedPosts.getContent(),
-                "totalPages", likedPosts.getTotalPages()
-        )));
+            return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", Map.of(
+                    "content", likedPosts.getContent(),
+                    "totalPages", likedPosts.getTotalPages()
+            )));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.fail(ErrorCode.USER_EXCEPTION));
+        }
     }
 }

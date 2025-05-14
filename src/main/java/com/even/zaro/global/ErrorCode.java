@@ -20,7 +20,9 @@ public enum ErrorCode {
 
     // 커스텀 예외
     EXAMPLE_EXCEPTION("EXAMPLE_EXCEPTION", HttpStatus.INTERNAL_SERVER_ERROR, "예시 예외 발생"),
-    USER_EXCEPTION("USER_EXCEPTION", HttpStatus.INTERNAL_SERVER_ERROR, "사용자 예외 발생");
+    USER_EXCEPTION("USER_EXCEPTION", HttpStatus.INTERNAL_SERVER_ERROR, "사용자 예외 발생"),
+    FAVORITEGROUP_EXCEPTION("FAVORITEGROUP_EXCEPTION", HttpStatus.INTERNAL_SERVER_ERROR, "즐겨찾기 그룹 예외 발생");
+
 
     private final String code;
     private final HttpStatus httpStatus;

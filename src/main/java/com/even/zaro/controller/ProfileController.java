@@ -1,15 +1,15 @@
 package com.even.zaro.controller;
 
+import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -26,5 +26,12 @@ public class ProfileController {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.fail(ErrorCode.USER_EXCEPTION));
         }
+    }
+
+    @GetMapping("/{userID}/posts")
+    public ResponseEntity<?> getUserPosts(@PathVariable("userID") Long userID) {
+
+        List<UserPostDto> posts = profileService.getUserPosts(userID);
+        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", posts));
     }
 }

@@ -4,6 +4,7 @@ import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.repository.PostLikeRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
@@ -12,6 +13,7 @@ import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 
 import java.util.List;
 import java.util.stream.Collectors;
@@ -22,6 +24,7 @@ import java.util.stream.Collectors;
 public class ProfileService {
     private final UserRepository userRepository;
     private final PostRepository postRepository;
+    private final PostLikeRepository postLikeRepository;
 
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {
@@ -62,4 +65,22 @@ public class ProfileService {
 
     }
 
+    // 유저가 좋아요 누른 게시물 list 조회
+    public Page<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.USER_EXCEPTION.getDefaultMessage()));
+
+        return postLikeRepository.findByUser(user, pageable)
+                .map(postLike -> UserPostDto.builder()
+                        .postId(postLike.getPost().getId())
+                        .title(postLike.getPost().getTitle())
+                        .content(postLike.getPost().getContent())
+                        .category(postLike.getPost().getCategory().name())
+                        .tag(postLike.getPost().getTag() != null ? postLike.getPost().getTag().name() : null)
+                        .imageUrl(postLike.getPost().getImageUrl())
+                        .likeCount(postLike.getPost().getLikeCount())
+                        .commentCount(postLike.getPost().getCommentCount())
+                        .createdAt(postLike.getPost().getCreatedAt())
+                        .build());
+    }
 }

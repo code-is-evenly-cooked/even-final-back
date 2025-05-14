@@ -67,11 +67,11 @@ public class ProfileService {
 
     @Transactional
     public void deleteGroup(long groupId) {
-        FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(FavoriteGroupException::NotFoundGroupExcpetion);
+        FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
         // 이미 삭제 처리 된 경우
         if(group.isDeleted()) {
-            throw FavoriteGroupException.AlreadyDeletedGroupExcpetion();
+            throw FavoriteGroupException.AlreadyDeletedGroupException();
         }
 
         group.setDeleted(true);
@@ -82,7 +82,7 @@ public class ProfileService {
     @Transactional
     public void editGroup(GroupEditRequest request) {
         FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
-                .orElseThrow(FavoriteGroupException::NotFoundGroupExcpetion);
+                .orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
         group.setName(request.getName());
         group.setUpdatedAt(LocalDateTime.now());

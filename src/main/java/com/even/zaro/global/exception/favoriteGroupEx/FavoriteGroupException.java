@@ -5,11 +5,11 @@ public class FavoriteGroupException extends RuntimeException {
         super(message);
     }
 
-    public static FavoriteGroupException NotFoundGroupExcpetion() {
+    public static FavoriteGroupException NotFoundGroupException() {
         return new FavoriteGroupException("해당 그룹을 찾지 못했습니다.");
     }
 
-    public static FavoriteGroupException AlreadyDeletedGroupExcpetion() {
+    public static FavoriteGroupException AlreadyDeletedGroupException() {
         return new FavoriteGroupException("이미 삭제한 그룹입니다.");
     }
 }

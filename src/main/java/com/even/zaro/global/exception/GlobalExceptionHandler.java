@@ -3,6 +3,7 @@ package com.even.zaro.global.exception;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.exampleEx.ExampleException;
+import com.even.zaro.global.exception.favoriteGroupEx.FavoriteGroupException;
 import com.even.zaro.global.exception.userEx.UserException;
 import jakarta.persistence.NoResultException;
 import lombok.extern.slf4j.Slf4j;
@@ -104,5 +105,12 @@ public class GlobalExceptionHandler {
         String message = "유저 예외 발생 : " + ex.getMessage();
         log.error(message, ex);
         return ResponseEntity.status(ErrorCode.USER_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.USER_EXCEPTION, message));
+    }
+
+    @ExceptionHandler(FavoriteGroupException.class)
+    public ResponseEntity<ApiResponse<?>> handleFavoriteGroupException(FavoriteGroupException ex) {
+        String message = "즐겨찾기 그룹 예외 발생 : " + ex.getMessage();
+        log.error(ex.getMessage(), ex);
+        return ResponseEntity.status(ErrorCode.FAVORITEGROUP_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.FAVORITEGROUP_EXCEPTION, message));
     }
 }

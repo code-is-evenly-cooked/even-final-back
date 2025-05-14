@@ -28,7 +28,7 @@ public class ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new IllegalArgumentException(ErrorCode.USER_EXCEPTION.getDefaultMessage()));
 
-        int postCount = 0; // post 구현 후 수정할 부분
+        int postCount = postRepository.countByUserAndIsDeletedFalse(user);
 
         return UserProfileDto.builder()
                 .userId(user.getId())

@@ -1,10 +1,9 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.profileDto.CreateGroupRequest;
-import com.even.zaro.entity.Favorite;
+import com.even.zaro.dto.profileDto.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
-import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.exception.userEx.UserException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
@@ -12,13 +11,11 @@ import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Service
 @Slf4j
@@ -42,5 +39,27 @@ public class ProfileService {
                 .build();
 
         favoriteGroupRepository.save(favoriteGroup);
+    }
+
+    @Transactional(readOnly = true)
+    public List<GroupResponse> getFavoriteGroups(long userId) {
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(UserException::NotFoundUserException);
+
+
+        // userId 값이 일치하는 데이터 조회
+        List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
+
+
+        // GroupResponse 리스트로 변환
+        List<GroupResponse> responseList = groupList.stream()
+                .map(group -> GroupResponse.builder()
+                        .id(group.getId())
+                        .name(group.getName())
+                        .build())
+                .toList();
+
+        return responseList;
     }
 }

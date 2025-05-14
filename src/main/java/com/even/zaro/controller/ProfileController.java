@@ -12,6 +12,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -39,6 +40,9 @@ public class ProfileController {
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<UserPostDto> posts = profileService.getUserPosts(userID, pageRequest);
 
-        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", posts));
+        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공", Map.of(
+                "content", posts.getContent(),
+                "totalPages", posts.getTotalPages()
+        )));
     }
 }

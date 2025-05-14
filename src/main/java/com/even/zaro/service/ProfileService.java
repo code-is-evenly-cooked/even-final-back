@@ -45,7 +45,7 @@ public class ProfileService {
     // 유저가 쓴 게시물 list 조회
     public Page<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_RESULT.getDefaultMessage()));
+                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.USER_EXCEPTION.getDefaultMessage()));
 
         return postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()

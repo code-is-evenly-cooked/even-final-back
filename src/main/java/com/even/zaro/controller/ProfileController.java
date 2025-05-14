@@ -37,12 +37,17 @@ public class ProfileController {
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> posts = profileService.getUserPosts(userID, pageRequest);
+        try {
+            PageRequest pageRequest = PageRequest.of(page, size);
+            Page<UserPostDto> posts = profileService.getUserPosts(userID, pageRequest);
 
-        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공", Map.of(
-                "content", posts.getContent(),
-                "totalPages", posts.getTotalPages()
-        )));
+            return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", Map.of(
+                    "content", posts.getContent(),
+                    "totalPages", posts.getTotalPages()
+            )));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.fail(ErrorCode.USER_EXCEPTION));
+        }
     }
 }

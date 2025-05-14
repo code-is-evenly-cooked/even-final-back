@@ -1,0 +1,10 @@
+package com.even.zaro.dto.profileDto;
+
+import lombok.Data;
+
+@Data
+public class CreateGroupRequest {
+    private long userId;
+    // Group 이름
+    private String name;
+}

@@ -20,7 +20,7 @@ public class GlobalExceptionHandler {
     // 기타 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleGeneralException(Exception ex) {
-        ApiResponse<?> response = ApiResponse.fail("알 수 없는 오류 요청 URL을 다시 확인해보십시오: " + ex.getMessage());
+        ApiResponse<?> response = ApiResponse.fail("UNKNOWN_REQUEST", "알 수 없는 오류 요청 URL을 다시 확인해보십시오: " + ex.getMessage());
         log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -28,7 +28,7 @@ public class GlobalExceptionHandler {
     // 이메일 중복 인증 발생 예외 처리
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<ApiResponse<?>> handleIllegalStateException(IllegalStateException ex) {
-        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        ApiResponse<?> response = ApiResponse.fail("ILLEGAL_STATE", ex.getMessage());
         log.error(ex.getMessage(), ex);
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
@@ -37,45 +37,45 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(MethodArgumentTypeMismatchException.class)
     public ApiResponse<?> handleTypeMismatchException(MethodArgumentTypeMismatchException e) {
         String message = String.format("잘못된 요청: '%s' 값을 '%s' 타입으로 변환할 수 없습니다.", e.getValue(), e.getRequiredType().getSimpleName());
-        return ApiResponse.fail(message);
+        return ApiResponse.fail("TYPE_MISMATCH", message);
     }
 
     // 숫자 변환 실패
     @ExceptionHandler(NumberFormatException.class)
     public ApiResponse<?> handleNumberFormatException(NumberFormatException e) {
-        return ApiResponse.fail("숫자 변환 오류: " + e.getMessage());
+        return ApiResponse.fail("NUMBER_FORMAT_ERROR", "숫자 변환 오류: " + e.getMessage());
     }
 
     // 데이터베이스 접근 오류
     @ExceptionHandler(DataAccessException.class)
     public ApiResponse<?> handleDataAccessException(DataAccessException e) {
-        return ApiResponse.fail("데이터베이스 오류 발생: " + e.getMessage());
+        return ApiResponse.fail("DB_ACCESS_ERROR", "데이터베이스 오류 발생: " + e.getMessage());
     }
 
     // 요구되는 값이 비어있을 때
     @ExceptionHandler(NullPointerException.class)
     public ResponseEntity<ApiResponse<?>> handleNullPointerException(NullPointerException ex) {
-        ApiResponse<?> response = ApiResponse.fail("필수 데이터가 누락되었습니다.");
+        ApiResponse<?> response = ApiResponse.fail("NULL_POINTER", "필수 데이터가 누락되었습니다.");
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     // 유효하지 않은 요청 파라미터
     @ExceptionHandler(IllegalArgumentException.class)
     public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException ex) {
-        ApiResponse<?> response = ApiResponse.fail("잘못된 요청: " + ex.getMessage());
+        ApiResponse<?> response = ApiResponse.fail("INVALID_ARGUMENT", "잘못된 요청: " + ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
     // 특정 예외를 명확히 처리
     @ExceptionHandler(NoResultException.class)
     public ResponseEntity<ApiResponse<?>> handleNoResultException(NoResultException ex) {
-        ApiResponse<?> response = ApiResponse.fail("데이터를 찾을 수 없습니다.");
+        ApiResponse<?> response = ApiResponse.fail("NO_RESULT", "데이터를 찾을 수 없습니다.");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
     @ExceptionHandler(EmptyResultDataAccessException.class)
     public ResponseEntity<ApiResponse<?>> handleEmptyResultException(EmptyResultDataAccessException ex) {
-        ApiResponse<?> response = ApiResponse.fail("결과가 존재하지 않습니다.");
+        ApiResponse<?> response = ApiResponse.fail("EMPTY_RESULT", "결과가 존재하지 않습니다.");
         return new ResponseEntity<>(response, HttpStatus.NOT_FOUND);
     }
 
@@ -84,14 +84,14 @@ public class GlobalExceptionHandler {
     // 예시 예외를 캐치
     @ExceptionHandler(ExampleException.class)
     public ResponseEntity<ApiResponse<?>> handleExampleException(ExampleException ex) {
-        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        ApiResponse<?> response = ApiResponse.fail("EXAMPLE_EXCEPTION", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 
     // UserException 캐치
     @ExceptionHandler(UserException.class)
     public ResponseEntity<ApiResponse<?>> handleUserException(UserException ex) {
-        ApiResponse<?> response = ApiResponse.fail(ex.getMessage());
+        ApiResponse<?> response = ApiResponse.fail("USER_EXCEPTION", ex.getMessage());
         return new ResponseEntity<>(response, HttpStatus.INTERNAL_SERVER_ERROR);
     }
 }

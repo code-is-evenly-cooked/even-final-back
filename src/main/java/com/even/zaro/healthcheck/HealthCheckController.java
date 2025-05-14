@@ -15,14 +15,14 @@ public class HealthCheckController {
 
     @GetMapping("/health")
     public ResponseEntity<ApiResponse<String>> healthCheck() {
-        return ResponseEntity.ok(ApiResponse.success(null, "서버 정상 작동 중"));
+        return ResponseEntity.ok(ApiResponse.success("서버 정상 작동 중", null));
     }
 
     @GetMapping("/health/db")
     public ResponseEntity<ApiResponse<String>> dbHealth() {
         try {
             mockRepository.count(); // 실제 쿼리로 DB 연결 확인
-            return ResponseEntity.ok(ApiResponse.success(null, "DB 연결 성공"));
+            return ResponseEntity.ok(ApiResponse.success("DB 연결 성공",null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                     .body(ApiResponse.fail("INTERNAL_SERVER_ERROR", "DB 연결 실패"));

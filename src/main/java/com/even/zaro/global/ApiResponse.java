@@ -7,18 +7,18 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApiResponse<T> {
 
-    private T data;
-    private String status;
+    private String code;
     private String message;
+    private T data;
 
-    private ApiResponse(T data, String success, String message) {
-        this.data = data;
-        this.status = success;
+    private ApiResponse(String code, String message, T data){
+        this.code = code;
         this.message = message;
+        this.data = data;
     }
 
-    public static <T> ApiResponse<T> success(T data, String message) {
-        return new ApiResponse<>(data, "SUCCESS", message);
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>("SUCCESS", message, data);
     }
 //
 //    public static <T> ApiResponse<T> success(T data, String status, String message) {
@@ -26,8 +26,8 @@ public class ApiResponse<T> {
 //    }
 
     //
-    public static <T> ApiResponse<T> fail(String status, String message) {
-        return new ApiResponse<>(null, status, message);
+    public static <T> ApiResponse<T> fail(String code, String message) {
+        return new ApiResponse<>(code, message, null);
     }
 
 //    public static <T> ApiResponse<T> fail(T data, String status, String message) {

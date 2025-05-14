@@ -24,6 +24,6 @@ public class ApiTestController {
                 .username("동훈")
                 .build();
 
-        return ResponseEntity.ok(ApiResponse.success(exDto, "성공"));
+        return ResponseEntity.ok(ApiResponse.success(exDto, "API 테스트 성공~"));
     }
 }

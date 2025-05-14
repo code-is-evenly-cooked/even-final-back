@@ -26,7 +26,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // JWT 사용으로 필요 없음
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
-                        .requestMatchers("/**").permitAll() // 로그인, 회원가입 인증 없이
+                        .requestMatchers("/**").permitAll() // 현재 전체 인증 없이
                 );
         return http.build();
     }

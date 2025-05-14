@@ -8,4 +8,6 @@ import java.util.List;
 
 public interface FavoriteGroupRepository extends JpaRepository<FavoriteGroup, Long> {
     List<FavoriteGroup> findByUser(User user);
+
+    boolean existsByUser_IdAndName(Long userId, String name);
 }

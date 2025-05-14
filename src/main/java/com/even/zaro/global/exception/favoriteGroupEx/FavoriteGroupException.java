@@ -12,4 +12,8 @@ public class FavoriteGroupException extends RuntimeException {
     public static FavoriteGroupException AlreadyDeletedGroupException() {
         return new FavoriteGroupException("이미 삭제한 그룹입니다.");
     }
+
+    public static FavoriteGroupException DuplicateGroupException() {
+        return new FavoriteGroupException("이미 존재하는 그룹 이름입니다.");
+    }
 }

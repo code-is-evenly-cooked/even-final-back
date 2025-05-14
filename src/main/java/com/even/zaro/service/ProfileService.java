@@ -34,6 +34,13 @@ public class ProfileService {
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(UserException::NotFoundUserException);
 
+        boolean dupCheck = groupNameDuplicateCheck(request.getName(), request.getUserId());
+
+        // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
+        if (dupCheck) {
+            throw FavoriteGroupException.DuplicateGroupException();
+        }
+
         FavoriteGroup favoriteGroup = FavoriteGroup.builder()
                 .user(user) // 유저 설정
                 .name(request.getName()) // Group 이름 설정
@@ -70,7 +77,7 @@ public class ProfileService {
         FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
         // 이미 삭제 처리 된 경우
-        if(group.isDeleted()) {
+        if (group.isDeleted()) {
             throw FavoriteGroupException.AlreadyDeletedGroupException();
         }
 
@@ -84,10 +91,24 @@ public class ProfileService {
         FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
                 .orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
+        boolean dupCheck = groupNameDuplicateCheck(group.getName(), group.getUser().getId());
+
+        // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
+        if (dupCheck) {
+            throw FavoriteGroupException.DuplicateGroupException();
+        }
+
+
         group.setName(request.getName());
         group.setUpdatedAt(LocalDateTime.now());
 
 
         favoriteGroupRepository.save(group);
+    }
+
+
+    // 입력한 그룹 이름이 이미 해당 userId가 가지고 있는지 확인
+    public boolean groupNameDuplicateCheck(String groupName, long userId) {
+        return favoriteGroupRepository.existsByUser_IdAndName(userId, groupName);
     }
 }

@@ -1,6 +1,7 @@
 package com.even.zaro.healthcheck;
 
 import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -25,7 +26,7 @@ public class HealthCheckController {
             return ResponseEntity.ok(ApiResponse.success("DB 연결 성공",null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.fail("INTERNAL_SERVER_ERROR", "DB 연결 실패"));
+                    .body(ApiResponse.fail(ErrorCode.DB_ACCESS_ERROR, "DB 연결 실패"));
         }
     }
 }

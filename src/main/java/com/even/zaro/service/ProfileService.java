@@ -1,6 +1,7 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.profileDto.CreateGroupRequest;
+import com.even.zaro.dto.profileDto.GroupCreateRequest;
+import com.even.zaro.dto.profileDto.GroupEditRequest;
 import com.even.zaro.dto.profileDto.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
@@ -28,7 +29,7 @@ public class ProfileService {
     private final FavoriteGroupRepository favoriteGroupRepository;
 
     @Transactional
-    public void createGroup(CreateGroupRequest request) {
+    public void createGroup(GroupCreateRequest request) {
 
         User user = userRepository.findById(request.getUserId())
                 .orElseThrow(UserException::NotFoundUserException);
@@ -74,6 +75,18 @@ public class ProfileService {
         }
 
         group.setDeleted(true);
+
+        favoriteGroupRepository.save(group);
+    }
+
+    @Transactional
+    public void editGroup(GroupEditRequest request) {
+        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
+                .orElseThrow(FavoriteGroupException::NotFoundGroupExcpetion);
+
+        group.setName(request.getName());
+        group.setUpdatedAt(LocalDateTime.now());
+
 
         favoriteGroupRepository.save(group);
     }

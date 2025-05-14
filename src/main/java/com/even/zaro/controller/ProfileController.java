@@ -1,14 +1,13 @@
 package com.even.zaro.controller;
 
-import com.even.zaro.dto.profileDto.CreateGroupRequest;
+import com.even.zaro.dto.profileDto.GroupCreateRequest;
+import com.even.zaro.dto.profileDto.GroupEditRequest;
 import com.even.zaro.dto.profileDto.GroupResponse;
-import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
-import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -29,7 +28,7 @@ public class ProfileController {
     }
 
     @PostMapping("/group")
-    public ResponseEntity<ApiResponse<String>> createGroup(@RequestBody CreateGroupRequest request) {
+    public ResponseEntity<ApiResponse<String>> createGroup(@RequestBody GroupCreateRequest request) {
         profileService.createGroup(request);
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹이 생성되었습니다."));
@@ -40,6 +39,13 @@ public class ProfileController {
         profileService.deleteGroup(groupId);
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 삭제했습니다."));
+    }
+
+    @PatchMapping("/group/{groupId}")
+    public ResponseEntity<ApiResponse<String>> editGroup(@RequestBody GroupEditRequest request) {
+        profileService.editGroup(request);
+
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 수정했습니다."));
     }
 
 }

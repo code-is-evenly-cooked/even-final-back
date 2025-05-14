@@ -18,15 +18,13 @@ public class ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(()-> new IllegalArgumentException(ErrorCode.USER_EXCEPTION.getDefaultMessage()));
 
-        String dDay = "D+500"; // 수정필요 (계산로직추가구현)
-        int postCount = 0; // 수정필요2 (추가구현)
+        int postCount = 0; // post 구현 후 수정할 부분
 
         return UserProfileDto.builder()
                 .userId(user.getId())
                 .nickname(user.getNickname())
                 .profileImage(user.getProfileImage())
                 .liveAloneDate(user.getLiveAloneDate())
-                .dDay(dDay)
                 .mbti(user.getMbti())
                 .postCount(postCount)
                 .followingCount(user.getFollowingCount())

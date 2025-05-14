@@ -15,7 +15,6 @@ public class UserProfileDto {
     private String nickname;
     private String profileImage;
     private LocalDate liveAloneDate;
-    private String dDay;
     private String mbti;
     private int postCount;
     private int followingCount;

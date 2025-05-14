@@ -7,29 +7,30 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class ApiResponse<T> {
 
-    private boolean success;
     private T data;
+    private String status;
     private String message;
 
-    private ApiResponse(boolean success, T data, String message) {
-        this.success = success;
+    private ApiResponse(T data, String success, String message) {
         this.data = data;
+        this.status = success;
         this.message = message;
     }
 
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(true, data, null);
-    }
-
     public static <T> ApiResponse<T> success(T data, String message) {
-        return new ApiResponse<>(true, data, message);
+        return new ApiResponse<>(data, "SUCCESS", message);
+    }
+//
+//    public static <T> ApiResponse<T> success(T data, String status, String message) {
+//        return new ApiResponse<>(data, status, message);
+//    }
+
+    //
+    public static <T> ApiResponse<T> fail(String status, String message) {
+        return new ApiResponse<>(null, status, message);
     }
 
-    public static <T> ApiResponse<T> fail(String message) {
-        return new ApiResponse<>(false, null, message);
-    }
-
-    public static <T> ApiResponse<T> fail(T data, String message) {
-        return new ApiResponse<>(false, data, message);
-    }
+//    public static <T> ApiResponse<T> fail(T data, String status, String message) {
+//        return new ApiResponse<>(data, status, message);
+//    }
 }

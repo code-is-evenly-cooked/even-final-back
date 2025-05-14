@@ -7,6 +7,9 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,12 +43,11 @@ public class ProfileService {
     }
 
     // 유저가 쓴 게시물 list 조회
-    public List<UserPostDto> getUserPosts(Long userId) {
+    public Page<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new IllegalArgumentException(ErrorCode.NO_RESULT.getDefaultMessage()));
 
-        return postRepository.findByUserAndIsDeletedFalse(user)
-                .stream()
+        return postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()
                         .postId(post.getId())
                         .title(post.getTitle())
@@ -56,8 +58,8 @@ public class ProfileService {
                         .likeCount(post.getLikeCount())
                         .commentCount(post.getCommentCount())
                         .createdAt(post.getCreatedAt())
-                        .build())
-                .collect(Collectors.toList());
+                        .build());
+
     }
 
 }

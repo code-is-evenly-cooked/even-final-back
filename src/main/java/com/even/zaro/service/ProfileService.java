@@ -4,6 +4,7 @@ import com.even.zaro.dto.profileDto.CreateGroupRequest;
 import com.even.zaro.dto.profileDto.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
+import com.even.zaro.global.exception.favoriteGroupEx.FavoriteGroupException;
 import com.even.zaro.global.exception.userEx.UserException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
@@ -61,5 +62,19 @@ public class ProfileService {
                 .toList();
 
         return responseList;
+    }
+
+    @Transactional
+    public void deleteGroup(long groupId) {
+        FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(FavoriteGroupException::NotFoundGroupExcpetion);
+
+        // 이미 삭제 처리 된 경우
+        if(group.isDeleted()) {
+            throw FavoriteGroupException.AlreadyDeletedGroupExcpetion();
+        }
+
+        group.setDeleted(true);
+
+        favoriteGroupRepository.save(group);
     }
 }

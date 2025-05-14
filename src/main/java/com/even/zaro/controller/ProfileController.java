@@ -35,4 +35,11 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹이 생성되었습니다."));
     }
 
+    @DeleteMapping("/group/{groupId}")
+    public ResponseEntity<ApiResponse<String>> deleteGroup(@PathVariable("groupId") long groupId) {
+        profileService.deleteGroup(groupId);
+
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 삭제했습니다."));
+    }
+
 }

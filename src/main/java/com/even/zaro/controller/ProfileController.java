@@ -2,6 +2,7 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.UserProfileDto;
 import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
 import com.even.zaro.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -17,8 +18,13 @@ public class ProfileController {
     private final ProfileService profileService;
 
     @GetMapping("/{userID}")
-    public ResponseEntity<?> getProfile(@PathVariable("userID") Long userID) {
-        UserProfileDto profile = profileService.getUserProfile(userID);
-        return ResponseEntity.ok(ApiResponse.success("유저 프로필 정보 조회 성공 !", profile));
+    public ResponseEntity<?> getUserProfile(@PathVariable("userID") Long userID) {
+        try {
+            UserProfileDto profile = profileService.getUserProfile(userID);
+            return ResponseEntity.ok(ApiResponse.success("유저 프로필 정보 조회 성공 !", profile));
+        } catch (Exception e) {
+            return ResponseEntity.badRequest()
+                    .body(ApiResponse.fail(ErrorCode.USER_EXCEPTION));
+        }
     }
 }

@@ -14,6 +14,7 @@ public class DataInit {
 
     @PostConstruct
     public void init() {
+        if(userRepository.count() == 0) {
             User user = User.builder()
                     .email("test@example.com")
                     .nickname("테스트유저")
@@ -21,5 +22,6 @@ public class DataInit {
                     .status(Status.ACTIVE)
                     .build();
             userRepository.save(user);
+        }
     }
 }

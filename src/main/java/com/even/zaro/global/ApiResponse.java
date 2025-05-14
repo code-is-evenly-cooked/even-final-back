@@ -2,34 +2,32 @@ package com.even.zaro.global;
 
 import lombok.Getter;
 import lombok.NoArgsConstructor;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @NoArgsConstructor
 public class ApiResponse<T> {
 
-    private boolean success;
-    private T data;
+    private String code;
     private String message;
+    private T data;
 
-    private ApiResponse(boolean success, T data, String message) {
-        this.success = success;
-        this.data = data;
+    private ApiResponse(String code, String message, T data){
+        this.code = code;
         this.message = message;
+        this.data = data;
     }
 
-    public static <T> ApiResponse<T> success(T data) {
-        return new ApiResponse<>(true, data, null);
+    public static <T> ApiResponse<T> success(String message, T data) {
+        return new ApiResponse<>("SUCCESS", message, data);
     }
 
-    public static <T> ApiResponse<T> success(T data, String message) {
-        return new ApiResponse<>(true, data, message);
+    public static <T> ApiResponse<T> fail(ErrorCode errorCode) {
+        return new ApiResponse<>(errorCode.getCode(), errorCode.getDefaultMessage(), null);
     }
 
-    public static <T> ApiResponse<T> fail(String message) {
-        return new ApiResponse<>(false, null, message);
+    public static <T> ApiResponse<T> fail(ErrorCode errorCode, String message) {
+        return new ApiResponse<>(errorCode.getCode(), message, null);
     }
 
-    public static <T> ApiResponse<T> fail(T data, String message) {
-        return new ApiResponse<>(false, data, message);
-    }
 }

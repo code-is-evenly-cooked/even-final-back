@@ -1,6 +1,7 @@
 package com.even.zaro.healthcheck;
 
 import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -15,17 +16,17 @@ public class HealthCheckController {
 
     @GetMapping("/health")
     public ResponseEntity<ApiResponse<String>> healthCheck() {
-        return ResponseEntity.ok(ApiResponse.success("OK", "서버 정상 작동 중"));
+        return ResponseEntity.ok(ApiResponse.success("서버 정상 작동 중", null));
     }
 
     @GetMapping("/health/db")
     public ResponseEntity<ApiResponse<String>> dbHealth() {
         try {
             mockRepository.count(); // 실제 쿼리로 DB 연결 확인
-            return ResponseEntity.ok(ApiResponse.success("DB 연결 성공"));
+            return ResponseEntity.ok(ApiResponse.success("DB 연결 성공",null));
         } catch (Exception e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
-                    .body(ApiResponse.fail("DB 연결 실패"));
+                    .body(ApiResponse.fail(ErrorCode.DB_ACCESS_ERROR, "DB 연결 실패"));
         }
     }
 }

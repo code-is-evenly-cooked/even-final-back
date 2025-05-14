@@ -28,6 +28,9 @@ public class User {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
+
     @Column(name = "password")
     private String password;
 
@@ -48,7 +51,7 @@ public class User {
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
-    private Status status;
+    private Status status = Status.ACTIVE; // 임시로 활성화 상태로 지정
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -61,8 +64,8 @@ public class User {
     private LocalDateTime lastLoginAt;
 
     @Column(name = "follower_count")
-    private int followerCount;
+    private int followerCount = 0;
 
     @Column(name = "following_count")
-    private int followingCount;
+    private int followingCount = 0;
 }

@@ -22,7 +22,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleGeneralException(Exception ex) {
         String message = "요청 url을 다시 확인해보세요 : " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.UNKNOWN_REQUEST.getHttpStatus()).body(ApiResponse.fail(ErrorCode.UNKNOWN_REQUEST));
+        return ResponseEntity.status(ErrorCode.UNKNOWN_REQUEST.getHttpStatus()).body(ApiResponse.fail(ErrorCode.UNKNOWN_REQUEST, message));
     }
 
     // 이메일 중복 인증 발생 예외 처리
@@ -71,7 +71,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException ex) {
         String message = "잘못된 요청: " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.INVALID_ARGUMENT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.INVALID_ARGUMENT));
+        return ResponseEntity.status(ErrorCode.INVALID_ARGUMENT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.INVALID_ARGUMENT, message));
     }
 
     // 특정 예외를 명확히 처리
@@ -85,7 +85,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleEmptyResultException(EmptyResultDataAccessException ex) {
         String message = "결과가 존재하지 않습니다 : " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.EMPTY_RESULT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.EMPTY_RESULT));
+        return ResponseEntity.status(ErrorCode.EMPTY_RESULT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.EMPTY_RESULT, message));
     }
 
     // --------- 커스텀 예외 아래 작성 ------------- //
@@ -95,7 +95,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleExampleException(ExampleException ex) {
         String message = "예시 예외 발생 : " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.EXAMPLE_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.EXAMPLE_EXCEPTION));
+        return ResponseEntity.status(ErrorCode.EXAMPLE_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.EXAMPLE_EXCEPTION, message));
     }
 
     // UserException 캐치
@@ -103,6 +103,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleUserException(UserException ex) {
         String message = "유저 예외 발생 : " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.USER_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.USER_EXCEPTION));
+        return ResponseEntity.status(ErrorCode.USER_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.USER_EXCEPTION, message));
     }
 }

@@ -20,6 +20,7 @@ import java.util.Map;
 public class ProfileController {
     private final ProfileService profileService;
 
+    // 유저 기본 프로필 조회
     @GetMapping("/{userID}")
     public ResponseEntity<?> getUserProfile(@PathVariable("userID") Long userID) {
         try {
@@ -31,6 +32,7 @@ public class ProfileController {
         }
     }
 
+    // 유저가 쓴 게시물 list 조회
     @GetMapping("/{userID}/posts")
     public ResponseEntity<?> getUserPosts(
             @PathVariable("userID") Long userID,
@@ -49,5 +51,21 @@ public class ProfileController {
             return ResponseEntity.badRequest()
                     .body(ApiResponse.fail(ErrorCode.USER_EXCEPTION));
         }
+    }
+
+    // 유저가 좋아요 누른 게시물 list 조회
+    @GetMapping("/{userID}/likes")
+    public ResponseEntity<?> getUserLikedPosts(
+            @PathVariable("userID") Long userID,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userID, pageRequest);
+
+        return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", Map.of(
+                "content", likedPosts.getContent(),
+                "totalPages", likedPosts.getTotalPages()
+        )));
     }
 }

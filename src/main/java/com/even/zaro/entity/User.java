@@ -65,8 +65,15 @@ public class User {
     @Column(name = "following_count", nullable = false)
     private int followingCount = 0;
 
+    @Column(name = "provider", nullable = false)
+    private Provider provider;
+
 
     public enum Status {
         PENDING, ACTIVE, DORMANT, DELETED
+    }
+
+    public enum Provider {
+        LOCAL, KAKAO
     }
 }

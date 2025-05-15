@@ -61,6 +61,7 @@ public class AuthService {
                         .email(email)
                         .nickname(nickname)
                         .password(passwordEncoder.encode(password))
+                        .profileImage("https://your-cdn.com/default.png")
                         .provider(Provider.LOCAL)
                         .status(Status.PENDING)
                         .build()

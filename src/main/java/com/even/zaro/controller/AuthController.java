@@ -32,6 +32,7 @@ public class AuthController {
                 .body(ApiResponse.success("회원가입이 완료되었습니다.", responseDto));
     }
 
+    @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
     @PostMapping("/signin")
     public ResponseEntity<ApiResponse<SignInResponseDto>> signin(@RequestBody SignInRequestDto requestDto) {
         SignInResponseDto responseDto = authService.signIn(requestDto);

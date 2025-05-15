@@ -2,6 +2,7 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.favoriteDTO.FavoriteEditRequest;
 import com.even.zaro.dto.favoriteDTO.FavoriteResponse;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.ProfileService;
@@ -105,11 +106,12 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기 그룹의 장소 목록을 성공적으로 조회했습니다.", groupItems));
     }
 
-//
-//    @PatchMapping("/favorite/{favoriteId}")
-//    public ResponseEntity<ApiResponse<String>> editFavoriteMemo(@PathVariable("favoriteId") long favoriteId) {
-//        profileService.editFavoriteMemo(favoriteId);
-//    }
 
+    @Operation(summary = "즐겨찾기의 메모 수정", description = "해당 즐겨찾기의 메모를 수정합니다.")
+    @PatchMapping("/favorite/{favoriteId}")
+    public ResponseEntity<ApiResponse<String>> editFavoriteMemo(@PathVariable("favoriteId") long favoriteId, @RequestBody FavoriteEditRequest request) {
+        profileService.editFavoriteMemo(favoriteId, request);
 
+        return ResponseEntity.ok(ApiResponse.success("장소 메모가 성공적으로 수정되었습니다."));
+    }
 }

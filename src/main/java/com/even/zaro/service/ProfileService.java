@@ -2,6 +2,7 @@ package com.even.zaro.service;
 
 import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.favoriteDTO.FavoriteEditRequest;
 import com.even.zaro.dto.favoriteDTO.FavoriteResponse;
 import com.even.zaro.dto.profileDTO.GroupCreateRequest;
 import com.even.zaro.dto.profileDTO.GroupEditRequest;
@@ -186,12 +187,13 @@ public class ProfileService {
         return favoriteResponseList;
     }
 
-//    public void editFavoriteMemo(long favoriteId) {
-//        Favorite favorite = favoriteRepository.findById(favoriteId)
-//                .orElseThrow(() -> new ProfileException(ErrorCode.FAVORITE_NOT_FOUND));
-//
-//        favorite.setMemo(favorite.getMemo());
-//
-//
-//    }
+    // 해당 즐겨찾기의 메모를 수정
+    public void editFavoriteMemo(long favoriteId, FavoriteEditRequest request) {
+        Favorite favorite = favoriteRepository.findById(favoriteId)
+                .orElseThrow(() -> new ProfileException(ErrorCode.FAVORITE_NOT_FOUND));
+
+        favorite.setMemo(request.getMemo());
+
+        favoriteRepository.save(favorite);
+    }
 }

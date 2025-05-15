@@ -6,6 +6,7 @@ import com.even.zaro.global.ApiResponse;
 import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
@@ -23,7 +24,7 @@ public class UserController {
     private final UserService userService;
     private final JwtUtil jwtUtil;
 
-    @Operation(summary = "내 정보 조회", description = "AccessToken 기반으로 로그인한 사용자의 정보를 조회합니다.")
+    @Operation(summary = "내 정보 조회", description = "AccessToken 기반으로 로그인한 사용자의 정보를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/my")
     public ResponseEntity<ApiResponse<UserInfoResponseDto>> getMyInfo(@AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         UserInfoResponseDto responseDto = userService.getMyInfo(userInfoDto.getUserId());

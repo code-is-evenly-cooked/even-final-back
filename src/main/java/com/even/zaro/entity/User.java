@@ -1,20 +1,20 @@
 package com.even.zaro.entity;
 
-import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
+import lombok.*;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
-@Data
 @Entity
-@AllArgsConstructor
+@Getter
+@Setter
 @NoArgsConstructor
+@AllArgsConstructor
 @Builder
 @Table(name = "user")
 public class User {
@@ -27,11 +27,11 @@ public class User {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "nickname", nullable = false)
-    private String nickname;
-
     @Column(name = "password")
     private String password;
+
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
 
     @Column(name = "profile_image")
     private String profileImage;
@@ -42,10 +42,10 @@ public class User {
     @Column(name = "live_alone_date")
     private LocalDate liveAloneDate;
 
-    @Column(length = 10)
+    @Column(name = "gender")
     private String gender;
 
-    @Column(length = 4)
+    @Column(name = "mbti",  length = 4)
     private String mbti;
 
     @Enumerated(EnumType.STRING)
@@ -68,4 +68,11 @@ public class User {
 
     @Column(name = "following_count")
     private int followingCount = 0;
+
+    @Column(name = "provider", nullable = false)
+    private Provider provider;
+
+    public void updateLastLoginAt(LocalDateTime time) {
+        this.lastLoginAt = time;
+    }
 }

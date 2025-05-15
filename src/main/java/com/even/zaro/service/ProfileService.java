@@ -10,7 +10,7 @@ import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
 import com.even.zaro.global.exception.favoriteGroupEx.FavoriteGroupException;
-import com.even.zaro.global.exception.userEx.UserException;
+import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
@@ -101,8 +101,7 @@ public class ProfileService {
   
     public void createGroup(GroupCreateRequest request) {
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(UserException::NotFoundUserException);
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
         boolean dupCheck = groupNameDuplicateCheck(request.getName(), request.getUserId());
 
@@ -111,11 +110,9 @@ public class ProfileService {
             throw FavoriteGroupException.DuplicateGroupException();
         }
 
-        FavoriteGroup favoriteGroup = FavoriteGroup.builder()
-                .user(user) // 유저 설정
+        FavoriteGroup favoriteGroup = FavoriteGroup.builder().user(user) // 유저 설정
                 .name(request.getName()) // Group 이름 설정
-                .updatedAt(LocalDateTime.now())
-                .build();
+                .updatedAt(LocalDateTime.now()).build();
 
         favoriteGroupRepository.save(favoriteGroup);
     }
@@ -123,8 +120,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<GroupResponse> getFavoriteGroups(long userId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(UserException::NotFoundUserException);
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
 
         // userId 값이 일치하는 데이터 조회
@@ -132,12 +128,7 @@ public class ProfileService {
 
 
         // GroupResponse 리스트로 변환
-        List<GroupResponse> responseList = groupList.stream()
-                .map(group -> GroupResponse.builder()
-                        .id(group.getId())
-                        .name(group.getName())
-                        .build())
-                .toList();
+        List<GroupResponse> responseList = groupList.stream().map(group -> GroupResponse.builder().id(group.getId()).name(group.getName()).build()).toList();
 
         return responseList;
     }
@@ -156,8 +147,7 @@ public class ProfileService {
     }
   
     public void editGroup(GroupEditRequest request) {
-        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
-                .orElseThrow(FavoriteGroupException::NotFoundGroupException);
+        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId()).orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
         boolean dupCheck = groupNameDuplicateCheck(group.getName(), group.getUser().getId());
 

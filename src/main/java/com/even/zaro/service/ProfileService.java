@@ -140,8 +140,8 @@ public class ProfileService {
         favoriteGroupRepository.save(group);
     }
 
-    public void editGroup(GroupEditRequest request) {
-        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
+    public void editGroup(long groupId, GroupEditRequest request) {
+        FavoriteGroup group = favoriteGroupRepository.findById(groupId)
                 .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
 
         boolean dupCheck = groupNameDuplicateCheck(request.getName(), group.getUser().getId());
@@ -151,7 +151,6 @@ public class ProfileService {
             throw new ProfileException(ErrorCode.GROUP_ALREADY_EXIST);
         }
         group.setName(request.getName());
-        group.setUpdatedAt(LocalDateTime.now());
 
         favoriteGroupRepository.save(group);
     }
@@ -186,4 +185,13 @@ public class ProfileService {
 
         return favoriteResponseList;
     }
+
+//    public void editFavoriteMemo(long favoriteId) {
+//        Favorite favorite = favoriteRepository.findById(favoriteId)
+//                .orElseThrow(() -> new ProfileException(ErrorCode.FAVORITE_NOT_FOUND));
+//
+//        favorite.setMemo(favorite.getMemo());
+//
+//
+//    }
 }

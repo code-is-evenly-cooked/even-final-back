@@ -91,16 +91,25 @@ public class ProfileController {
 
     @Operation(summary = "즐겨찾기 그룹 수정", description = "userId와 그룹이름을 입력받아 그룹을 수정합니다.")
     @PatchMapping("/group/{groupId}")
-    public ResponseEntity<ApiResponse<String>> editGroup(@RequestBody GroupEditRequest request) {
-        profileService.editGroup(request);
+    public ResponseEntity<ApiResponse<String>> editGroup(@PathVariable("groupId") long groupId, @RequestBody GroupEditRequest request) {
+        profileService.editGroup(groupId, request);
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 수정했습니다."));
     }
 
-    @GetMapping("/group/{groupId}/items")
+    @Operation(summary = "그룹의 즐겨찾기 리스트 조회", description = "해당 그룹의 즐겨찾기 리스트를 조회합니다.")
+    @GetMapping("/favorite/{groupId}/items")
     public ResponseEntity<ApiResponse<List<FavoriteResponse>>> getGroupItems(@PathVariable("groupId") long groupId) {
         List<FavoriteResponse> groupItems = profileService.getGroupItems(groupId);
 
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기 그룹의 장소 목록을 성공적으로 조회했습니다.", groupItems));
     }
+
+//
+//    @PatchMapping("/favorite/{favoriteId}")
+//    public ResponseEntity<ApiResponse<String>> editFavoriteMemo(@PathVariable("favoriteId") long favoriteId) {
+//        profileService.editFavoriteMemo(favoriteId);
+//    }
+
+
 }

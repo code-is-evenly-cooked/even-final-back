@@ -196,4 +196,13 @@ public class ProfileService {
 
         favoriteRepository.save(favorite);
     }
+
+    // 해당 즐겨찾기를 soft 삭제
+    public void deleteFavorite(long favoriteId) {
+        Favorite favorite = favoriteRepository.findById(favoriteId)
+                .orElseThrow(() -> new ProfileException(ErrorCode.FAVORITE_NOT_FOUND));
+
+        favorite.setDeleted(true);
+        favoriteRepository.save(favorite);
+    }
 }

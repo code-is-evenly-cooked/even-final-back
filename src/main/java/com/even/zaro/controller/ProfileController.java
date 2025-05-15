@@ -112,6 +112,14 @@ public class ProfileController {
     public ResponseEntity<ApiResponse<String>> editFavoriteMemo(@PathVariable("favoriteId") long favoriteId, @RequestBody FavoriteEditRequest request) {
         profileService.editFavoriteMemo(favoriteId, request);
 
-        return ResponseEntity.ok(ApiResponse.success("장소 메모가 성공적으로 수정되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success("즐겨찾기 메모가 성공적으로 수정되었습니다."));
+    }
+
+    @Operation(summary = "즐겨찾기 삭제", description = "해당 즐겨찾기를 삭제합니다.")
+    @DeleteMapping("/favorite/{favoriteId}")
+    public ResponseEntity<ApiResponse<String>> deleteFavorite(@PathVariable("favoriteId") long favoriteId) {
+        profileService.deleteFavorite(favoriteId);
+
+        return ResponseEntity.ok(ApiResponse.success("즐겨찾기가 성공적으로 삭제되었습니다."));
     }
 }

@@ -7,6 +7,7 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.repository.PostLikeRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.global.exception.CustomException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;

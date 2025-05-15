@@ -70,7 +70,6 @@ public class AuthService {
                         .profileImage("https://your-cdn.com/default.png")
                         .provider(Provider.LOCAL)
                         .status(Status.PENDING)
-                        .createdAt(LocalDateTime.now())
                         .build()
         );
 

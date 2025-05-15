@@ -20,7 +20,7 @@ public class AuthService {
     // 상수
     private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
     private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[_!@#$%^&*])[A-Za-z\\d_!@#$%^&*]{6,}$";
-    private static final String NICKNAME_REGEX = "^[a-zA-Z0-9가-힣_-]+$";
+    private static final String NICKNAME_REGEX = "^[a-zA-Z0-9가-힣_-]{2,10}$";
     // 필드, 생성자
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;

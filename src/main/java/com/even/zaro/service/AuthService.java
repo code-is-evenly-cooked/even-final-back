@@ -2,6 +2,8 @@ package com.even.zaro.service;
 
 import com.even.zaro.dto.auth.SignUpRequestDto;
 import com.even.zaro.dto.auth.SignUpResponseDto;
+import com.even.zaro.entity.Provider;
+import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
@@ -59,8 +61,8 @@ public class AuthService {
                         .email(email)
                         .nickname(nickname)
                         .password(passwordEncoder.encode(password))
-                        .provider(User.Provider.LOCAL)
-                        .status(User.Status.PENDING)
+                        .provider(Provider.LOCAL)
+                        .status(Status.PENDING)
                         .build()
         );
 

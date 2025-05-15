@@ -30,18 +30,18 @@ public class AuthService {
 
         // 유효성 검사
         if (email == null || email.isBlank()) {
-            throw new UserException(ErrorCode.EMAIL_REQUIRED); //email not null
+            throw new UserException(ErrorCode.EMAIL_REQUIRED);
         }
         if (!Pattern.matches(EMAIL_REGEX, email)) {
             throw new UserException(ErrorCode.INVALID_EMAIL_FORMAT);
         }
         if (password == null || password.isBlank()) {
-            throw new UserException(ErrorCode.PASSWORD_REQUIRED); //password not null
+            throw new UserException(ErrorCode.PASSWORD_REQUIRED);
         }
         if (!Pattern.matches(PASSWORD_REGEX, password)) {
             throw new UserException(ErrorCode.INVALID_PASSWORD);
         }
-        if (nickname == null || email.isBlank()) {
+        if (nickname == null || nickname.isBlank()) {
             throw new UserException(ErrorCode.NICKNAME_REQUIRED);
         }
         if (!Pattern.matches(NICKNAME_REGEX, nickname)) {

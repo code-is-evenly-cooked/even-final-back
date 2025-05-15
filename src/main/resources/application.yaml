@@ -9,7 +9,6 @@ spring:
 
   config:
     import: optional:file:.env[.properties]
-    #스프링 도커 컨테이너에서 실행되면 필요 없음. 단, 로컬 개발시 필요한 사람이 있을 수 있을 것 같아 남겨둡니다.
 
   #시간 설정
   jackson:
@@ -51,3 +50,11 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# 백엔드 도메인
+cors:
+  backend-origin: ${BACKEND_DOMAIN}
+
+# 스웨거 https 인식
+server:
+  forward-headers-strategy: framework

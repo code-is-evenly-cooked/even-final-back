@@ -2,6 +2,8 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.favoriteDTO.FavoriteAddRequest;
+import com.even.zaro.dto.favoriteDTO.FavoriteAddResponse;
 import com.even.zaro.dto.favoriteDTO.FavoriteEditRequest;
 import com.even.zaro.dto.favoriteDTO.FavoriteResponse;
 import com.even.zaro.global.ApiResponse;
@@ -97,6 +99,15 @@ public class ProfileController {
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 수정했습니다."));
     }
+
+    @Operation(summary = "즐겨찾기 추가", description = "그룹에 즐겨찾기를 추가합니다.")
+    @PostMapping("/favorite/{groupId}")
+    public ResponseEntity<ApiResponse<FavoriteAddResponse>> addFavorite(@PathVariable("groupId") long groupId, @RequestBody FavoriteAddRequest request) {
+        FavoriteAddResponse favoriteAddResponse = profileService.addFavorite(groupId, request);
+
+        return ResponseEntity.ok(ApiResponse.success("즐겨찾기가 해당 그룹에 성공적으로 추가되었습니다.", favoriteAddResponse));
+    }
+
 
     @Operation(summary = "그룹의 즐겨찾기 리스트 조회", description = "해당 그룹의 즐겨찾기 리스트를 조회합니다.")
     @GetMapping("/favorite/{groupId}/items")

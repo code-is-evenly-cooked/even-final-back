@@ -2,6 +2,8 @@ package com.even.zaro.service;
 
 import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.favoriteDTO.FavoriteAddRequest;
+import com.even.zaro.dto.favoriteDTO.FavoriteAddResponse;
 import com.even.zaro.dto.favoriteDTO.FavoriteEditRequest;
 import com.even.zaro.dto.favoriteDTO.FavoriteResponse;
 import com.even.zaro.dto.profileDTO.GroupCreateRequest;
@@ -9,9 +11,11 @@ import com.even.zaro.dto.profileDTO.GroupEditRequest;
 import com.even.zaro.dto.profileDTO.GroupResponse;
 import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.FavoriteGroup;
+import com.even.zaro.entity.Place;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
+import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.*;
@@ -204,5 +208,37 @@ public class ProfileService {
 
         favorite.setDeleted(true);
         favoriteRepository.save(favorite);
+    }
+
+    // 그룹에 즐겨찾기를 추가
+    public FavoriteAddResponse addFavorite(long groupId, FavoriteAddRequest request) {
+
+        FavoriteGroup group = favoriteGroupRepository.findById(groupId)
+                .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
+
+        User user = userRepository.findById(request.getUserId())
+                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+
+        Place place = placeRepository.findById(request.getPlaceId())
+                .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
+
+        Favorite favorite = Favorite.builder()
+                .user(user)
+                .group(group)
+                .place(place)
+                .memo(request.getMemo())
+                .isDeleted(false)
+                .build();
+
+        favoriteRepository.save(favorite);
+
+        FavoriteAddResponse favoriteAddResponse = FavoriteAddResponse.builder()
+                .placeId(favorite.getPlace().getId())
+                .memo(favorite.getMemo())
+                .lat(favorite.getPlace().getLat())
+                .lng(favorite.getPlace().getLng())
+                .build();
+
+        return favoriteAddResponse;
     }
 }

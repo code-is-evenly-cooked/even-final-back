@@ -29,6 +29,8 @@ public enum ErrorCode {
 
 
     // 지도 Map
+    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장소를 찾지 못했습니다."),
+
 
     // Health
     DB_CONNECTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DB 연결 실패"),

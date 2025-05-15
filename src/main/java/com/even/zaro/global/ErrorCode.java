@@ -24,7 +24,6 @@ public enum ErrorCode {
 
     NICKNAME_REQUIRED(HttpStatus.BAD_REQUEST, "닉네임은 필수 입력 값입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 영문, 한글, 숫자, -, _만 가능합니다."),
-    NICKNAME_ALREADY_EXISTED(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
 
     // 게시글 Post
 

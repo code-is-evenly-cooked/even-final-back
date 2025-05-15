@@ -1,6 +1,7 @@
 package com.even.zaro.config.security;
 
 import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
@@ -19,6 +20,9 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 @RequiredArgsConstructor
 @EnableWebSecurity
 public class SecurityConfig {
+    @Value("${cors.backend-origin}")
+    private String backendOrigin;
+
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http
@@ -26,6 +30,7 @@ public class SecurityConfig {
                 .csrf(AbstractHttpConfigurer::disable) // JWT 사용으로 필요 없음
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
+                        .requestMatchers("/swagger-ui/*", "/v3/api-docs/**").permitAll() // 스웨거
                         .requestMatchers("/**").permitAll() // 현재 전체 인증 없이
                 );
         return http.build();
@@ -37,6 +42,8 @@ public class SecurityConfig {
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
 
         configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedOrigin("https://zaro.vercel.app");
+        configuration.addAllowedOrigin(backendOrigin);
         configuration.addAllowedMethod("GET");
         configuration.addAllowedMethod("POST");
         configuration.addAllowedMethod("PUT");

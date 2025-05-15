@@ -1,12 +1,16 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.auth.LoginRequestDto;
+import com.even.zaro.dto.auth.LoginResponseDto;
 import com.even.zaro.dto.auth.SignUpRequestDto;
 import com.even.zaro.dto.auth.SignUpResponseDto;
+import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.entity.Provider;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -24,6 +28,7 @@ public class AuthService {
     // 필드, 생성자
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
+    private final JwtUtil jwtUtil;
     // 메서드
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
@@ -68,6 +73,27 @@ public class AuthService {
         );
 
         return new SignUpResponseDto(user.getId(), user.getEmail(), user.getNickname());
+    }
 
+    public LoginResponseDto login(LoginRequestDto requestDto) {
+        User user = userRepository.findByEmail(requestDto.getEmail())
+                .orElseThrow(() -> new UserException(ErrorCode.EMAIL_NOT_FOUND));
+
+        if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
+            throw new UserException(ErrorCode.INCORRECT_PASSWORD);
+        }
+
+        String[] tokens = jwtUtil.generateToken(new JwtUserInfoDto(user.getId()));
+        String accessToken = tokens[0];
+        String refreshToken = tokens[1];
+
+        return new LoginResponseDto(
+                accessToken,
+                refreshToken,
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getProfileImage()
+        );
     }
 }

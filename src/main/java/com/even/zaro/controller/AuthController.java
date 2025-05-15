@@ -24,9 +24,9 @@ public class AuthController {
 
     @Operation(summary = "회원가입", description = "이메일, 비밀번호, 닉네임으로 회원가입합니다.")
     @PostMapping("/signup")
-    public ResponseEntity<ApiResponse<SignUpResponseDto>> signup(@RequestBody SignUpRequestDto request) {
-        SignUpResponseDto response = authService.signUp(request);
+    public ResponseEntity<ApiResponse<SignUpResponseDto>> signup(@RequestBody SignUpRequestDto requestDto) {
+        SignUpResponseDto responseDto = authService.signUp(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success("회원가입이 완료되었습니다.", response));
+                .body(ApiResponse.success("회원가입이 완료되었습니다.", responseDto));
     }
 }

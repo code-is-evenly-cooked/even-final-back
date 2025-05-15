@@ -73,13 +73,4 @@ public class User {
 
     @Column(name = "provider", nullable = false)
     private Provider provider;
-
-
-    public enum Status {
-        PENDING, ACTIVE, DORMANT, DELETED
-    }
-
-    public enum Provider {
-        LOCAL, KAKAO
-    }
 }

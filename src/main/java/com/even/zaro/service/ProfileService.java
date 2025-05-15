@@ -29,7 +29,7 @@ public class ProfileService {
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(()-> new IllegalArgumentException(ErrorCode.USER_EXCEPTION.getDefaultMessage()));
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
 
         int postCount = postRepository.countByUserAndIsDeletedFalse(user);
 
@@ -48,7 +48,7 @@ public class ProfileService {
     // 유저가 쓴 게시물 list 조회
     public Page<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.USER_EXCEPTION.getDefaultMessage()));
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
 
         return postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()
@@ -68,7 +68,7 @@ public class ProfileService {
     // 유저가 좋아요 누른 게시물 list 조회
     public Page<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new IllegalArgumentException(ErrorCode.USER_EXCEPTION.getDefaultMessage()));
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
 
         return postLikeRepository.findByUser(user, pageable)
                 .map(postLike -> UserPostDto.builder()

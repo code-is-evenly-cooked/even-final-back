@@ -25,6 +25,8 @@ public enum ErrorCode {
     NICKNAME_REQUIRED(HttpStatus.BAD_REQUEST, "닉네임은 필수 입력 값입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 영문, 한글, 숫자, -, _만 가능합니다."),
 
+    USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),
+
     // 게시글 Post
 
     // 프로필 Profile

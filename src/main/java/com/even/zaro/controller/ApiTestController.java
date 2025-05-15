@@ -2,8 +2,9 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.ExDTO;
 import com.even.zaro.global.ApiResponse;
-import com.even.zaro.global.exception.exampleEx.ExampleException;
-import com.even.zaro.global.exception.userEx.UserException;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.CustomException;
+import com.even.zaro.global.exception.user.UserException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -32,12 +33,12 @@ public class ApiTestController {
     @Operation(summary = "예외 테스트 API", description = "예외 테스트 응답 확인용")
     @GetMapping("/error-throw")
     public ResponseEntity<ApiResponse<?>> errorThrow() {
-        throw UserException.NotFoundUserException();
+        throw new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND);
     }
 
     @Operation(summary = "예외 테스트 API", description = "예외 테스트 응답 확인용")
     @GetMapping("/error-throw/ex")
     public ResponseEntity<ApiResponse<?>> errorThrowEx() {
-        throw ExampleException.NotFoundExampleException();
+        throw new CustomException(ErrorCode.EXAMPLE_EXCEPTION);
     }
 }

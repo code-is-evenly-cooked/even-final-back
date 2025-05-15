@@ -2,9 +2,8 @@ package com.even.zaro.global.exception;
 
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
-import com.even.zaro.global.exception.exampleEx.ExampleException;
-import com.even.zaro.global.exception.userEx.UserException;
 import jakarta.persistence.NoResultException;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
@@ -16,13 +15,20 @@ import org.springframework.web.method.annotation.MethodArgumentTypeMismatchExcep
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    // 커스텀 처리
+    @ExceptionHandler(CustomException.class)
+    public ResponseEntity<ApiResponse<?>> handleCustom(CustomException ex) {
+        return ResponseEntity
+                .status(ex.getStatus())
+                .body(ApiResponse.fail(ex.getCode(), ex.getMessage()));
+    }
 
     // 기타 예외 처리
     @ExceptionHandler(Exception.class)
     public ResponseEntity<ApiResponse<?>> handleGeneralException(Exception ex) {
         String message = "요청 url을 다시 확인해보세요 : " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.UNKNOWN_REQUEST.getHttpStatus()).body(ApiResponse.fail(ErrorCode.UNKNOWN_REQUEST));
+        return ResponseEntity.status(ErrorCode.UNKNOWN_REQUEST.getHttpStatus()).body(ApiResponse.fail(ErrorCode.UNKNOWN_REQUEST, message));
     }
 
     // 이메일 중복 인증 발생 예외 처리
@@ -71,7 +77,7 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleIllegalArgumentException(IllegalArgumentException ex) {
         String message = "잘못된 요청: " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.INVALID_ARGUMENT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.INVALID_ARGUMENT));
+        return ResponseEntity.status(ErrorCode.INVALID_ARGUMENT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.INVALID_ARGUMENT, message));
     }
 
     // 특정 예외를 명확히 처리
@@ -85,24 +91,6 @@ public class GlobalExceptionHandler {
     public ResponseEntity<ApiResponse<?>> handleEmptyResultException(EmptyResultDataAccessException ex) {
         String message = "결과가 존재하지 않습니다 : " + ex.getMessage();
         log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.EMPTY_RESULT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.EMPTY_RESULT));
-    }
-
-    // --------- 커스텀 예외 아래 작성 ------------- //
-
-    // 예시 예외를 캐치
-    @ExceptionHandler(ExampleException.class)
-    public ResponseEntity<ApiResponse<?>> handleExampleException(ExampleException ex) {
-        String message = "예시 예외 발생 : " + ex.getMessage();
-        log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.EXAMPLE_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.EXAMPLE_EXCEPTION));
-    }
-
-    // UserException 캐치
-    @ExceptionHandler(UserException.class)
-    public ResponseEntity<ApiResponse<?>> handleUserException(UserException ex) {
-        String message = "유저 예외 발생 : " + ex.getMessage();
-        log.error(message, ex);
-        return ResponseEntity.status(ErrorCode.USER_EXCEPTION.getHttpStatus()).body(ApiResponse.fail(ErrorCode.USER_EXCEPTION));
+        return ResponseEntity.status(ErrorCode.EMPTY_RESULT.getHttpStatus()).body(ApiResponse.fail(ErrorCode.EMPTY_RESULT, message));
     }
 }

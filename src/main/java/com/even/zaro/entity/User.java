@@ -42,14 +42,15 @@ public class User {
     @Column(name = "live_alone_date")
     private LocalDate liveAloneDate;
 
-    @Column(nullable = true, length = 10)
+    @Column(length = 10)
     private String gender;
 
-    @Column(nullable = true, length = 4)
+    @Column(length = 4)
     private String mbti;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)
+    @Builder.Default
     private Status status = Status.ACTIVE; // 임시로 활성화 상태로 지정
 
     @CreationTimestamp

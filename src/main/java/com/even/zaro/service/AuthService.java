@@ -1,7 +1,7 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.auth.LoginRequestDto;
-import com.even.zaro.dto.auth.LoginResponseDto;
+import com.even.zaro.dto.auth.SignInRequestDto;
+import com.even.zaro.dto.auth.SignInResponseDto;
 import com.even.zaro.dto.auth.SignUpRequestDto;
 import com.even.zaro.dto.auth.SignUpResponseDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
@@ -75,7 +75,7 @@ public class AuthService {
         return new SignUpResponseDto(user.getId(), user.getEmail(), user.getNickname());
     }
 
-    public LoginResponseDto login(LoginRequestDto requestDto) {
+    public SignInResponseDto signIn(SignInRequestDto requestDto) {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UserException(ErrorCode.EMAIL_NOT_FOUND));
 
@@ -87,7 +87,7 @@ public class AuthService {
         String accessToken = tokens[0];
         String refreshToken = tokens[1];
 
-        return new LoginResponseDto(
+        return new SignInResponseDto(
                 accessToken,
                 refreshToken,
                 user.getId(),

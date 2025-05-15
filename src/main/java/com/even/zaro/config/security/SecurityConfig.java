@@ -37,7 +37,7 @@ public class SecurityConfig {
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/swagger-ui/*", "/v3/api-docs/**").permitAll() // 스웨거
-                        .requestMatchers("/auth/**").permitAll() // auth 인증 없이
+                        .requestMatchers("/api/auth/**").permitAll() // auth 인증 없이
 //                        .requestMatchers("/**").permitAll() // 전체 인증 없이 개발용
                         .anyRequest().authenticated()
                 )

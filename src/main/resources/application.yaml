@@ -50,3 +50,7 @@ logging:
   level:
     org.hibernate.SQL: DEBUG
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# 스웨거 https 인식
+server:
+  forward-headers-strategy: framework

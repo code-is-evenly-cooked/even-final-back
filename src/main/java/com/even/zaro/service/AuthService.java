@@ -59,8 +59,8 @@ public class AuthService {
         User user = userRepository.save(
                 User.builder()
                         .email(email)
-                        .nickname(nickname)
                         .password(passwordEncoder.encode(password))
+                        .nickname(nickname)
                         .profileImage("https://your-cdn.com/default.png")
                         .provider(Provider.LOCAL)
                         .status(Status.PENDING)

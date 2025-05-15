@@ -29,11 +29,11 @@ public class User {
     @Column(name = "email", unique = true, nullable = false)
     private String email;
 
-    @Column(name = "nickname", nullable = false)
-    private String nickname;
-
     @Column(name = "password")
     private String password;
+
+    @Column(name = "nickname", nullable = false)
+    private String nickname;
 
     @Column(name = "profile_image", nullable = false)
     private String profileImage;

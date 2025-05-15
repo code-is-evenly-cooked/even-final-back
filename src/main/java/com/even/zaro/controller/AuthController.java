@@ -36,7 +36,6 @@ public class AuthController {
     @PostMapping("/signin")
     public ResponseEntity<ApiResponse<SignInResponseDto>> signin(@RequestBody SignInRequestDto requestDto) {
         SignInResponseDto responseDto = authService.signIn(requestDto);
-        return ResponseEntity.status(HttpStatus.OK)
-                .body(ApiResponse.success("로그인에 성공했습니다.", responseDto));
+        return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", responseDto));
     }
 }

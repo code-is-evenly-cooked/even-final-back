@@ -2,6 +2,8 @@ package com.even.zaro.entity;
 
 import jakarta.persistence.*;
 import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -25,5 +27,6 @@ public class PostLike {
     private User user;
 
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 }

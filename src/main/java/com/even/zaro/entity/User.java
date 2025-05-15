@@ -1,6 +1,5 @@
 package com.even.zaro.entity;
 
-
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
@@ -43,10 +42,10 @@ public class User {
     @Column(name = "live_alone_date")
     private LocalDate liveAloneDate;
 
-    @Column(name = "gender")
+    @Column(nullable = true, length = 10)
     private String gender;
 
-    @Column(name = "mbti")
+    @Column(nullable = true, length = 4)
     private String mbti;
 
     @Enumerated(EnumType.STRING)

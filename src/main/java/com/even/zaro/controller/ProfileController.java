@@ -1,5 +1,13 @@
 package com.even.zaro.controller;
 
+import com.even.zaro.dto.UserPostDto;
+import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.service.ProfileService;
+import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import com.even.zaro.dto.profileDto.GroupCreateRequest;
 import com.even.zaro.dto.profileDto.GroupEditRequest;
 import com.even.zaro.dto.profileDto.GroupResponse;
@@ -13,6 +21,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/profile")
@@ -21,6 +30,43 @@ import java.util.List;
 @Tag(name = "프로필 페이지", description = "프로필 페이지 API")
 public class ProfileController {
     private final ProfileService profileService;
+  
+    // 유저 기본 프로필 조회
+    @GetMapping("/{userID}")
+    public ResponseEntity<?> getUserProfile(@PathVariable("userID") Long userID) {
+        UserProfileDto profile = profileService.getUserProfile(userID);
+        return ResponseEntity.ok(ApiResponse.success("유저 프로필 정보 조회 성공 !", profile));
+    }
+
+    // 유저가 쓴 게시물 list 조회
+    @GetMapping("/{userID}/posts")
+    public ResponseEntity<?> getUserPosts(
+            @PathVariable("userID") Long userID,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<UserPostDto> posts = profileService.getUserPosts(userID, pageRequest);
+        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", Map.of(
+                "content", posts.getContent(),
+                "totalPages", posts.getTotalPages()
+        )));
+    }
+
+    // 유저가 좋아요 누른 게시물 list 조회
+    @GetMapping("/{userID}/likes")
+    public ResponseEntity<?> getUserLikedPosts(
+            @PathVariable("userID") Long userID,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userID, pageRequest);
+        return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", Map.of(
+                "content", likedPosts.getContent(),
+                "totalPages", likedPosts.getTotalPages()
+        )));
+    }
 
     @Operation(summary = "즐겨찾기 그룹 리스트 조회", description = "userId로 즐겨찾기 그룹 리스트를 조회합니다.")
     @GetMapping("/group")
@@ -53,5 +99,4 @@ public class ProfileController {
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 수정했습니다."));
     }
-
 }

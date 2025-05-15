@@ -42,7 +42,8 @@ spring:
 #      schema-locations:
 #        - classpath:db/schema.sql
 
-
+  cors:
+    backend-origin: ${BACKEND_DOMAIN}
 
 # 로그 레벨 설정
 logging:

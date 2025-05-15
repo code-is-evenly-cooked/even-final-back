@@ -5,8 +5,9 @@ import com.even.zaro.dto.profileDto.GroupEditRequest;
 import com.even.zaro.dto.profileDto.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
+import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.favoriteGroupEx.FavoriteGroupException;
-import com.even.zaro.global.exception.userEx.UserException;
+import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
@@ -32,7 +33,7 @@ public class ProfileService {
     public void createGroup(GroupCreateRequest request) {
 
         User user = userRepository.findById(request.getUserId())
-                .orElseThrow(UserException::NotFoundUserException);
+                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
         boolean dupCheck = groupNameDuplicateCheck(request.getName(), request.getUserId());
 
@@ -54,7 +55,7 @@ public class ProfileService {
     public List<GroupResponse> getFavoriteGroups(long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(UserException::NotFoundUserException);
+                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
 
         // userId 값이 일치하는 데이터 조회

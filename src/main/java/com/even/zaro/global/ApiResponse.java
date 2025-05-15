@@ -5,7 +5,6 @@ import lombok.NoArgsConstructor;
 import org.springframework.http.HttpStatus;
 
 @Getter
-@NoArgsConstructor
 public class ApiResponse<T> {
 
     private String code;
@@ -34,4 +33,7 @@ public class ApiResponse<T> {
         return new ApiResponse<>(errorCode.getCode(), message, null);
     }
 
+    public static <T> ApiResponse<T> fail(String code, String message) {
+        return new ApiResponse<>(code, message, null);
+    }
 }

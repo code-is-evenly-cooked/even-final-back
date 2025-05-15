@@ -17,6 +17,7 @@ import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.PostLikeRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
+import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;

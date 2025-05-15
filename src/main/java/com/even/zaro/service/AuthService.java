@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.time.LocalDateTime;
 import java.util.regex.Pattern;
 
 @Service
@@ -69,6 +70,7 @@ public class AuthService {
                         .profileImage("https://your-cdn.com/default.png")
                         .provider(Provider.LOCAL)
                         .status(Status.PENDING)
+                        .createdAt(LocalDateTime.now())
                         .build()
         );
 
@@ -86,6 +88,9 @@ public class AuthService {
         String[] tokens = jwtUtil.generateToken(new JwtUserInfoDto(user.getId()));
         String accessToken = tokens[0];
         String refreshToken = tokens[1];
+
+        user.updateLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
 
         return new SignInResponseDto(
                 accessToken,

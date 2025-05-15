@@ -2,14 +2,15 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.favoriteDTO.FavoriteResponse;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import com.even.zaro.dto.profileDto.GroupCreateRequest;
-import com.even.zaro.dto.profileDto.GroupEditRequest;
-import com.even.zaro.dto.profileDto.GroupResponse;
+import com.even.zaro.dto.profileDTO.GroupCreateRequest;
+import com.even.zaro.dto.profileDTO.GroupEditRequest;
+import com.even.zaro.dto.profileDTO.GroupResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
@@ -94,5 +95,12 @@ public class ProfileController {
         profileService.editGroup(request);
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 수정했습니다."));
+    }
+
+    @GetMapping("/group/{groupId}/items")
+    public ResponseEntity<ApiResponse<List<FavoriteResponse>>> getGroupItems(@PathVariable("groupId") long groupId) {
+        List<FavoriteResponse> groupItems = profileService.getGroupItems(groupId);
+
+        return ResponseEntity.ok(ApiResponse.success("즐겨찾기 그룹의 장소 목록을 성공적으로 조회했습니다.", groupItems));
     }
 }

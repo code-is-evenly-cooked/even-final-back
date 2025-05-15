@@ -2,21 +2,18 @@ package com.even.zaro.service;
 
 import com.even.zaro.dto.UserPostDto;
 import com.even.zaro.dto.UserProfileDto;
-import com.even.zaro.dto.profileDto.GroupCreateRequest;
-import com.even.zaro.dto.profileDto.GroupEditRequest;
-import com.even.zaro.dto.profileDto.GroupResponse;
+import com.even.zaro.dto.favoriteDTO.FavoriteResponse;
+import com.even.zaro.dto.profileDTO.GroupCreateRequest;
+import com.even.zaro.dto.profileDTO.GroupEditRequest;
+import com.even.zaro.dto.profileDTO.GroupResponse;
+import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
 import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
-import com.even.zaro.repository.FavoriteGroupRepository;
-import com.even.zaro.repository.FavoriteRepository;
-import com.even.zaro.repository.PlaceRepository;
-import com.even.zaro.repository.PostLikeRepository;
-import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.UserRepository;
+import com.even.zaro.repository.*;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
@@ -95,7 +92,7 @@ public class ProfileService {
                         .createdAt(postLike.getPost().getCreatedAt())
                         .build());
     }
-  
+
     public void createGroup(GroupCreateRequest request) {
 
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
@@ -142,7 +139,7 @@ public class ProfileService {
 
         favoriteGroupRepository.save(group);
     }
-  
+
     public void editGroup(GroupEditRequest request) {
         FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
                 .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
@@ -165,11 +162,28 @@ public class ProfileService {
         return favoriteGroupRepository.existsByUser_IdAndName(userId, groupName);
     }
 
-    public List<> getGroupItems(long groupId) {
-        FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
+    // 해당 그룹의 즐겨찾기 리스트를 조회
+    public List<FavoriteResponse> getGroupItems(long groupId) {
+        FavoriteGroup group = favoriteGroupRepository.findById(groupId)
+                .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
 
+        List<Favorite> favoriteList = favoriteRepository.findAllByGroup(group);
 
-        favoriteRepository.findAllByGroup()
+        List<FavoriteResponse> favoriteResponseList = favoriteList.stream().map(favorite ->
+                FavoriteResponse.builder()
+                        .id(favorite.getId())
+                        .userId(favorite.getUser().getId())
+                        .groupId(favorite.getGroup().getId())
+                        .placeId(favorite.getPlace().getId())
+                        .memo(favorite.getMemo())
+                        .createdAt(favorite.getCreatedAt())
+                        .updatedAt(favorite.getUpdatedAt())
+                        .isDeleted(favorite.isDeleted())
+                        .lat(favorite.getPlace().getLat())
+                        .lng(favorite.getPlace().getLng())
+                        .build()
+        ).toList();
 
+        return favoriteResponseList;
     }
 }

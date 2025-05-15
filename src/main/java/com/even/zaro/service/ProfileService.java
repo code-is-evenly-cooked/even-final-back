@@ -146,7 +146,7 @@ public class ProfileService {
     public void editGroup(GroupEditRequest request) {
         FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId()).orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
-        boolean dupCheck = groupNameDuplicateCheck(group.getName(), group.getUser().getId());
+        boolean dupCheck = groupNameDuplicateCheck(request.getName(), group.getUser().getId());
 
         // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
         if (dupCheck) {

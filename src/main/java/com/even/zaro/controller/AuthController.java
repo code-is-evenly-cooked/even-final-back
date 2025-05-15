@@ -1,5 +1,7 @@
 package com.even.zaro.controller;
 
+import com.even.zaro.dto.auth.SignInRequestDto;
+import com.even.zaro.dto.auth.SignInResponseDto;
 import com.even.zaro.dto.auth.SignUpRequestDto;
 import com.even.zaro.dto.auth.SignUpResponseDto;
 import com.even.zaro.global.ApiResponse;
@@ -28,5 +30,12 @@ public class AuthController {
         SignUpResponseDto responseDto = authService.signUp(requestDto);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(ApiResponse.success("회원가입이 완료되었습니다.", responseDto));
+    }
+
+    @PostMapping("/signin")
+    public ResponseEntity<ApiResponse<SignInResponseDto>> signin(@RequestBody SignInRequestDto requestDto) {
+        SignInResponseDto responseDto = authService.signIn(requestDto);
+        return ResponseEntity.status(HttpStatus.OK)
+                .body(ApiResponse.success("로그인에 성공했습니다.", responseDto));
     }
 }

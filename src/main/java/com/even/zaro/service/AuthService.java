@@ -41,7 +41,7 @@ public class AuthService {
             throw new UserException(ErrorCode.PASSWORD_REQUIRED);
         }
         if (!Pattern.matches(PASSWORD_REGEX, password)) {
-            throw new UserException(ErrorCode.INVALID_PASSWORD);
+            throw new UserException(ErrorCode.INVALID_PASSWORD_FORMAT);
         }
         if (nickname == null || nickname.isBlank()) {
             throw new UserException(ErrorCode.NICKNAME_REQUIRED);

@@ -20,7 +20,7 @@ public enum ErrorCode {
     EMAIL_ALREADY_EXISTED(HttpStatus.CONFLICT, "이미 사용 중인 이메일입니다."),
 
     PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "비밀번호는 필수 입력 값입니다."),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함한 6자 이상이어야 합니다."),
+    INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함한 6자 이상이어야 합니다."),
 
     NICKNAME_REQUIRED(HttpStatus.BAD_REQUEST, "닉네임은 필수 입력 값입니다."),
     INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 영문, 한글, 숫자, -, _만 가능합니다."),

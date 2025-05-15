@@ -9,7 +9,7 @@ import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
-import com.even.zaro.global.exception.favoriteGroupEx.FavoriteGroupException;
+import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
@@ -104,7 +104,7 @@ public class ProfileService {
 
         // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
         if (dupCheck) {
-            throw FavoriteGroupException.DuplicateGroupException();
+            throw new ProfileException(ErrorCode.GROUP_ALREADY_EXIST);
         }
 
         FavoriteGroup favoriteGroup = FavoriteGroup.builder().user(user) // 유저 설정
@@ -117,12 +117,11 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<GroupResponse> getFavoriteGroups(long userId) {
 
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
-
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
         // userId 값이 일치하는 데이터 조회
         List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
-
 
         // GroupResponse 리스트로 변환
         List<GroupResponse> responseList = groupList.stream().map(group -> GroupResponse.builder().id(group.getId()).name(group.getName()).build()).toList();
@@ -131,11 +130,12 @@ public class ProfileService {
     }
 
     public void deleteGroup(long groupId) {
-        FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(FavoriteGroupException::NotFoundGroupException);
+        FavoriteGroup group = favoriteGroupRepository.findById(groupId)
+                .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
 
         // 이미 삭제 처리 된 경우
         if (group.isDeleted()) {
-            throw FavoriteGroupException.AlreadyDeletedGroupException();
+            throw new ProfileException(ErrorCode.GROUP_ALREADY_DELETE);
         }
 
         group.setDeleted(true);
@@ -144,19 +144,17 @@ public class ProfileService {
     }
   
     public void editGroup(GroupEditRequest request) {
-        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId()).orElseThrow(FavoriteGroupException::NotFoundGroupException);
+        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
+                .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
 
         boolean dupCheck = groupNameDuplicateCheck(request.getName(), group.getUser().getId());
 
         // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
         if (dupCheck) {
-            throw FavoriteGroupException.DuplicateGroupException();
+            throw new ProfileException(ErrorCode.GROUP_ALREADY_EXIST);
         }
-
-
         group.setName(request.getName());
         group.setUpdatedAt(LocalDateTime.now());
-
 
         favoriteGroupRepository.save(group);
     }
@@ -165,5 +163,13 @@ public class ProfileService {
     // 입력한 그룹 이름이 이미 해당 userId가 가지고 있는지 확인
     public boolean groupNameDuplicateCheck(String groupName, long userId) {
         return favoriteGroupRepository.existsByUser_IdAndName(userId, groupName);
+    }
+
+    public List<> getGroupItems(long groupId) {
+        FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
+
+
+        favoriteRepository.findAllByGroup()
+
     }
 }

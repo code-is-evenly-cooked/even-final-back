@@ -17,16 +17,19 @@ import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.PostLikeRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
-
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Slf4j
@@ -96,11 +99,10 @@ public class ProfileService {
                         .createdAt(postLike.getPost().getCreatedAt())
                         .build());
     }
-
+  
     public void createGroup(GroupCreateRequest request) {
 
-        User user = userRepository.findById(request.getUserId())
-                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
         boolean dupCheck = groupNameDuplicateCheck(request.getName(), request.getUserId());
 
@@ -121,8 +123,7 @@ public class ProfileService {
     @Transactional(readOnly = true)
     public List<GroupResponse> getFavoriteGroups(long userId) {
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
 
         // userId 값이 일치하는 데이터 조회
@@ -130,12 +131,7 @@ public class ProfileService {
 
 
         // GroupResponse 리스트로 변환
-        List<GroupResponse> responseList = groupList.stream()
-                .map(group -> GroupResponse.builder()
-                        .id(group.getId())
-                        .name(group.getName())
-                        .build())
-                .toList();
+        List<GroupResponse> responseList = groupList.stream().map(group -> GroupResponse.builder().id(group.getId()).name(group.getName()).build()).toList();
 
         return responseList;
     }
@@ -152,10 +148,9 @@ public class ProfileService {
 
         favoriteGroupRepository.save(group);
     }
-
+  
     public void editGroup(GroupEditRequest request) {
-        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId())
-                .orElseThrow(FavoriteGroupException::NotFoundGroupException);
+        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId()).orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
         boolean dupCheck = groupNameDuplicateCheck(group.getName(), group.getUser().getId());
 

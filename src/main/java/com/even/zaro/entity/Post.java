@@ -3,16 +3,21 @@ package com.even.zaro.entity;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
-import lombok.Data;
 import lombok.NoArgsConstructor;
+import lombok.*;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.List;
 
 @Entity
 @Table(name = "post")
-@Data
-@Builder
-@NoArgsConstructor
+@Getter
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
+@Builder
 public class Post {
 
     @Id
@@ -26,54 +31,77 @@ public class Post {
     @Column(nullable = false)
     private String title;
 
-    @Column(columnDefinition = "TEXT", nullable = false)
+    @Lob
+    @Column(nullable = false)
     private String content;
-
-    @Column(name = "image_url")
-    private String imageUrl;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private Category category;
+    private PostCategory category;
 
     @Enumerated(EnumType.STRING)
-    private Tag tag;
+    @Column(nullable = false)
+    private PostTag tag;
 
-    @Column(name = "is_reported", nullable = false)
+    @ElementCollection
+    @CollectionTable(name = "post_image", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "image_url")
+    @Builder.Default
+    private List<String> imageUrlList = new ArrayList<>();
+
+    @Column(name = "thumbnail_url")
+    private String thumbnailUrl;
+
+    @Column(name = "is_reported")
     private boolean isReported = false;
-
-    @Column(name = "is_deleted", nullable = false)
+    @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
-
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
-
-    @Column(name = "like_count", nullable = false)
+    @Column(name = "like_count")
     private int likeCount = 0;
-
-    @Column(name = "comment_count", nullable = false)
+    @Column(name = "comment_count")
     private int commentCount = 0;
-
-    @Column(name = "report_count", nullable = false)
+    @Column(name = "report_count")
     private int reportCount = 0;
 
-    // 카테고리 ENUM
-    public enum Category {
-        TOGETHER, // 같이쓰자
-        DAILY_LIFE, // 자취일상
-        RANDOM_BUY // 아무거나샀어요
+    @CreationTimestamp
+    @Column(name = "created_at")
+    private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
+    private LocalDateTime updatedAt;
+
+    public void increaseLikeCount() {
+        this.likeCount++;
     }
 
-    // 태그 ENUM
-    public enum Tag {
-        // 자취일상
-        TIPS, QUESTIONS,
-        // 같이쓰자
-        BUY_TOGETHER, SHARE, EXCHANGE,
-        // 아무거나샀어요
-        MUST_HAVE, REGRET
+    public void decreaseLikeCount() {
+        if (this.likeCount > 0) this.likeCount--;
     }
+
+    public void markAsDeleted() {
+        this.isDeleted = true;
+    }
+
+    public void increaseReportCount() {
+        this.reportCount++;
+        if(this.reportCount >= 5 ){
+            this.isReported = true;
+        }
+    }
+
+    public void update(String title, String content, PostTag newTag, List<String> newImages, String newThumbnailUrl) {
+        this.title = title;
+        this.content = content;
+        this.tag = newTag;
+        this.imageUrlList = newImages;
+        this.thumbnailUrl = newThumbnailUrl;
+
+    }
+
+    public void softDelete() {
+        this.isDeleted = true;
+    }
+
 }

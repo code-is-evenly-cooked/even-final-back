@@ -238,12 +238,12 @@ public class ProfileService {
     }
 
     // 그룹에 즐겨찾기를 추가
-    public FavoriteAddResponse addFavorite(long groupId, FavoriteAddRequest request) {
+    public FavoriteAddResponse addFavorite(long groupId, FavoriteAddRequest request, long userId) {
 
         FavoriteGroup group = favoriteGroupRepository.findById(groupId)
                 .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
 
-        User user = userRepository.findById(request.getUserId())
+        User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
         Place place = placeRepository.findById(request.getPlaceId())

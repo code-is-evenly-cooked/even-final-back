@@ -33,6 +33,12 @@ spring:
     #      schema-locations:
     #        - classpath:db/schema.sql
 
+  # Redis
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
+
   # SwaggerUI 설정
   springdoc:
     api-docs:

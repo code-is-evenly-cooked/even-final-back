@@ -33,8 +33,18 @@ public enum ErrorCode {
     // 게시글 Post
 
     // 프로필 Profile
+    GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹을 찾지 못했습니다."),
+    GROUP_ALREADY_DELETE(HttpStatus.NOT_FOUND, "이미 삭제한 그룹입니다."),
+    GROUP_ALREADY_EXIST(HttpStatus.NOT_FOUND, "이미 존재하는 그룹 이름입니다."),
+
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 즐겨찾기를 찾지 못했습니다."),
+
+
+
 
     // 지도 Map
+    PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장소를 찾지 못했습니다."),
+
 
     // Health
     DB_CONNECTION_FAILED(HttpStatus.INTERNAL_SERVER_ERROR, "DB 연결 실패"),

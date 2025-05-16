@@ -5,6 +5,9 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
 
 @Entity
@@ -46,10 +49,12 @@ public class Post {
     private boolean isDeleted = false;
 
     @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt = LocalDateTime.now();
+    @CreationTimestamp
+    private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
-    private LocalDateTime updatedAt = LocalDateTime.now();
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
 
     @Column(name = "like_count", nullable = false)
     private int likeCount = 0;

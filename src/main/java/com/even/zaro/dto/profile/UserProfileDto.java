@@ -1,4 +1,4 @@
-package com.even.zaro.dto;
+package com.even.zaro.dto.profile;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;

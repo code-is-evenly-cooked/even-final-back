@@ -34,6 +34,7 @@ public class ProfileService {
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
     private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {
@@ -115,6 +116,31 @@ public class ProfileService {
                             .commentCreatedAt(comment.getCreatedAt())
                             .build();
                 });
+    }
+
+    // 특정 유저 팔로우 하기
+    public void followUser(Long followerId, Long followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+        }
+
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+
+        // 이미 팔로우되어 있는지 확인
+        boolean alreadyFollowing = followRepository.existsByFollowerAndFollowee(follower, followee);
+        if (alreadyFollowing) {
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+        }
+
+        // 팔로우 저장
+        Follow follow = Follow.builder()
+                .follower(follower)
+                .followee(followee)
+                .build();
+        followRepository.save(follow);
     }
 
     public void createGroup(GroupCreateRequest request) {

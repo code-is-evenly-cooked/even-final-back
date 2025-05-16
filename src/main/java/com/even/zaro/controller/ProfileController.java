@@ -124,47 +124,4 @@ public class ProfileController {
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹 이름을 수정했습니다."));
     }
-
-    @Operation(summary = "즐겨찾기 추가", description = "그룹에 즐겨찾기를 추가합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @PostMapping("/groups/{groupId}/favorites")
-    public ResponseEntity<ApiResponse<FavoriteAddResponse>> addFavorite(@PathVariable("groupId") long groupId,
-                                                                        @RequestBody FavoriteAddRequest request,
-                                                                        @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        FavoriteAddResponse favoriteAddResponse = profileService.addFavorite(groupId, request, userInfoDto.getUserId());
-
-        return ResponseEntity.ok(ApiResponse.success("즐겨찾기가 해당 그룹에 성공적으로 추가되었습니다.", favoriteAddResponse));
-    }
-
-
-    @Operation(summary = "그룹의 즐겨찾기 리스트 조회", description = "해당 그룹의 즐겨찾기 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @GetMapping("/favorite/{groupId}/items")
-    public ResponseEntity<ApiResponse<List<FavoriteResponse>>> getGroupItems(
-            @PathVariable("groupId") long groupId,
-            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        List<FavoriteResponse> groupItems = profileService.getGroupItems(groupId);
-
-        return ResponseEntity.ok(ApiResponse.success("즐겨찾기 그룹의 장소 목록을 성공적으로 조회했습니다.", groupItems));
-    }
-
-
-    @Operation(summary = "즐겨찾기의 메모 수정", description = "해당 즐겨찾기의 메모를 수정합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @PatchMapping("/favorite/{favoriteId}")
-    public ResponseEntity<ApiResponse<String>> editFavoriteMemo(
-            @PathVariable("favoriteId") long favoriteId,
-            @RequestBody FavoriteEditRequest request,
-            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        profileService.editFavoriteMemo(favoriteId, request, userInfoDto.getUserId());
-
-        return ResponseEntity.ok(ApiResponse.success("즐겨찾기 메모가 성공적으로 수정되었습니다."));
-    }
-
-    @Operation(summary = "즐겨찾기 삭제", description = "해당 즐겨찾기를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @DeleteMapping("/favorite/{favoriteId}")
-    public ResponseEntity<ApiResponse<String>> deleteFavorite(
-            @PathVariable("favoriteId") long favoriteId,
-            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        profileService.deleteFavorite(favoriteId, userInfoDto.getUserId());
-
-        return ResponseEntity.ok(ApiResponse.success("즐겨찾기가 성공적으로 삭제되었습니다."));
-    }
 }

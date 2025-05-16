@@ -7,7 +7,10 @@ import org.hibernate.annotations.CreationTimestamp;
 import java.time.LocalDateTime;
 
 @Entity
-@Table(name = "follow")
+@Table(name = "follow", uniqueConstraints = {
+    @UniqueConstraint(columnNames = {"follower_id", "followee_id"})
+        // 고유 제약 조건(컬럼 조합 unique) : 같은 사용자가 동일한 사용자를 중복으로 팔로우할 수 없도록 설정
+})
 @Data
 @Builder
 @NoArgsConstructor

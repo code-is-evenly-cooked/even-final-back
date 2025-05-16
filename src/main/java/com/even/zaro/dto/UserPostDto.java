@@ -17,7 +17,7 @@ public class UserPostDto {
     private String content;
     private String category;
     private String tag;
-    private String imageUrl;
+    private String thumbnailUrl;
     private int likeCount;
     private int commentCount;
     private LocalDateTime createdAt;

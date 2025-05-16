@@ -124,7 +124,7 @@ public class ProfileController {
 
     // 팔로워 목록 조회
     @Operation(summary = "팔로워 목록 조회", description = "특정 유저를 팔로우하는 사용자 목록을 조회합니다.")
-    @GetMapping("/{userId}/followings")
+    @GetMapping("/{userId}/followers")
     public ResponseEntity<?> getUserFollowers(
             @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId) {
         List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userId);

@@ -1,9 +1,6 @@
 package com.even.zaro.controller;
 
-import com.even.zaro.dto.auth.SignInRequestDto;
-import com.even.zaro.dto.auth.SignInResponseDto;
-import com.even.zaro.dto.auth.SignUpRequestDto;
-import com.even.zaro.dto.auth.SignUpResponseDto;
+import com.even.zaro.dto.auth.*;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
@@ -15,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -57,8 +55,13 @@ public class AuthController {
             } else {
                 response.sendRedirect(frontendUrl + "/login?status=error");
             }
-            throw e;
         }
         response.sendRedirect(frontendUrl + "/login");
+    }
+
+    @PostMapping("/email/resend")
+    public ResponseEntity<ApiResponse<Void>> resendEmail(@RequestBody ResendEmailRequestDto requestDto) {
+        authService.resendVerificationEmail(requestDto.getEmail());
+        return ResponseEntity.ok(ApiResponse.success("이메일 인증 메일이 재전송되었습니다."));
     }
 }

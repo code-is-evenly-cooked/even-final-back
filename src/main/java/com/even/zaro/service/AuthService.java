@@ -1,21 +1,16 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.auth.SignInRequestDto;
-import com.even.zaro.dto.auth.SignInResponseDto;
-import com.even.zaro.dto.auth.SignUpRequestDto;
-import com.even.zaro.dto.auth.SignUpResponseDto;
+import com.even.zaro.dto.auth.*;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
-import com.even.zaro.entity.EmailToken;
-import com.even.zaro.entity.Provider;
-import com.even.zaro.entity.Status;
-import com.even.zaro.entity.User;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.repository.EmailTokenRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.parameters.P;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -24,6 +19,7 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.regex.Pattern;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class AuthService {
@@ -38,6 +34,8 @@ public class AuthService {
     private final JwtUtil jwtUtil;
     private final EmailVerifyService emailService;
     private final EmailTokenRepository emailTokenRepository;
+    private final RedisTemplate<String, String> redisTemplate;
+
 
     // 메서드
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
@@ -112,6 +110,30 @@ public class AuthService {
                 user.getProfileImage(),
                 user.getProvider()
         );
+    }
+
+    @Transactional
+    public RefreshResponseDto refreshAccessToken(String refreshToken) {
+        String token = jwtUtil.extractBearerPrefix(refreshToken);
+
+        if (!jwtUtil.validateRefreshToken(token)) {
+            throw new UserException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        String userId = jwtUtil.getUserIdFromRefreshToken(token);
+
+        User user = userRepository.findById(Long.valueOf(userId))
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        String savedToken = redisTemplate.opsForValue().get("refresh:" + userId);
+
+        if (savedToken == null || !savedToken.equals(token)) {
+            throw new UserException(ErrorCode.INVALID_REFRESH_TOKEN);
+        }
+
+        String newAccessToken = jwtUtil.generateAccessToken(new JwtUserInfoDto(user.getId()));
+
+        return new RefreshResponseDto(newAccessToken);
     }
 
     @Transactional

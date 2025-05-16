@@ -143,6 +143,13 @@ public class ProfileService {
                 .followee(followee)
                 .build();
         followRepository.save(follow);
+
+        // 팔로잉 & 팔로워 카운트 증가
+        follower.setFollowingCount(follower.getFollowingCount() + 1);
+        followee.setFollowerCount(followee.getFollowerCount() + 1);
+
+        userRepository.save(follower);
+        userRepository.save(followee);
     }
 
     // 다른 유저 언팔로우 하기
@@ -160,6 +167,13 @@ public class ProfileService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
 
         followRepository.delete(follow);
+
+        // 팔로잉 & 팔로워 카운트 감소
+        follower.setFollowingCount(follower.getFollowingCount() - 1);
+        followee.setFollowerCount(followee.getFollowerCount() - 1);
+
+        userRepository.save(follower);
+        userRepository.save(followee);
     }
 
     // 팔로잉 목록 조회

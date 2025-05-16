@@ -33,17 +33,18 @@ spring:
     #      schema-locations:
     #        - classpath:db/schema.sql
 
-  # JWT
-  jwt:
-    secret: ${JWT_SECRET}
-    expiration: 86400000
-
   # SwaggerUI 설정
   springdoc:
     api-docs:
       path: /api-docs
     swagger-ui:
       path: /swagger-ui
+
+# JWT
+jwt:
+  secret: ${JWT_SECRET}
+  refresh_secret : ${JWT_REFRESH_SECRET}
+  expiration: 86400000
 
 # 로그 레벨 설정
 logging:

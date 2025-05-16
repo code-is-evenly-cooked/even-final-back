@@ -5,10 +5,7 @@ import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.favorite.FavoriteAddResponse;
 import com.even.zaro.dto.favorite.FavoriteEditRequest;
 import com.even.zaro.dto.favorite.FavoriteResponse;
-import com.even.zaro.entity.Favorite;
-import com.even.zaro.entity.FavoriteGroup;
-import com.even.zaro.entity.Place;
-import com.even.zaro.entity.User;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
 import com.even.zaro.global.exception.map.MapException;
@@ -93,6 +90,30 @@ public class ProfileService {
                         .commentCount(postLike.getPost().getCommentCount())
                         .createdAt(postLike.getPost().getCreatedAt())
                         .build());
+    }
+
+    public Page<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+
+        return commentRepository.findByUserAndIsDeletedFalse(user, pageable)
+                .map(comment -> {
+                    Post post = comment.getPost();
+                    if (post == null) {
+                        throw new CustomException(ErrorCode.NO_RESULT);
+                    }
+
+                    return UserCommentDto.builder()
+                            .postId(post.getId())
+                            .title(post.getTitle())
+                            .category(post.getCategory().name())
+                            .tag(post.getTag() != null ? post.getTag().name() : null)
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .commentContent(comment.getContent())
+                            .commentCreatedAt(comment.getCreatedAt())
+                            .build();
+                });
     }
 
     public void createGroup(GroupCreateRequest request) {

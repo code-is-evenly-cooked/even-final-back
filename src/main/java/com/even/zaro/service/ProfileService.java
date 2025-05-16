@@ -99,11 +99,11 @@ public class ProfileService {
                         .build());
     }
 
-    public void createGroup(GroupCreateRequest request) {
+    public void createGroup(GroupCreateRequest request, long userid) {
 
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+        User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
-        boolean dupCheck = groupNameDuplicateCheck(request.getName(), request.getUserId());
+        boolean dupCheck = groupNameDuplicateCheck(request.getName(), userid);
 
         // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
         if (dupCheck) {

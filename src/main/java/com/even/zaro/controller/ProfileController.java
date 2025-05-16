@@ -96,12 +96,14 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.success("나의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));
     }
 
-    @Operation(summary = "즐겨찾기 그룹 추가", description = "userId와 그룹이름을 입력받아 그룹을 추가합니다.")
+    @Operation(summary = "즐겨찾기 그룹 추가", description = "그룹 이름을 입력받아 그룹을 추가합니다.")
     @PostMapping("/group")
-    public ResponseEntity<ApiResponse<String>> createGroup(@RequestBody GroupCreateRequest request) {
-        profileService.createGroup(request);
+    public ResponseEntity<ApiResponse<String>> createGroup(@RequestBody GroupCreateRequest request,
+                                                           @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        long userId = userInfoDto.getUserId();
+        profileService.createGroup(request, userId);
 
-        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹이 생성되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 즐겨찾기 그룹이 생성되었습니다."));
     }
 
     @Operation(summary = "즐겨찾기 그룹 삭제", description = "groupId로 즐겨찾기 그룹 리스트를 삭제합니다.")

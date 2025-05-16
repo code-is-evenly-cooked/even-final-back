@@ -209,9 +209,14 @@ public class ProfileService {
     }
 
     // 해당 즐겨찾기의 메모를 수정
-    public void editFavoriteMemo(long favoriteId, FavoriteEditRequest request) {
+    public void editFavoriteMemo(long favoriteId, FavoriteEditRequest request, long userId) {
         Favorite favorite = favoriteRepository.findById(favoriteId)
                 .orElseThrow(() -> new ProfileException(ErrorCode.FAVORITE_NOT_FOUND));
+
+        // 로그인한 사용자와 즐겨찾기의 userId가 일치하는지 검증
+        if (favorite.getUser().getId() != userId) {
+            throw new ProfileException(ErrorCode.UNAUTHORIZED_FAVORITE_UPDATE);
+        }
 
         favorite.setMemo(request.getMemo());
 

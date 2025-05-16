@@ -147,10 +147,13 @@ public class ProfileController {
     }
 
 
-    @Operation(summary = "즐겨찾기의 메모 수정", description = "해당 즐겨찾기의 메모를 수정합니다.")
+    @Operation(summary = "즐겨찾기의 메모 수정", description = "해당 즐겨찾기의 메모를 수정합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/favorite/{favoriteId}")
-    public ResponseEntity<ApiResponse<String>> editFavoriteMemo(@PathVariable("favoriteId") long favoriteId, @RequestBody FavoriteEditRequest request) {
-        profileService.editFavoriteMemo(favoriteId, request);
+    public ResponseEntity<ApiResponse<String>> editFavoriteMemo(
+            @PathVariable("favoriteId") long favoriteId,
+            @RequestBody FavoriteEditRequest request,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        profileService.editFavoriteMemo(favoriteId, request, userInfoDto.getUserId());
 
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기 메모가 성공적으로 수정되었습니다."));
     }

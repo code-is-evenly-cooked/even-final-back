@@ -1,20 +1,14 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.UserPostDto;
-import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.profile.*;
 import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.favorite.FavoriteAddResponse;
 import com.even.zaro.dto.favorite.FavoriteEditRequest;
 import com.even.zaro.dto.favorite.FavoriteResponse;
-import com.even.zaro.dto.profile.GroupCreateRequest;
-import com.even.zaro.dto.profile.GroupEditRequest;
-import com.even.zaro.dto.profile.GroupResponse;
-import com.even.zaro.entity.Favorite;
-import com.even.zaro.entity.FavoriteGroup;
-import com.even.zaro.entity.Place;
-import com.even.zaro.entity.User;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
+import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
@@ -28,7 +22,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,11 +34,13 @@ public class ProfileService {
     private final FavoriteGroupRepository favoriteGroupRepository;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         int postCount = postRepository.countByUserAndIsDeletedFalse(user);
 
@@ -64,7 +59,7 @@ public class ProfileService {
     // 유저가 쓴 게시물 list 조회
     public Page<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()
@@ -83,7 +78,7 @@ public class ProfileService {
     // 유저가 좋아요 누른 게시물 list 조회
     public Page<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return postLikeRepository.findByUser(user, pageable)
                 .map(postLike -> UserPostDto.builder()
@@ -98,6 +93,120 @@ public class ProfileService {
                         .createdAt(postLike.getPost().getCreatedAt())
                         .build());
     }
+
+    // 유저가 작성한 댓글 list 조회
+    public Page<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        return commentRepository.findByUserAndIsDeletedFalse(user, pageable)
+                .map(comment -> {
+                    Post post = comment.getPost();
+                    if (post == null) {
+                        throw new CommentException(ErrorCode.COMMENT_NO_ASSOCIATED_POST);
+                    }
+
+                    return UserCommentDto.builder()
+                            .postId(post.getId())
+                            .title(post.getTitle())
+                            .category(post.getCategory().name())
+                            .tag(post.getTag() != null ? post.getTag().name() : null)
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .commentContent(comment.getContent())
+                            .commentCreatedAt(comment.getCreatedAt())
+                            .build();
+                });
+    }
+
+    ////////////// 팔로우 관련
+
+    // 다른 유저 팔로우 하기
+    public void followUser(Long followerId, Long followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new ProfileException(ErrorCode.FOLLOW_SELF_NOT_ALLOWED);
+        }
+
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        // 이미 팔로우되어 있는지 확인
+        boolean alreadyFollowing = followRepository.existsByFollowerAndFollowee(follower, followee);
+        if (alreadyFollowing) {
+            throw new ProfileException(ErrorCode.FOLLOW_ALREADY_EXISTS);
+        }
+
+        // 팔로우 저장
+        Follow follow = Follow.builder()
+                .follower(follower)
+                .followee(followee)
+                .build();
+        followRepository.save(follow);
+
+        // 팔로잉 & 팔로워 카운트 증가
+        follower.setFollowingCount(follower.getFollowingCount() + 1);
+        followee.setFollowerCount(followee.getFollowerCount() + 1);
+
+        userRepository.save(follower);
+        userRepository.save(followee);
+    }
+
+    // 다른 유저 언팔로우 하기
+    public void unfollowUser(Long followerId, Long followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new ProfileException(ErrorCode.FOLLOW_UNFOLLOW_SELF_NOT_ALLOWED);
+        }
+
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        Follow follow = followRepository.findByFollowerAndFollowee(follower, followee)
+                .orElseThrow(() -> new ProfileException(ErrorCode.FOLLOW_NOT_EXIST));
+
+        followRepository.delete(follow);
+
+        // 팔로잉 & 팔로워 카운트 감소
+        follower.setFollowingCount(follower.getFollowingCount() - 1);
+        followee.setFollowerCount(followee.getFollowerCount() - 1);
+
+        userRepository.save(follower);
+        userRepository.save(followee);
+    }
+
+    // 팔로잉 목록 조회
+    public List<FollowerFollowingListDto> getUserFollowings(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        return followRepository.findByFollower(user).stream()
+                .map(follow -> FollowerFollowingListDto.builder()
+                        .userId(follow.getFollowee().getId())
+                        .userName(follow.getFollowee().getNickname())
+                        .profileImage(follow.getFollowee().getProfileImage())
+                        .build())
+                .toList();
+    }
+
+    // 팔로워 목록 조회
+    public List<FollowerFollowingListDto> getUserFollowers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        return followRepository.findByFollowee(user).stream()
+                .map(follow -> FollowerFollowingListDto.builder()
+                        .userId(follow.getFollower().getId())
+                        .userName(follow.getFollower().getNickname())
+                        .profileImage(follow.getFollower().getProfileImage())
+                        .build())
+                .toList();
+    }
+
+
+    ////////////// 즐겨찾기
 
     public void createGroup(GroupCreateRequest request) {
 

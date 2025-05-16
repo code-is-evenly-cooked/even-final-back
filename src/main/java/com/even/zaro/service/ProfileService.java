@@ -1,14 +1,10 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.UserPostDto;
-import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.profile.*;
 import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.favorite.FavoriteAddResponse;
 import com.even.zaro.dto.favorite.FavoriteEditRequest;
 import com.even.zaro.dto.favorite.FavoriteResponse;
-import com.even.zaro.dto.profile.GroupCreateRequest;
-import com.even.zaro.dto.profile.GroupEditRequest;
-import com.even.zaro.dto.profile.GroupResponse;
 import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.Place;
@@ -28,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
-import java.util.Optional;
 
 @Service
 @Slf4j
@@ -41,6 +36,7 @@ public class ProfileService {
     private final FavoriteGroupRepository favoriteGroupRepository;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
 
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {

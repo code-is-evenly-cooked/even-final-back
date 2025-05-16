@@ -1,7 +1,7 @@
 package com.even.zaro.controller;
 
-import com.even.zaro.dto.UserPostDto;
-import com.even.zaro.dto.UserProfileDto;
+import com.even.zaro.dto.profile.UserPostDto;
+import com.even.zaro.dto.profile.UserProfileDto;
 import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.favorite.FavoriteAddResponse;
 import com.even.zaro.dto.favorite.FavoriteEditRequest;

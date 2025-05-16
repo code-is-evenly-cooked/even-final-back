@@ -237,6 +237,7 @@ public class ProfileService {
                 .memo(favorite.getMemo())
                 .lat(favorite.getPlace().getLat())
                 .lng(favorite.getPlace().getLng())
+                .address(favorite.getPlace().getAddress())
                 .build();
 
         return favoriteAddResponse;

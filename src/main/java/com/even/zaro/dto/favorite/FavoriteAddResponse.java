@@ -19,4 +19,7 @@ public class FavoriteAddResponse {
 
     @Schema(description = "경도", example = "126.90543")
     private double lng;
+
+    @Schema(description = "주소")
+    private String address;
 }

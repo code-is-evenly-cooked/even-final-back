@@ -83,16 +83,17 @@ public class ProfileController {
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         List<GroupResponse> groupList = profileService.getFavoriteGroups(userId);
 
-        return ResponseEntity.ok(ApiResponse.success("그룹 리스트를 조회했습니다.", groupList));
+        return ResponseEntity.ok(ApiResponse.success("해당 유저의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));
     }
 
 
     @Operation(summary = "나의 즐겨찾기 그룹 리스트 조회", description = "나의 즐겨찾기 그룹 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/group")
-    public ResponseEntity<ApiResponse<List<GroupResponse>>> getMyFavoriteGroups(@RequestParam("userId") long userId) {
-        List<GroupResponse> groupList = profileService.getFavoriteGroups(userId);
+    public ResponseEntity<ApiResponse<List<GroupResponse>>> getMyFavoriteGroups(
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        List<GroupResponse> groupList = profileService.getFavoriteGroups(userInfoDto.getUserId());
 
-        return ResponseEntity.ok(ApiResponse.success("그룹 리스트를 조회했습니다.", groupList));
+        return ResponseEntity.ok(ApiResponse.success("나의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));
     }
 
     @Operation(summary = "즐겨찾기 그룹 추가", description = "userId와 그룹이름을 입력받아 그룹을 추가합니다.")

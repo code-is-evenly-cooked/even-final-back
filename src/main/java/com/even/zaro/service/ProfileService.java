@@ -8,6 +8,7 @@ import com.even.zaro.dto.favorite.FavoriteResponse;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
+import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
@@ -102,7 +103,7 @@ public class ProfileService {
                 .map(comment -> {
                     Post post = comment.getPost();
                     if (post == null) {
-                        throw new CustomException(ErrorCode.NO_RESULT);
+                        throw new CommentException(ErrorCode.COMMENT_NO_ASSOCIATED_POST);
                     }
 
                     return UserCommentDto.builder()

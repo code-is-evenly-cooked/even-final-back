@@ -118,6 +118,8 @@ public class ProfileService {
                 });
     }
 
+    ////////////// 팔로우 관련
+
     // 다른 유저 팔로우 하기
     public void followUser(Long followerId, Long followeeId) {
         if (followerId.equals(followeeId)) {
@@ -143,7 +145,7 @@ public class ProfileService {
         followRepository.save(follow);
     }
 
-    // 다른 유저 팔로우 하기
+    // 다른 유저 언팔로우 하기
     public void unfollowUser(Long followerId, Long followeeId) {
         if (followerId.equals(followeeId)) {
             throw new CustomException(ErrorCode.INVALID_ARGUMENT);
@@ -158,6 +160,20 @@ public class ProfileService {
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
 
         followRepository.delete(follow);
+    }
+
+    // 팔로잉 목록 조회
+    public List<FollowerFollowingListDto> getUserFollowings(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+
+        return followRepository.findByFollower(user).stream()
+                .map(follow -> FollowerFollowingListDto.builder()
+                        .userId(follow.getFollowee().getId())
+                        .userName(follow.getFollowee().getNickname())
+                        .profileImage(follow.getFollowee().getProfileImage())
+                        .build())
+                .toList();
     }
 
 

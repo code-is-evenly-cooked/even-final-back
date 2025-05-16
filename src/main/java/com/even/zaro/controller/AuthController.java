@@ -5,6 +5,8 @@ import com.even.zaro.dto.auth.SignInResponseDto;
 import com.even.zaro.dto.auth.SignUpRequestDto;
 import com.even.zaro.dto.auth.SignUpResponseDto;
 import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -45,7 +47,18 @@ public class AuthController {
 
     @GetMapping("/email/verify")
     public void verifyEmail(@RequestParam String token, HttpServletResponse response) throws IOException {
-        authService.verifyEmailToken(token);
+        try {
+            authService.verifyEmailToken(token);
+        } catch (UserException e) {
+            if (e.getErrorCode() == ErrorCode.EMAIL_TOKEN_EXPIRED) {
+                response.sendRedirect(frontendUrl + "/login?status=expired");
+            } else if (e.getErrorCode() == ErrorCode.EMAIL_TOKEN_ALREADY_VERIFIED) {
+                response.sendRedirect(frontendUrl + "/login?status=already-verified");
+            } else {
+                response.sendRedirect(frontendUrl + "/login?status=error");
+            }
+            throw e;
+        }
         response.sendRedirect(frontendUrl + "/login");
     }
 }

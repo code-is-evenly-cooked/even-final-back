@@ -31,6 +31,13 @@ public enum ErrorCode {
     INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 
     // 게시글 Post
+    IMAGE_REQUIRED_FOR_RANDOM_BUY(HttpStatus.BAD_REQUEST, "이미지는 필수입니다."),
+    INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "올바르지 않은 카테고리입니다."),
+    INVALID_TAG(HttpStatus.BAD_REQUEST, "올바르지 않은 태그입니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND,"게시글을 찾을 수 없습니다."),
+    INVALID_POST_OWNER(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+    INVALID_TAG_FOR_CATEGORY(HttpStatus.BAD_REQUEST, "해당 카테고리에는 사용할 수 없는 태그입니다."),
+    THUMBNAIL_NOT_IN_IMAGE_LIST(HttpStatus.BAD_REQUEST, "썸네일은 이미지 목록에 포함되어야 합니다."),
 
     // 프로필 Profile
 

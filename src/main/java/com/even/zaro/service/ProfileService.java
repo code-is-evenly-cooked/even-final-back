@@ -118,7 +118,7 @@ public class ProfileService {
                 });
     }
 
-    // 특정 유저 팔로우 하기
+    // 다른 유저 팔로우 하기
     public void followUser(Long followerId, Long followeeId) {
         if (followerId.equals(followeeId)) {
             throw new CustomException(ErrorCode.INVALID_ARGUMENT);

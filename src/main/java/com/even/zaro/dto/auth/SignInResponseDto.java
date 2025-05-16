@@ -1,5 +1,6 @@
 package com.even.zaro.dto.auth;
 
+import com.even.zaro.entity.Provider;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -25,4 +26,7 @@ public class SignInResponseDto {
 
     @Schema(description = "프로필 이미지 URL", example = "https://your-cdn.com/default.png")
     private String profileImageUrl;
+
+    @Schema(description = "로그인 방식(LOCAL or KAKAO)", example = "LOCAL")
+    private Provider provider;
 }

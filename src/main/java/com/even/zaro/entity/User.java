@@ -69,6 +69,7 @@ public class User {
     @Column(name = "following_count")
     private int followingCount = 0;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false)
     private Provider provider;
 

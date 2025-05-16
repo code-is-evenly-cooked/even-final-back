@@ -43,6 +43,7 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", responseDto));
     }
 
+    @Operation(summary = "이메일 인증 확인", description = "프론트에서 호출하지 않음. 서버에서 처리. 토큰 확인용 입니다.")
     @GetMapping("/email/verify")
     public void verifyEmail(@RequestParam String token, HttpServletResponse response) throws IOException {
         try {
@@ -59,6 +60,7 @@ public class AuthController {
         response.sendRedirect(frontendUrl + "/login");
     }
 
+    @Operation(summary = "이메일 인증 메일 전송", description = "회원가입 시 입력한 이메일로 인증 메일을 보냅니다.")
     @PostMapping("/email/resend")
     public ResponseEntity<ApiResponse<Void>> resendEmail(@RequestBody ResendEmailRequestDto requestDto) {
         authService.resendVerificationEmail(requestDto.getEmail());

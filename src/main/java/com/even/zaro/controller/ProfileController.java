@@ -97,7 +97,7 @@ public class ProfileController {
     public ResponseEntity<ApiResponse<String>> editGroup(@PathVariable("groupId") long groupId, @RequestBody GroupEditRequest request) {
         profileService.editGroup(groupId, request);
 
-        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 수정했습니다."));
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹 이름을 수정했습니다."));
     }
 
     @Operation(summary = "즐겨찾기 추가", description = "그룹에 즐겨찾기를 추가합니다.")

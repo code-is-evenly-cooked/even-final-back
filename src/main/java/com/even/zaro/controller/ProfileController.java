@@ -115,10 +115,12 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 삭제했습니다."));
     }
 
-    @Operation(summary = "즐겨찾기 그룹 수정", description = "userId와 그룹이름을 입력받아 그룹을 수정합니다.")
+    @Operation(summary = "즐겨찾기 그룹 수정", description = "그룹 이름을 수정합니다.")
     @PatchMapping("/group/{groupId}")
-    public ResponseEntity<ApiResponse<String>> editGroup(@PathVariable("groupId") long groupId, @RequestBody GroupEditRequest request) {
-        profileService.editGroup(groupId, request);
+    public ResponseEntity<ApiResponse<String>> editGroup(@PathVariable("groupId") long groupId,
+                                                         @RequestBody GroupEditRequest request,
+                                                         @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        profileService.editGroup(groupId, request, userInfoDto.getUserId());
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹 이름을 수정했습니다."));
     }

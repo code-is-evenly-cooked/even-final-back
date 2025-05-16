@@ -156,13 +156,18 @@ public class ProfileService {
         favoriteGroupRepository.save(group);
     }
 
-    public void editGroup(long groupId, GroupEditRequest request) {
+    public void editGroup(long groupId, GroupEditRequest request, long userId) {
         FavoriteGroup group = favoriteGroupRepository.findById(groupId)
                 .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
 
+        // 다른 사용자의 즐겨찾기 그룹 수정 방지
+        if (group.getUser().getId() != userId) {
+            throw new ProfileException(ErrorCode.UNAUTHORIZED_GROUP_UPDATE);
+        }
+
         boolean dupCheck = groupNameDuplicateCheck(request.getName(), group.getUser().getId());
 
-        // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
+        // 해당 유저가 이미 있는 즐겨찾기 그룹 이름을 입력했을 때
         if (dupCheck) {
             throw new ProfileException(ErrorCode.GROUP_ALREADY_EXIST);
         }

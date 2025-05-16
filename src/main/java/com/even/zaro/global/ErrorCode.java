@@ -39,6 +39,7 @@ public enum ErrorCode {
 
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 즐겨찾기를 찾지 못했습니다."),
     UNAUTHORIZED_GROUP_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 삭제 시도입니다."),
+    UNAUTHORIZED_GROUP_UPDATE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 수정 시도입니다."),
 
 
 

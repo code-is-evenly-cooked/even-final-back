@@ -32,7 +32,7 @@ public class JwtUtil {
         this.accessKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(accessSecretKey));
         this.refreshKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(refreshSecretKey));
         this.accessTokenExpireTime = 15 * MINUTE;
-        this.refreshTokenExpireTime = 3 * DAY;
+        this.refreshTokenExpireTime = 7 * DAY;
     }
 
     //토큰 생성 - access, refresh 발급

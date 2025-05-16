@@ -15,6 +15,7 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.UUID;
 import java.util.regex.Pattern;
@@ -86,6 +87,7 @@ public class AuthService {
         return new SignUpResponseDto(user.getId(), user.getEmail(), user.getNickname());
     }
 
+    @Transactional
     public SignInResponseDto signIn(SignInRequestDto requestDto) {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UserException(ErrorCode.EMAIL_NOT_FOUND));
@@ -100,6 +102,14 @@ public class AuthService {
 
         user.updateLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
+
+        try {
+            redisTemplate.opsForValue()
+                    .set("refresh:" + user.getId(), refreshToken, Duration.ofDays(7));
+        } catch (Exception e) {
+            log.error("Redis 토큰 저장 실패: {}", e.getMessage());
+            // redis 저장 실패시 우선 로그만, 이후 로그인 실패 처리 등 확장 가능
+        }
 
         return new SignInResponseDto(
                 accessToken,

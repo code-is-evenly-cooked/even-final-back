@@ -88,14 +88,25 @@ public class ProfileController {
     }
 
     // 다른 유저 팔로우 하기
-    @Operation(summary = "다른 유저 팔로우 하기", description = "AccessToken 기반으로 다른 사용자를 팔로우합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "팔로우 하기", description = "AccessToken 기반으로 다른 사용자를 팔로우합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/{userId}/follow")
     public ResponseEntity<?> followUser(
             @PathVariable("userId") Long userId,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
         profileService.followUser(userInfoDto.getUserId(), userId);
-        return ResponseEntity.ok(ApiResponse.success("로그인 된 유저가 다른 유저 팔로우 성공 !"));
+        return ResponseEntity.ok(ApiResponse.success("로그인 된 유저가 타겟 유저 팔로우 성공 !"));
+    }
+
+    // 다른 유저 언팔로우 하기
+    @Operation(summary = "언팔로우 하기", description = "AccessToken 기반으로 다른 사용자를 언팔로우합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @DeleteMapping("/{userId}/follow")
+    public ResponseEntity<?> unfollowUser(
+            @PathVariable("userId") Long userId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+
+        profileService.unfollowUser(userInfoDto.getUserId(), userId);
+        return ResponseEntity.ok(ApiResponse.success("로그인 된 유저가 타겟 유저 언팔로우 성공 !"));
     }
 
 

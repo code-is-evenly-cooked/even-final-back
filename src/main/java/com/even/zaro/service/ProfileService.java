@@ -39,7 +39,7 @@ public class ProfileService {
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         int postCount = postRepository.countByUserAndIsDeletedFalse(user);
 
@@ -58,7 +58,7 @@ public class ProfileService {
     // 유저가 쓴 게시물 list 조회
     public Page<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()
@@ -77,7 +77,7 @@ public class ProfileService {
     // 유저가 좋아요 누른 게시물 list 조회
     public Page<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return postLikeRepository.findByUser(user, pageable)
                 .map(postLike -> UserPostDto.builder()
@@ -96,7 +96,7 @@ public class ProfileService {
     // 유저가 작성한 댓글 list 조회
     public Page<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return commentRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(comment -> {
@@ -165,7 +165,7 @@ public class ProfileService {
     // 팔로잉 목록 조회
     public List<FollowerFollowingListDto> getUserFollowings(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return followRepository.findByFollower(user).stream()
                 .map(follow -> FollowerFollowingListDto.builder()
@@ -179,7 +179,7 @@ public class ProfileService {
     // 팔로워 목록 조회
     public List<FollowerFollowingListDto> getUserFollowers(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return followRepository.findByFollowee(user).stream()
                 .map(follow -> FollowerFollowingListDto.builder()

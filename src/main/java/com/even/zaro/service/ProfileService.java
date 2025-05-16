@@ -28,6 +28,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -207,8 +208,18 @@ public class ProfileService {
         Favorite favorite = favoriteRepository.findById(favoriteId)
                 .orElseThrow(() -> new ProfileException(ErrorCode.FAVORITE_NOT_FOUND));
 
+        long placeId = favorite.getPlace().getId();
+
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new ProfileException(ErrorCode.PLACE_NOT_FOUND));
+
+        // 즐겨찾기 개수 1 감소
+        place.setFavoriteCount(place.getFavoriteCount() - 1);
+
         favorite.setDeleted(true);
+
         favoriteRepository.save(favorite);
+        placeRepository.save(place);
     }
 
     // 그룹에 즐겨찾기를 추가
@@ -231,7 +242,11 @@ public class ProfileService {
                 .isDeleted(false)
                 .build();
 
+        // 즐겨찾기 개수 1 증가
+        place.setFavoriteCount(place.getFavoriteCount() + 1);
+
         favoriteRepository.save(favorite);
+        placeRepository.save(place);
 
         FavoriteAddResponse favoriteAddResponse = FavoriteAddResponse.builder()
                 .placeId(favorite.getPlace().getId())

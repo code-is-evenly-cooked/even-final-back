@@ -116,6 +116,13 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.success("유저의 팔로잉 목록 조회 성공 !", followings));
     }
 
+    // 팔로워 목록 조회
+    @GetMapping("/{userId}/followings")
+    public ResponseEntity<?> getUserFollowers(@PathVariable Long userId) {
+        List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userId);
+        return ResponseEntity.ok(ApiResponse.success("유저의 팔로워 목록 조회 성공 !", followers));
+    }
+
 
     ////////////// 즐겨찾기
 

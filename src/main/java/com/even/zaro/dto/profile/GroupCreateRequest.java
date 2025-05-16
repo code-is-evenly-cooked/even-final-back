@@ -1,7 +1,6 @@
-package com.even.zaro.dto.profileDto;
+package com.even.zaro.dto.profile;
 
 import io.swagger.v3.oas.annotations.media.Schema;
-import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.Data;
 
 @Data

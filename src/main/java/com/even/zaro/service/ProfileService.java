@@ -224,9 +224,15 @@ public class ProfileService {
     }
 
     // 해당 즐겨찾기를 soft 삭제
-    public void deleteFavorite(long favoriteId) {
+    public void deleteFavorite(long favoriteId, long userId) {
         Favorite favorite = favoriteRepository.findById(favoriteId)
                 .orElseThrow(() -> new ProfileException(ErrorCode.FAVORITE_NOT_FOUND));
+
+        // 즐겨찾기의 userId와 로그인한 사용자의 userId 일치 여부 검증
+        if (favorite.getUser().getId() != userId) {
+            throw new ProfileException(ErrorCode.UNAUTHORIZED_FAVORITE_DELETE);
+        }
+
 
         long placeId = favorite.getPlace().getId();
 

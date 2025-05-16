@@ -158,10 +158,12 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기 메모가 성공적으로 수정되었습니다."));
     }
 
-    @Operation(summary = "즐겨찾기 삭제", description = "해당 즐겨찾기를 삭제합니다.")
+    @Operation(summary = "즐겨찾기 삭제", description = "해당 즐겨찾기를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping("/favorite/{favoriteId}")
-    public ResponseEntity<ApiResponse<String>> deleteFavorite(@PathVariable("favoriteId") long favoriteId) {
-        profileService.deleteFavorite(favoriteId);
+    public ResponseEntity<ApiResponse<String>> deleteFavorite(
+            @PathVariable("favoriteId") long favoriteId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        profileService.deleteFavorite(favoriteId, userInfoDto.getUserId());
 
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기가 성공적으로 삭제되었습니다."));
     }

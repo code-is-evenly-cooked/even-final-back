@@ -41,7 +41,7 @@ public enum ErrorCode {
     UNAUTHORIZED_GROUP_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 삭제 시도입니다."),
     UNAUTHORIZED_GROUP_UPDATE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 수정 시도입니다."),
     UNAUTHORIZED_FAVORITE_UPDATE(HttpStatus.UNAUTHORIZED, "다른 사용자의 즐겨찾기 메모 수정 시도입니다."),
-
+    UNAUTHORIZED_FAVORITE_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 즐겨찾기 삭제 시도입니다."),
 
 
 

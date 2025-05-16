@@ -124,18 +124,18 @@ public class ProfileService {
     // 다른 유저 팔로우 하기
     public void followUser(Long followerId, Long followeeId) {
         if (followerId.equals(followeeId)) {
-            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+            throw new ProfileException(ErrorCode.FOLLOW_SELF_NOT_ALLOWED);
         }
 
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         User followee = userRepository.findById(followeeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         // 이미 팔로우되어 있는지 확인
         boolean alreadyFollowing = followRepository.existsByFollowerAndFollowee(follower, followee);
         if (alreadyFollowing) {
-            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+            throw new ProfileException(ErrorCode.FOLLOW_ALREADY_EXISTS);
         }
 
         // 팔로우 저장
@@ -156,16 +156,16 @@ public class ProfileService {
     // 다른 유저 언팔로우 하기
     public void unfollowUser(Long followerId, Long followeeId) {
         if (followerId.equals(followeeId)) {
-            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+            throw new ProfileException(ErrorCode.FOLLOW_UNFOLLOW_SELF_NOT_ALLOWED);
         }
 
         User follower = userRepository.findById(followerId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
         User followee = userRepository.findById(followeeId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         Follow follow = followRepository.findByFollowerAndFollowee(follower, followee)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new ProfileException(ErrorCode.FOLLOW_NOT_EXIST));
 
         followRepository.delete(follow);
 

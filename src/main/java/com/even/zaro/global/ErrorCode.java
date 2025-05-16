@@ -36,6 +36,10 @@ public enum ErrorCode {
     COMMENT_NO_ASSOCIATED_POST(HttpStatus.INTERNAL_SERVER_ERROR, "댓글에 연결된 게시글이 존재하지 않습니다."),
 
     // 프로필 Profile
+    FOLLOW_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우할 수 없습니다."),
+    FOLLOW_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 팔로우하고 있는 사용자입니다."),
+    FOLLOW_UNFOLLOW_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신을 언팔로우할 수 없습니다."),
+    FOLLOW_NOT_EXIST(HttpStatus.NOT_FOUND, "팔로우하지 않은 사용자는 언팔로우할 수 없습니다."),
 
     // 그룹 Group
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹을 찾지 못했습니다."),

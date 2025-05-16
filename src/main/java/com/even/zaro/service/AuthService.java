@@ -81,6 +81,9 @@ public class AuthService {
                         .build()
         );
 
+        // 이메일 인증 메일 발송
+        sendEmailVerification(user);
+
         return new SignUpResponseDto(user.getId(), user.getEmail(), user.getNickname());
     }
 

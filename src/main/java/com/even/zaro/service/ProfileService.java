@@ -143,6 +143,26 @@ public class ProfileService {
         followRepository.save(follow);
     }
 
+    // 다른 유저 팔로우 하기
+    public void unfollowUser(Long followerId, Long followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new CustomException(ErrorCode.INVALID_ARGUMENT);
+        }
+
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+
+        Follow follow = followRepository.findByFollowerAndFollowee(follower, followee)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+
+        followRepository.delete(follow);
+    }
+
+
+    ////////////// 즐겨찾기
+
     public void createGroup(GroupCreateRequest request) {
 
         User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));

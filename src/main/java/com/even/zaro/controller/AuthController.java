@@ -6,6 +6,9 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.service.AuthService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -43,8 +46,10 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", responseDto));
     }
 
+    @Operation(summary = "Access Token 재발급", description = "Refresh 토큰을 입력해 Access Token을 재발급 받습니다. 상단 Authorize에 Refresh Token을 입력하세요.",
+            security = {@SecurityRequirement(name = "refresh-token")})
     @PostMapping("/refresh")
-    public ResponseEntity<ApiResponse<RefreshResponseDto>> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+    public ResponseEntity<ApiResponse<RefreshResponseDto>> refreshToken(@Parameter(hidden = true) @RequestHeader("Authorization") String refreshToken) {
         RefreshResponseDto response = authService.refreshAccessToken(refreshToken);
         return ResponseEntity.ok(ApiResponse.success("액세스 토큰 재생성을 성공했습니다.", response));
     }

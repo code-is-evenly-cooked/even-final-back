@@ -137,9 +137,14 @@ public class ProfileService {
         return responseList;
     }
 
-    public void deleteGroup(long groupId) {
+    public void deleteGroup(long groupId, long userId) {
         FavoriteGroup group = favoriteGroupRepository.findById(groupId)
                 .orElseThrow(() -> new ProfileException(ErrorCode.GROUP_NOT_FOUND));
+
+        // 다른 사용자의 그룹 삭제 방지
+        if (group.getUser().getId() != userId) {
+            throw new ProfileException(ErrorCode.UNAUTHORIZED_GROUP_DELETE);
+        }
 
         // 이미 삭제 처리 된 경우
         if (group.isDeleted()) {

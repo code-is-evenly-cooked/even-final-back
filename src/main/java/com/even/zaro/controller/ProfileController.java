@@ -106,10 +106,11 @@ public class ProfileController {
         return ResponseEntity.ok(ApiResponse.success("성공적으로 즐겨찾기 그룹이 생성되었습니다."));
     }
 
-    @Operation(summary = "즐겨찾기 그룹 삭제", description = "groupId로 즐겨찾기 그룹 리스트를 삭제합니다.")
+    @Operation(summary = "즐겨찾기 그룹 삭제", description = "groupId로 즐겨찾기 그룹 리스트를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping("/group/{groupId}")
-    public ResponseEntity<ApiResponse<String>> deleteGroup(@PathVariable("groupId") long groupId) {
-        profileService.deleteGroup(groupId);
+    public ResponseEntity<ApiResponse<String>> deleteGroup(@PathVariable("groupId") long groupId,
+                                                           @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        profileService.deleteGroup(groupId, userInfoDto.getUserId());
 
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 삭제했습니다."));
     }

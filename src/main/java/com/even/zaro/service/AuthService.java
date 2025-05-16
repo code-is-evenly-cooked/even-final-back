@@ -15,6 +15,7 @@ import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.repository.EmailTokenRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.parameters.P;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -113,7 +114,11 @@ public class AuthService {
         );
     }
 
+    @Transactional
     public void sendEmailVerification(User user) {
+        emailTokenRepository.deleteByUser(user);
+        emailTokenRepository.flush();
+
         String token = UUID.randomUUID().toString();
         LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
         emailTokenRepository.save(new EmailToken(token, user, expiredAt));
@@ -138,5 +143,17 @@ public class AuthService {
         emailTokenRepository.save(emailToken);
         emailToken.getUser().verify(); // PENDING->ACTIVE user 엔티티 메서드
         userRepository.save(emailToken.getUser());
+    }
+
+    @Transactional
+    public void resendVerificationEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserException(ErrorCode.EMAIL_NOT_FOUND));
+
+        if (user.getStatus() == Status.ACTIVE) {
+            throw new UserException(ErrorCode.EMAIL_TOKEN_ALREADY_VERIFIED);
+        }
+
+        sendEmailVerification(user);
     }
 }

@@ -68,7 +68,6 @@ spring:
 jwt:
   secret: ${JWT_SECRET}
   refresh_secret : ${JWT_REFRESH_SECRET}
-  expiration: 86400000
 
 # 로그 레벨 설정
 logging:

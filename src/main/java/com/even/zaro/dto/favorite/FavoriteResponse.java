@@ -22,10 +22,10 @@ public class FavoriteResponse {
     @Schema(description = "장소 id", example = "1")
     private long placeId;
 
-    @Schema(description = "장소 id", example = "37.5665")
+    @Schema(description = "위도", example = "37.5665")
     private double lat;
 
-    @Schema(description = "장소 id", example = "126.978")
+    @Schema(description = "경도", example = "126.978")
     private double lng;
 
     @Schema(description = "즐겨찾기 메모", example = "주말에 친구랑 가보고 싶은 감성카페")

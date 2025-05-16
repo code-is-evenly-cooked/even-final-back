@@ -39,7 +39,7 @@ public class FavoriteController {
 
 
     @Operation(summary = "그룹의 즐겨찾기 리스트 조회", description = "해당 그룹의 즐겨찾기 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @GetMapping("/favorite/{groupId}/items")
+    @GetMapping("/{groupId}/items")
     public ResponseEntity<ApiResponse<List<FavoriteResponse>>> getGroupItems(
             @PathVariable("groupId") long groupId,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
@@ -50,7 +50,7 @@ public class FavoriteController {
 
 
     @Operation(summary = "즐겨찾기의 메모 수정", description = "해당 즐겨찾기의 메모를 수정합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @PatchMapping("/favorite/{favoriteId}")
+    @PatchMapping("/{favoriteId}")
     public ResponseEntity<ApiResponse<String>> editFavoriteMemo(
             @PathVariable("favoriteId") long favoriteId,
             @RequestBody FavoriteEditRequest request,
@@ -61,7 +61,7 @@ public class FavoriteController {
     }
 
     @Operation(summary = "즐겨찾기 삭제", description = "해당 즐겨찾기를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @DeleteMapping("/favorite/{favoriteId}")
+    @DeleteMapping("/{favoriteId}")
     public ResponseEntity<ApiResponse<String>> deleteFavorite(
             @PathVariable("favoriteId") long favoriteId,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {

@@ -6,8 +6,11 @@ import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.favorite.FavoriteAddResponse;
 import com.even.zaro.dto.favorite.FavoriteEditRequest;
 import com.even.zaro.dto.favorite.FavoriteResponse;
+import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.ProfileService;
+import com.nimbusds.openid.connect.sdk.claims.UserInfo;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -18,6 +21,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -30,7 +34,7 @@ import java.util.Map;
 @Tag(name = "프로필 페이지", description = "프로필 페이지 API")
 public class ProfileController {
     private final ProfileService profileService;
-  
+
     // 유저 기본 프로필 조회
     @GetMapping("/{userID}")
     public ResponseEntity<?> getUserProfile(@PathVariable("userID") Long userID) {
@@ -68,9 +72,24 @@ public class ProfileController {
         )));
     }
 
-    @Operation(summary = "즐겨찾기 그룹 리스트 조회", description = "userId로 즐겨찾기 그룹 리스트를 조회합니다.")
+
+
+    // -------------------------------------------------------------------------------------------------- //
+
+    @Operation(summary = "사용자의 그룹 리스트 조회", description = "해당 유저의 그룹 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @GetMapping("/user/{userId}/group")
+    public ResponseEntity<ApiResponse<List<GroupResponse>>> getFavoriteGroupsByUserId (
+            @PathVariable("userId") long userId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        List<GroupResponse> groupList = profileService.getFavoriteGroups(userId);
+
+        return ResponseEntity.ok(ApiResponse.success("그룹 리스트를 조회했습니다.", groupList));
+    }
+
+
+    @Operation(summary = "나의 즐겨찾기 그룹 리스트 조회", description = "나의 즐겨찾기 그룹 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/group")
-    public ResponseEntity<ApiResponse<List<GroupResponse>>> getFavoriteGroups(@RequestParam("userId") long userId) {
+    public ResponseEntity<ApiResponse<List<GroupResponse>>> getMyFavoriteGroups(@RequestParam("userId") long userId) {
         List<GroupResponse> groupList = profileService.getFavoriteGroups(userId);
 
         return ResponseEntity.ok(ApiResponse.success("그룹 리스트를 조회했습니다.", groupList));

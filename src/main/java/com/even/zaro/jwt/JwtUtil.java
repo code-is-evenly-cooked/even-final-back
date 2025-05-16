@@ -11,6 +11,7 @@ import org.springframework.security.oauth2.jwt.JwtException;
 import org.springframework.stereotype.Component;
 
 import java.security.Key;
+import java.util.Base64;
 import java.util.Date;
 
 @Component
@@ -28,8 +29,8 @@ public class JwtUtil {
     // 시크릿 키 만료 시간 설정
     public JwtUtil(@Value("${jwt.secret}") String accessSecretKey,
                    @Value("${jwt.refresh_secret}") String refreshSecretKey) {
-        this.accessKey = Keys.hmacShaKeyFor(accessSecretKey.getBytes());
-        this.refreshKey = Keys.hmacShaKeyFor(refreshSecretKey.getBytes());
+        this.accessKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(accessSecretKey));
+        this.refreshKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(refreshSecretKey));
         this.accessTokenExpireTime = 15 * MINUTE;
         this.refreshTokenExpireTime = 3 * DAY;
     }
@@ -51,7 +52,10 @@ public class JwtUtil {
                 .compact();
     }
 
-    // refresh 재발급 로직 추가 필요
+    // access 재발급
+    public String generateAccessToken(JwtUserInfoDto user) {
+        return generateToken(user, accessKey, accessTokenExpireTime);
+    }
 
     // AccessToken 검증
     public boolean validateAccessToken(String token) {
@@ -88,6 +92,10 @@ public class JwtUtil {
     // 토큰에서 userId 추출
     public String getUserIdFromToken(String token) {
         return parseClaims(token, accessKey).getSubject();
+    }
+
+    public String getUserIdFromRefreshToken(String token) {
+        return parseClaims(token, refreshKey).getSubject();
     }
 
     // 토큰 추출

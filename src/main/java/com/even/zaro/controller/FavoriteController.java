@@ -26,8 +26,6 @@ import java.util.List;
 @Tag(name = "즐겨찾기", description = "즐겨찾기 API")
 public class FavoriteController {
     private final FavoriteService favoriteService;
-    private final ProfileService profileService;
-
 
     @Operation(summary = "즐겨찾기 추가", description = "그룹에 즐겨찾기를 추가합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/groups/{groupId}/favorites")

@@ -35,21 +35,21 @@ public class ProfileController {
     private final JwtUtil jwtUtil;
   
     // 유저 기본 프로필 조회
-    @GetMapping("/{userID}")
-    public ResponseEntity<?> getUserProfile(@PathVariable("userID") Long userID) {
-        UserProfileDto profile = profileService.getUserProfile(userID);
+    @GetMapping("/{userId}")
+    public ResponseEntity<?> getUserProfile(@PathVariable("userId") Long userId) {
+        UserProfileDto profile = profileService.getUserProfile(userId);
         return ResponseEntity.ok(ApiResponse.success("유저 프로필 정보 조회 성공 !", profile));
     }
 
     // 유저가 쓴 게시물 list 조회
-    @GetMapping("/{userID}/posts")
+    @GetMapping("/{userId}/posts")
     public ResponseEntity<?> getUserPosts(
-            @PathVariable("userID") Long userID,
+            @PathVariable("userId") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> posts = profileService.getUserPosts(userID, pageRequest);
+        Page<UserPostDto> posts = profileService.getUserPosts(userId, pageRequest);
         return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", Map.of(
                 "content", posts.getContent(),
                 "totalPages", posts.getTotalPages()
@@ -57,14 +57,14 @@ public class ProfileController {
     }
 
     // 유저가 좋아요 누른 게시물 list 조회
-    @GetMapping("/{userID}/likes")
+    @GetMapping("/{userId}/likes")
     public ResponseEntity<?> getUserLikedPosts(
-            @PathVariable("userID") Long userID,
+            @PathVariable("userId") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userID, pageRequest);
+        Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userId, pageRequest);
         return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", Map.of(
                 "content", likedPosts.getContent(),
                 "totalPages", likedPosts.getTotalPages()
@@ -72,14 +72,14 @@ public class ProfileController {
     }
 
     // 유저가 쓴 댓글 list 조회
-    @GetMapping("/{userID}/comments")
+    @GetMapping("/{userId}/comments")
     public ResponseEntity<?> getUserComments(
-            @PathVariable("userID") Long userID,
+            @PathVariable("userId") Long userId,
             @RequestParam(defaultValue = "0") int page,
             @RequestParam(defaultValue = "10") int size) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserCommentDto> comments = profileService.getUserComments(userID, pageRequest);
+        Page<UserCommentDto> comments = profileService.getUserComments(userId, pageRequest);
 
         return ResponseEntity.ok(ApiResponse.success("사용자가 작성한 댓글 조회 성공 !", Map.of(
                         "content", comments.getContent(),
@@ -97,6 +97,9 @@ public class ProfileController {
         profileService.followUser(userInfoDto.getUserId(), userId);
         return ResponseEntity.ok(ApiResponse.success("로그인 된 유저가 다른 유저 팔로우 성공 !"));
     }
+
+
+    ////////////// 즐겨찾기
 
     @Operation(summary = "즐겨찾기 그룹 리스트 조회", description = "userId로 즐겨찾기 그룹 리스트를 조회합니다.")
     @GetMapping("/group")

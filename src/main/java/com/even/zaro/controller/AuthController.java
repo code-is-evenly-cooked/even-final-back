@@ -43,6 +43,13 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", responseDto));
     }
 
+    @PostMapping("/refresh")
+    public ResponseEntity<ApiResponse<RefreshResponseDto>> refreshToken(@RequestHeader("Authorization") String refreshToken) {
+        RefreshResponseDto response = authService.refreshAccessToken(refreshToken);
+        return ResponseEntity.ok(ApiResponse.success("액세스 토큰 재생성을 성공했습니다.", response));
+    }
+
+
     @Operation(summary = "이메일 인증 확인", description = "프론트에서 호출하지 않음. 서버에서 처리. 토큰 확인용 입니다.")
     @GetMapping("/email/verify")
     public void verifyEmail(@RequestParam String token, HttpServletResponse response) throws IOException {

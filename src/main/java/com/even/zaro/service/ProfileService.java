@@ -176,6 +176,20 @@ public class ProfileService {
                 .toList();
     }
 
+    // 팔로워 목록 조회
+    public List<FollowerFollowingListDto> getUserFollowers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+
+        return followRepository.findByFollowee(user).stream()
+                .map(follow -> FollowerFollowingListDto.builder()
+                        .userId(follow.getFollower().getId())
+                        .userName(follow.getFollower().getNickname())
+                        .profileImage(follow.getFollower().getProfileImage())
+                        .build())
+                .toList();
+    }
+
 
     ////////////// 즐겨찾기
 

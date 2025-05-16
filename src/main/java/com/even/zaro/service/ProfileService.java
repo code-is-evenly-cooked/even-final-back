@@ -92,6 +92,7 @@ public class ProfileService {
                         .build());
     }
 
+    // 유저가 작성한 댓글 list 조회
     public Page<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));

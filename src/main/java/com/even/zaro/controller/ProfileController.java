@@ -1,7 +1,6 @@
 package com.even.zaro.controller;
 
-import com.even.zaro.dto.profile.UserPostDto;
-import com.even.zaro.dto.profile.UserProfileDto;
+import com.even.zaro.dto.profile.*;
 import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.favorite.FavoriteAddResponse;
 import com.even.zaro.dto.favorite.FavoriteEditRequest;
@@ -11,12 +10,10 @@ import com.even.zaro.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
-import com.even.zaro.dto.profile.GroupCreateRequest;
-import com.even.zaro.dto.profile.GroupEditRequest;
-import com.even.zaro.dto.profile.GroupResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -66,6 +63,22 @@ public class ProfileController {
                 "content", likedPosts.getContent(),
                 "totalPages", likedPosts.getTotalPages()
         )));
+    }
+
+    // 유저가 쓴 댓글 list 조회
+    @GetMapping("/{userID}/comments")
+    public ResponseEntity<?> getUserComments(
+            @PathVariable("userID") Long userID,
+            @RequestParam(defaultValue = "0") int page,
+            @RequestParam(defaultValue = "10") int size) {
+
+        PageRequest pageRequest = PageRequest.of(page, size);
+        Page<UserCommentDto> comments = profileService.getUserComments(userID, pageRequest);
+
+        return ResponseEntity.ok(ApiResponse.success("사용자가 작성한 댓글 조회 성공 !", Map.of(
+                        "content", comments.getContent(),
+                        "totalPages", comments.getTotalPages()
+                )));
     }
 
     @Operation(summary = "즐겨찾기 그룹 리스트 조회", description = "userId로 즐겨찾기 그룹 리스트를 조회합니다.")

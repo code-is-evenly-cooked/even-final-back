@@ -127,7 +127,12 @@ public class ProfileService {
         List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
 
         // GroupResponse 리스트로 변환
-        List<GroupResponse> responseList = groupList.stream().map(group -> GroupResponse.builder().id(group.getId()).name(group.getName()).build()).toList();
+        List<GroupResponse> responseList = groupList.stream().map(group ->
+                GroupResponse.builder()
+                        .id(group.getId())
+                        .name(group.getName())
+                        .build())
+                .toList();
 
         return responseList;
     }

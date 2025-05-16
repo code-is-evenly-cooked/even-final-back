@@ -40,6 +40,19 @@ spring:
     swagger-ui:
       path: /swagger-ui
 
+  # 메일 의존성
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
 # JWT
 jwt:
   secret: ${JWT_SECRET}
@@ -59,3 +72,9 @@ cors:
 # 스웨거 https 인식
 server:
   forward-headers-strategy: framework
+
+# 이메일 인증
+email:
+  verification-url: ${EMAIL_VERIFICATION_URL}
+frontend:
+  url: ${FRONTEND_URL}

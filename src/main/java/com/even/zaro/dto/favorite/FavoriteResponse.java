@@ -37,6 +37,9 @@ public class FavoriteResponse {
     @Schema(description = "수정 시간", example = "2025-05-15 16:13:10")
     private LocalDateTime updatedAt;
 
+    @Schema(description = "주소", example = "서울특별시 중구 세종대로 110")
+    private String address;
+
     @Schema(description = "삭제 여부", example = "0")
     private boolean isDeleted;
 }

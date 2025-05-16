@@ -185,6 +185,7 @@ public class ProfileService {
                         .isDeleted(favorite.isDeleted())
                         .lat(favorite.getPlace().getLat())
                         .lng(favorite.getPlace().getLng())
+                        .address(favorite.getPlace().getAddress())
                         .build()
         ).toList();
 

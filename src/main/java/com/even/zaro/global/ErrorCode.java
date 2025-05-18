@@ -39,6 +39,7 @@ public enum ErrorCode {
     INVALID_TAG_FOR_CATEGORY(HttpStatus.BAD_REQUEST, "해당 카테고리에는 사용할 수 없는 태그입니다."),
     THUMBNAIL_NOT_IN_IMAGE_LIST(HttpStatus.BAD_REQUEST, "썸네일은 이미지 목록에 포함되어야 합니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    EMAIL_NOT_VERIFIED(HttpStatus.FORBIDDEN, "이메일 인증이 완료되지 않았습니다."),
 
     // 프로필 Profile
 

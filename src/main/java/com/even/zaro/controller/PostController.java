@@ -53,18 +53,6 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다.", null));
     }
 
-//    @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
-//    @GetMapping
-//    public ResponseEntity<ApiResponse<PostListResponse>> getPostList(
-//            @RequestParam(required = false) String category,
-//            @PageableDefault(size = 10)Pageable pageable
-//            )
-//    {
-//        PostListResponse response = postService.getPostList(category, pageable);
-//        return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공 했습니다.", response));
-//    }
-//
-
     @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getPostList(
@@ -91,9 +79,6 @@ public class PostController {
     }
 
 
-
-
-
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> deletePost(
@@ -103,6 +88,14 @@ public class PostController {
         Long userId = getAuthenticatedUserId(servletRequest);
         postService.deletePost(postId, userId);
         return ResponseEntity.ok(ApiResponse.success("게시글이 삭제되었습니다.", null));
+    }
+
+
+    @Operation(summary = "홈 전용 게시글 미리보기 조회", description = "홈 화면에서 보여줄 게시글을 조회합니다.")
+    @GetMapping("/home")
+    public ResponseEntity<ApiResponse<HomePostPreviewResponse>> getHomePost(){
+        HomePostPreviewResponse homePost = postService.getHomePostPreview();
+        return ResponseEntity.ok(ApiResponse.success("홈 게시글 조회가 성공했습니다.", homePost));
     }
 
     private Long getAuthenticatedUserId(HttpServletRequest request) {

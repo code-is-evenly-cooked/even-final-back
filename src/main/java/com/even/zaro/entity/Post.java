@@ -72,35 +72,39 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
-    public void increaseLikeCount() {
-        this.likeCount++;
+    public void changeTitle(String title) {
+        this.title = title;
     }
 
-    public void decreaseLikeCount() {
-        if (this.likeCount > 0) this.likeCount--;
+    public void changeContent(String content) {
+        this.content = content;
+    }
+
+    public void changeTag(Tag tag) {
+        this.tag = tag;
+    }
+
+    public void changeImageUrlList(List<String> imageUrlList) {
+        this.imageUrlList = imageUrlList;
+    }
+
+    public void changeThumbnailUrl(String thumbnailUrl) {
+        this.thumbnailUrl = thumbnailUrl;
+    }
+
+    public void changeLikeCount(int likeCount) {
+        this.likeCount = likeCount;
+    }
+
+    public void changeReportCount(int reportCount) {
+        this.reportCount = reportCount;
+    }
+
+    public void markAsReported() {
+        this.isReported = true;
     }
 
     public void markAsDeleted() {
-        this.isDeleted = true;
-    }
-
-    public void increaseReportCount() {
-        this.reportCount++;
-        if(this.reportCount >= 5 ){
-            this.isReported = true;
-        }
-    }
-
-    public void update(String title, String content, Tag newTag, List<String> newImages, String newThumbnailUrl) {
-        this.title = title;
-        this.content = content;
-        this.tag = newTag;
-        this.imageUrlList = newImages;
-        this.thumbnailUrl = newThumbnailUrl;
-
-    }
-
-    public void softDelete() {
         this.isDeleted = true;
     }
 

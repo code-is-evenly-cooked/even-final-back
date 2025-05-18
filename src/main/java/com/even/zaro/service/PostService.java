@@ -59,38 +59,20 @@ public class PostService {
             throw new PostException(ErrorCode.INVALID_POST_OWNER);
         }
 
-        if (post.getCategory() == Post.Category.RANDOM_BUY &&
-                (request.getImageUrlList() == null || request.getImageUrlList().isEmpty())) {
-            throw new PostException(ErrorCode.IMAGE_REQUIRED_FOR_RANDOM_BUY);
-        }
+        validateImageRequirement(post.getCategory(), request.getImageUrlList());
 
         Post.Tag tag = convertTag(request.getTag());
 
-        Post.Category category = post.getCategory();
-        if (!category.isAllowed(tag)){
-            throw new PostException(ErrorCode.INVALID_TAG_FOR_CATEGORY);
-        }
+        validateTagForCategory(post.getCategory(), tag);
 
-        List<String> imageUrls = request.getImageUrlList();
-        String thumbnail = request.getThumbnailUrl();
-        if (thumbnail != null) {
-            if (imageUrls == null || !imageUrls.contains(thumbnail)) {
-                throw new PostException(ErrorCode.THUMBNAIL_NOT_IN_IMAGE_LIST);
-            }
-        }
-
-        if (thumbnail == null && imageUrls != null && !imageUrls.isEmpty()) {
-            thumbnail = imageUrls.get(0);
-        }
+        String thumbnailUrl = resolveThumbnail(request.getThumbnailUrl(), request.getImageUrlList());
 
 
-        post.update(
-                request.getTitle(),
-                request.getContent(),
-                tag,
-                imageUrls,
-                thumbnail
-        );
+        post.changeTitle(request.getTitle());
+        post.changeContent(request.getContent());
+        post.changeTag(tag);
+        post.changeImageUrlList(request.getImageUrlList());
+        post.changeThumbnailUrl(thumbnailUrl);
     }
 
     @Transactional
@@ -157,7 +139,7 @@ public class PostService {
         if (!post.getUser().getId().equals(userId)) {
             throw new PostException(ErrorCode.INVALID_POST_OWNER);
         }
-        post.softDelete();
+        post.markAsDeleted();
     }
 
 

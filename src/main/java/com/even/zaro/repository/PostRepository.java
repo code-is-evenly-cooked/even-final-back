@@ -1,7 +1,6 @@
 package com.even.zaro.repository;
 
 import com.even.zaro.entity.Post;
-import com.even.zaro.entity.PostCategory;
 import com.even.zaro.entity.User;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -17,7 +16,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     int countByUserAndIsDeletedFalse(User user);
 
-    Page<Post> findByCategoryAndIsDeletedFalse(PostCategory category, Pageable pageable);
+    Page<Post> findByCategoryAndIsDeletedFalse(Post.Category category, Pageable pageable);
 
     Page<Post> findByIsDeletedFalse(Pageable pageable);
 

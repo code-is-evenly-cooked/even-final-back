@@ -2,8 +2,6 @@ package com.even.zaro.service;
 
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
-import com.even.zaro.entity.PostCategory;
-import com.even.zaro.entity.PostTag;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
@@ -27,20 +25,20 @@ public class PostService {
     @Transactional
     public Long createPost(PostCreateRequest request, Long userId) {
 
-        PostCategory category;
+        Post.Category category;
 
         try {
-            category = PostCategory.valueOf(request.getCategory());
+            category = Post.Category.valueOf(request.getCategory());
         } catch (IllegalArgumentException e){
             throw new PostException(ErrorCode.INVALID_CATEGORY);
         }
 
-        if (category == PostCategory.RANDOM_BUY &&
+        if (category == Post.Category.RANDOM_BUY &&
                 (request.getImageUrlList() == null || request.getImageUrlList().isEmpty())) {
             throw new PostException(ErrorCode.IMAGE_REQUIRED_FOR_RANDOM_BUY);
         }
 
-        PostTag tag = convertTag(request.getTag());
+        Post.Tag tag = convertTag(request.getTag());
 
         if (!category.isAllowed(tag)){
             throw new PostException(ErrorCode.INVALID_TAG_FOR_CATEGORY);
@@ -75,9 +73,9 @@ public class PostService {
         return post.getId();
     }
 
-    private PostTag convertTag(String tag) {
+    private Post.Tag convertTag(String tag) {
         try {
-            return PostTag.valueOf(tag);
+            return Post.Tag.valueOf(tag);
         } catch (IllegalArgumentException e) {
             throw new PostException(ErrorCode.INVALID_TAG);
         }
@@ -92,14 +90,14 @@ public class PostService {
             throw new PostException(ErrorCode.INVALID_POST_OWNER);
         }
 
-        if (post.getCategory() == PostCategory.RANDOM_BUY &&
+        if (post.getCategory() == Post.Category.RANDOM_BUY &&
                 (request.getImageUrlList() == null || request.getImageUrlList().isEmpty())) {
             throw new PostException(ErrorCode.IMAGE_REQUIRED_FOR_RANDOM_BUY);
         }
 
-        PostTag tag = convertTag(request.getTag());
+        Post.Tag tag = convertTag(request.getTag());
 
-        PostCategory category = post.getCategory();
+        Post.Category category = post.getCategory();
         if (!category.isAllowed(tag)){
             throw new PostException(ErrorCode.INVALID_TAG_FOR_CATEGORY);
         }
@@ -133,9 +131,9 @@ public class PostService {
         if(category == null || category.isBlank()) {
             page = postRepository.findByIsDeletedFalse(pageable);
         } else {
-            PostCategory postCategory;
+            Post.Category postCategory;
             try {
-                postCategory = PostCategory.valueOf(category);
+                postCategory = Post.Category.valueOf(category);
             } catch (IllegalArgumentException e){
                 throw new PostException(ErrorCode.INVALID_CATEGORY);
             }
@@ -192,5 +190,5 @@ public class PostService {
         }
         post.softDelete();
     }
-    
+
 }

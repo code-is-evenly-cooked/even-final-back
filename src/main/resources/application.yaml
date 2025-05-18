@@ -88,3 +88,14 @@ email:
   verification-url: ${EMAIL_VERIFICATION_URL}
 frontend:
   url: ${FRONTEND_URL}
+
+# S3
+cloud:
+  aws:
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ap-northeast-2
+    s3:
+      bucket: even-zaro-image-bucket

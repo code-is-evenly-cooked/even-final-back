@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -33,6 +34,10 @@ public class PostService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
+
+        if (!user.isVerified()) {
+            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
 
         String thumbnailUrl = resolveThumbnail(request.getThumbnailUrl(), request.getImageUrlList());
 
@@ -57,6 +62,13 @@ public class PostService {
 
         if (!post.getUser().getId().equals(userId)) {
             throw new PostException(ErrorCode.INVALID_POST_OWNER);
+        }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
+
+        if (!user.isVerified()) {
+            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
         validateImageRequirement(post.getCategory(), request.getImageUrlList());
@@ -122,7 +134,59 @@ public class PostService {
         if (!post.getUser().getId().equals(userId)) {
             throw new PostException(ErrorCode.INVALID_POST_OWNER);
         }
+
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
+
+        if (!user.isVerified()) {
+            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
+
         post.markAsDeleted();
+    }
+
+
+    @Transactional
+    public HomePostPreviewResponse getHomePostPreview() {
+        List<Post> togetherPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.TOGETHER);
+        List<Post> dailyLifePosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.DAILY_LIFE);
+        List<Post> randomBuyPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.RANDOM_BUY);
+
+        List<HomePostPreviewResponse.SimplePostDto> together = togetherPosts.stream()
+                .map(post -> HomePostPreviewResponse.SimplePostDto.builder()
+                        .postId(post.getId())
+                        .title(post.getTitle())
+                        .createAt(formatDate(post.getCreatedAt()))
+                        .build())
+                .toList();
+
+        List<HomePostPreviewResponse.SimplePostDto> dailyLife = dailyLifePosts.stream()
+                .map(post -> HomePostPreviewResponse.SimplePostDto.builder()
+                        .postId(post.getId())
+                        .title(post.getTitle())
+                        .createAt(formatDate(post.getCreatedAt()))
+                        .build())
+                .toList();
+
+        List<HomePostPreviewResponse.RandomBuyPostDto> randomBuy = randomBuyPosts.stream()
+                .map(post -> HomePostPreviewResponse.RandomBuyPostDto.builder()
+                        .postId(post.getId())
+                        .title(post.getTitle())
+                        .content(generatePreview(post.getContent()))
+                        .thumbnailUrl(post.getThumbnailUrl())
+                        .likeCount(post.getLikeCount())
+                        .commentCount(post.getCommentCount())
+                        .writerProfileImage(post.getUser().getProfileImage())
+                        .writerNickname(post.getUser().getNickname())
+                        .createAt(formatDate(post.getCreatedAt()))
+                        .build())
+                .toList();
+
+        return HomePostPreviewResponse.builder()
+                .together(together)
+                .dailyLife(dailyLife)
+                .randomBuy(randomBuy)
+                .build();
     }
 
 
@@ -173,5 +237,12 @@ public class PostService {
         }
 
         return null;
+    }
+
+    private String formatDate(LocalDateTime dateTime) {
+        return dateTime.toLocalDate().toString();
+    }
+    private String generatePreview(String content) {
+        return content.length() <= 30 ? content : content.substring(0, 30) + "...";
     }
 }

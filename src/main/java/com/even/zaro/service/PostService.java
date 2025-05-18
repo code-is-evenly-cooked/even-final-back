@@ -82,12 +82,7 @@ public class PostService {
         if(category == null || category.isBlank()) {
             page = postRepository.findByIsDeletedFalse(pageable);
         } else {
-            Post.Category postCategory;
-            try {
-                postCategory = Post.Category.valueOf(category);
-            } catch (IllegalArgumentException e){
-                throw new PostException(ErrorCode.INVALID_CATEGORY);
-            }
+            Post.Category postCategory = parseCategory(category);
             page = postRepository.findByCategoryAndIsDeletedFalse(postCategory,pageable);
         }
         List<PostPreviewDto> posts = page.getContent().stream()

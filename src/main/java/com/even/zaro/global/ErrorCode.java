@@ -38,6 +38,7 @@ public enum ErrorCode {
     INVALID_POST_OWNER(HttpStatus.FORBIDDEN, "권한이 없습니다."),
     INVALID_TAG_FOR_CATEGORY(HttpStatus.BAD_REQUEST, "해당 카테고리에는 사용할 수 없는 태그입니다."),
     THUMBNAIL_NOT_IN_IMAGE_LIST(HttpStatus.BAD_REQUEST, "썸네일은 이미지 목록에 포함되어야 합니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
 
     // 프로필 Profile
 

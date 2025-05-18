@@ -45,7 +45,17 @@ public class S3Service {
         return s3Client.generatePresignedUrl(request).toString();
     }
 
+    public void deleteImage(String key, Long currentUserId) {
+        if (key.startsWith("images/profile/")) {
+            String ownerId = key.split("/")[2].split("-")[0];
+            if (!ownerId.equals(currentUserId.toString())) {
+                throw new UserException(ErrorCode.UNAUTHORIZED_IMAGE_DELETE);
+            }
+        }
 
+        // post 작성 중 취소시 삭제 과정 - 프론트 처리
+        s3Client.deleteObject(bucket, key);
+    }
 
     public PresignedUrlResponse issuePresignedUrl(String type, Long userId, Long postId, String ext) {
         validateExtension(ext);

@@ -27,4 +27,10 @@ public class S3Controller {
         PresignedUrlResponse response = s3Service.issuePresignedUrl(type, userId, postId, ext);
         return ResponseEntity.ok(ApiResponse.success("presignedUrl을 발급했습니다.", response));
     }
+
+    @DeleteMapping("/image")
+    public ResponseEntity<ApiResponse<Void>> deleteImage(@RequestParam String key, @AuthenticationPrincipal JwtUserInfoDto user) {
+        s3Service.deleteImage(key, user.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("이미지를 삭제했습니다.", null));
+    }
 }

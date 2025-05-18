@@ -75,30 +75,18 @@ public class PostService {
         post.changeThumbnailUrl(thumbnailUrl);
     }
 
-    @Transactional
-    public PostListResponse getPostList(String category, Pageable pageable) {
+    @Transactional(readOnly = true)
+    public Page<PostPreviewDto> getPostListPage(String category, Pageable pageable) {
         Page<Post> page;
 
-        if(category == null || category.isBlank()) {
+        if (category == null || category.isBlank()) {
             page = postRepository.findByIsDeletedFalse(pageable);
         } else {
             Post.Category postCategory = parseCategory(category);
-            page = postRepository.findByCategoryAndIsDeletedFalse(postCategory,pageable);
+            page = postRepository.findByCategoryAndIsDeletedFalse(postCategory, pageable);
         }
-        List<PostPreviewDto> posts = page.getContent().stream()
-                .map(PostPreviewDto::from)
-                .toList();
 
-        PostListResponse.PageInfo pageInfo = PostListResponse.PageInfo.builder()
-                .currentPage(page.getNumber() + 1)
-                .totalPages(page.getTotalPages())
-                .totalElements((int) page.getTotalElements())
-                .build();
-
-        return PostListResponse.builder()
-                .posts(posts)
-                .pageInfo(pageInfo)
-                .build();
+        return page.map(PostPreviewDto::from);
     }
 
     @Transactional(readOnly = true)

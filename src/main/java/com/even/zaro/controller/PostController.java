@@ -11,10 +11,13 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.Map;
 
 @Tag(name = "게시판", description = "게시판 API")
 @RestController
@@ -50,16 +53,35 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다.", null));
     }
 
+//    @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
+//    @GetMapping
+//    public ResponseEntity<ApiResponse<PostListResponse>> getPostList(
+//            @RequestParam(required = false) String category,
+//            @PageableDefault(size = 10)Pageable pageable
+//            )
+//    {
+//        PostListResponse response = postService.getPostList(category, pageable);
+//        return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공 했습니다.", response));
+//    }
+//
+
     @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
     @GetMapping
-    public ResponseEntity<ApiResponse<PostListResponse>> getPostList(
+    public ResponseEntity<ApiResponse<?>> getPostList(
             @RequestParam(required = false) String category,
-            @PageableDefault(size = 10)Pageable pageable
-            )
-    {
-        PostListResponse response = postService.getPostList(category, pageable);
-        return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공 했습니다.", response));
+            @PageableDefault(size = 10) Pageable pageable
+    ){
+        Page<PostPreviewDto> posts = postService.getPostListPage(category, pageable);
+
+        return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공했습니다.", Map.of(
+                "content", posts.getContent(),
+                "totalPages", posts.getTotalPages(),
+                "currentPage", posts.getNumber() + 1,
+                "totalElements", posts.getTotalElements()
+        )));
     }
+
+
 
     @Operation(summary = "게시글 상세 조회", description = "게시글의 상세 내용을 조회합니다.")
     @GetMapping("/{postId}")
@@ -67,6 +89,10 @@ public class PostController {
         PostDetailResponse response = postService.getPostDetail(postId);
         return ResponseEntity.ok(ApiResponse.success("게시글 상세 조회가 성공 했습니다.", response));
     }
+
+
+
+
 
     @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
     @DeleteMapping("/{postId}")

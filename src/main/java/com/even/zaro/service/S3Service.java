@@ -36,7 +36,7 @@ public class S3Service {
     }
 
     public String generatePresignedUrl(String key) {
-        Date expiration = new Date(System.currentTimeMillis() + MINUTE * 3); // 호출 시점 기준
+        Date expiration = new Date(System.currentTimeMillis() + MINUTE * 10); // 호출 시점 기준
 
         GeneratePresignedUrlRequest request = new GeneratePresignedUrlRequest(bucket, key)
                 .withMethod(HttpMethod.PUT)

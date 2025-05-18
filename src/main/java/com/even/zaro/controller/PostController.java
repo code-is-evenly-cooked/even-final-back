@@ -2,6 +2,8 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.post.*;
 import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.CustomException;
 import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -25,14 +27,14 @@ public class PostController {
 
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<PostCreateResponse>> createPost(
+    public ResponseEntity<ApiResponse<Long>> createPost(
             @RequestBody @Valid PostCreateRequest request,
             HttpServletRequest servletRequest
     ) {
-        Long userId = Long.valueOf(extractUserId(servletRequest));
+        Long userId = getAuthenticatedUserId(servletRequest);
         Long postId = postService.createPost(request, userId);
         return ResponseEntity.ok(
-                ApiResponse.success("게시글이 작성 되었습니다.", new PostCreateResponse(postId))
+                ApiResponse.success("게시글이 작성 되었습니다.",postId)
         );
     }
 
@@ -43,7 +45,7 @@ public class PostController {
             @RequestBody @Valid PostUpdateRequest request,
             HttpServletRequest servletRequest
     ) {
-        Long userId = Long.valueOf(extractUserId(servletRequest));
+        Long userId = getAuthenticatedUserId(servletRequest);
         postService.updatePost(postId, request, userId);
         return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다.", null));
     }
@@ -72,17 +74,17 @@ public class PostController {
             @PathVariable Long postId,
             HttpServletRequest servletRequest
     ) {
-        Long userId = Long.valueOf(extractUserId(servletRequest));
+        Long userId = getAuthenticatedUserId(servletRequest);
         postService.deletePost(postId, userId);
         return ResponseEntity.ok(ApiResponse.success("게시글이 삭제되었습니다.", null));
     }
 
-    private String extractUserId(HttpServletRequest request) {
-        String token = request.getHeader("Authorization");
-        if (token != null && token.startsWith("Bearer ")) {
-            token = token.substring(7);
+    private Long getAuthenticatedUserId(HttpServletRequest request) {
+        String token = jwtUtil.resolveToken(request);
+        if (token == null || !jwtUtil.validateAccessToken(token)) {
+            throw new CustomException(ErrorCode.INVALID_TOKEN);
         }
-        return jwtUtil.getUserIdFromToken(token);
+        return Long.valueOf(jwtUtil.getUserIdFromToken(token));
     }
 
 }

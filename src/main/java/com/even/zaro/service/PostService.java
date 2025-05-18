@@ -25,39 +25,16 @@ public class PostService {
     @Transactional
     public Long createPost(PostCreateRequest request, Long userId) {
 
-        Post.Category category;
-
-        try {
-            category = Post.Category.valueOf(request.getCategory());
-        } catch (IllegalArgumentException e){
-            throw new PostException(ErrorCode.INVALID_CATEGORY);
-        }
-
-        if (category == Post.Category.RANDOM_BUY &&
-                (request.getImageUrlList() == null || request.getImageUrlList().isEmpty())) {
-            throw new PostException(ErrorCode.IMAGE_REQUIRED_FOR_RANDOM_BUY);
-        }
+        Post.Category category = parseCategory(request.getCategory());
+        validateImageRequirement(category, request.getImageUrlList());
 
         Post.Tag tag = convertTag(request.getTag());
-
-        if (!category.isAllowed(tag)){
-            throw new PostException(ErrorCode.INVALID_TAG_FOR_CATEGORY);
-        }
+        validateTagForCategory(category, tag);
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
 
-        String thumbnailUrl = request.getThumbnailUrl();
-        List<String> imageUrls = request.getImageUrlList();
-
-        if (thumbnailUrl != null) {
-            if (imageUrls == null || !imageUrls.contains(thumbnailUrl)) {
-                throw new PostException(ErrorCode.THUMBNAIL_NOT_IN_IMAGE_LIST);
-            }
-        }
-        if (thumbnailUrl == null && imageUrls != null && !imageUrls.isEmpty()) {
-            thumbnailUrl = imageUrls.get(0);
-        }
+        String thumbnailUrl = resolveThumbnail(request.getThumbnailUrl(), request.getImageUrlList());
 
         Post post = Post.builder()
                 .title(request.getTitle())
@@ -65,20 +42,12 @@ public class PostService {
                 .category(category)
                 .tag(tag)
                 .thumbnailUrl(thumbnailUrl)
+                .imageUrlList(request.getImageUrlList())
                 .user(user)
                 .build();
 
         postRepository.save(post);
-
         return post.getId();
-    }
-
-    private Post.Tag convertTag(String tag) {
-        try {
-            return Post.Tag.valueOf(tag);
-        } catch (IllegalArgumentException e) {
-            throw new PostException(ErrorCode.INVALID_TAG);
-        }
     }
 
     @Transactional
@@ -202,7 +171,7 @@ public class PostService {
     }
 
 
-    private Post.Tag convertTage(String tag) {
+    private Post.Tag convertTag(String tag) {
         try {
             return Post.Tag.valueOf(tag);
         } catch (IllegalArgumentException e){

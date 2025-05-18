@@ -33,11 +33,16 @@ spring:
     #      schema-locations:
     #        - classpath:db/schema.sql
 
-# JWT
-jwt:
-  secret: ${JWT_SECRET}
-  refresh_secret : ${JWT_REFRESH_SECRET}
-  expiration: 86400000
+  # Redis
+  data:
+    redis:
+      repositories:
+        enabled: false
+
+  redis:
+    host: ${REDIS_HOST}
+    port: ${REDIS_PORT}
+    password: ${REDIS_PASSWORD}
 
   # SwaggerUI 설정
   springdoc:
@@ -45,6 +50,24 @@ jwt:
       path: /api-docs
     swagger-ui:
       path: /swagger-ui
+
+  # 메일 의존성
+  mail:
+    host: smtp.gmail.com
+    port: 587
+    username: ${MAIL_USERNAME}
+    password: ${MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+
+# JWT
+jwt:
+  secret: ${JWT_SECRET}
+  refresh_secret : ${JWT_REFRESH_SECRET}
 
 # 로그 레벨 설정
 logging:
@@ -59,6 +82,12 @@ cors:
 # 스웨거 https 인식
 server:
   forward-headers-strategy: framework
+
+# 이메일 인증
+email:
+  verification-url: ${EMAIL_VERIFICATION_URL}
+frontend:
+  url: ${FRONTEND_URL}
 
 # S3
 cloud:

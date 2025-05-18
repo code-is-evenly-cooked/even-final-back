@@ -37,11 +37,11 @@ public class Post {
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PostCategory category;
+    private Category category;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
-    private PostTag tag;
+    private Tag tag;
 
     @ElementCollection
     @CollectionTable(name = "post_image", joinColumns = @JoinColumn(name = "post_id"))
@@ -91,7 +91,7 @@ public class Post {
         }
     }
 
-    public void update(String title, String content, PostTag newTag, List<String> newImages, String newThumbnailUrl) {
+    public void update(String title, String content, Tag newTag, List<String> newImages, String newThumbnailUrl) {
         this.title = title;
         this.content = content;
         this.tag = newTag;
@@ -103,5 +103,37 @@ public class Post {
     public void softDelete() {
         this.isDeleted = true;
     }
+
+    public enum Category {
+        TOGETHER(List.of(Tag.GROUP_BUY, Tag.SHARING, Tag.EXCHANGE)),   //같이쓰자
+        DAILY_LIFE(List.of(Tag.TIPS, Tag.QUESTIONS)), //자취일상
+        RANDOM_BUY(List.of(Tag.TREASURE, Tag.REGRET));//아무거나 샀어요
+
+        private final List<Tag> allowedTags;
+
+        Category(List<Tag> allowedTags) {
+            this.allowedTags = allowedTags;
+        }
+
+        public boolean isAllowed(Tag tag) {
+            return allowedTags.contains(tag);
+        }
+    }
+
+    public enum Tag {
+
+        // 자취일상 - 자취꿀팁, 질문있어요
+        TIPS, QUESTIONS,
+
+        // 같이쓰기 - 같이사기, 나눔해요, 물물교환
+        GROUP_BUY, SHARING, EXCHANGE,
+
+        // 아무거나 샀어요 - 소중한 꿀템, 후회막심
+        TREASURE, REGRET
+    }
+
+
+
+
 
 }

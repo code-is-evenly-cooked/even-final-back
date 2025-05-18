@@ -45,7 +45,7 @@ public class S3Controller {
 
             @AuthenticationPrincipal JwtUserInfoDto user
             ) {
-        PresignedUrlResponse response = s3Service.issuePresignedUrl(type, userId, postId, ext);
+        PresignedUrlResponse response = s3Service.issuePresignedUrl(type, userId, postId, ext, user.getUserId());
         return ResponseEntity.ok(ApiResponse.success("presignedUrl을 발급했습니다.", response));
     }
 

@@ -57,12 +57,15 @@ public class S3Service {
         s3Client.deleteObject(bucket, key);
     }
 
-    public PresignedUrlResponse issuePresignedUrl(String type, Long userId, Long postId, String ext) {
+    public PresignedUrlResponse issuePresignedUrl(String type, Long userId, Long postId, String ext, Long currentUserId) {
         validateExtension(ext);
 
         String key = switch (type) {
             case "profile" -> {
                 if (userId == null) throw new CustomException(ErrorCode.INVALID_USER_ID);
+                if (!userId.equals(currentUserId)) {
+                    throw new CustomException(ErrorCode.UNAUTHORIZED_IMAGE_UPLOAD);
+                }
                 yield generateProfileKey(userId, ext);
             }
             case "post" -> {

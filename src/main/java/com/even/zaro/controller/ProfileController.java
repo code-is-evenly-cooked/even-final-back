@@ -2,13 +2,10 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.profile.*;
-import com.even.zaro.dto.UserPostDto;
-import com.even.zaro.dto.UserProfileDto;
-import com.even.zaro.entity.Follow;
+import com.even.zaro.service.ProfileService;
 
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.jwt.JwtUtil;
-import com.even.zaro.service.ProfileService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -20,11 +17,11 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.data.domain.Pageable;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @RestController

@@ -1,8 +1,8 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.profile.GroupCreateRequest;
-import com.even.zaro.dto.profile.GroupEditRequest;
-import com.even.zaro.dto.profile.GroupResponse;
+import com.even.zaro.dto.group.GroupCreateRequest;
+import com.even.zaro.dto.group.GroupEditRequest;
+import com.even.zaro.dto.group.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
@@ -27,7 +27,6 @@ public class GroupService {
     private final FavoriteGroupRepository favoriteGroupRepository;
 
     public void createGroup(GroupCreateRequest request, long userid) {
-
 
         User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 

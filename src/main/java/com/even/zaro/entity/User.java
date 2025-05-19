@@ -67,9 +67,11 @@ public class User {
     private LocalDateTime lastLoginAt;
 
     @Column(name = "follower_count")
+    @Builder.Default
     private int followerCount = 0;
 
     @Column(name = "following_count")
+    @Builder.Default
     private int followingCount = 0;
 
     @Enumerated(EnumType.STRING)
@@ -80,7 +82,11 @@ public class User {
         this.lastLoginAt = time;
     }
 
-    public void verify() {
+    public void changeStatusToActive() {
         this.status = Status.ACTIVE;
+    }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
     }
 }

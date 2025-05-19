@@ -37,9 +37,10 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
 
-        FavoriteGroup favoriteGroup = FavoriteGroup.builder().user(user) // 유저 설정
+        FavoriteGroup favoriteGroup = FavoriteGroup.builder()
+                .user(user) // 유저 설정
                 .name(request.getName()) // Group 이름 설정
-                .updatedAt(LocalDateTime.now()).build();
+                .build();
 
         favoriteGroupRepository.save(favoriteGroup);
     }

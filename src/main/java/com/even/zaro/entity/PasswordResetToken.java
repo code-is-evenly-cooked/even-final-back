@@ -24,4 +24,18 @@ public class PasswordResetToken {
     private LocalDateTime expiredAt;
     private boolean used;
 
+    public PasswordResetToken(String email, String token, LocalDateTime expiredAt, boolean used) {
+        this.email = email;
+        this.token = token;
+        this.expiredAt = expiredAt;
+        this.used = used;
+    }
+
+    public boolean isExpired() {
+        return LocalDateTime.now().isAfter(this.expiredAt);
+    }
+
+    public void markUsed() {
+        this.used = true;
+    }
 }

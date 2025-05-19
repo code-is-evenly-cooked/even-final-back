@@ -85,4 +85,8 @@ public class User {
     public void changeStatusToActive() {
         this.status = Status.ACTIVE;
     }
+
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
 }

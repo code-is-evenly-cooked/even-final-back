@@ -100,8 +100,6 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
         group.setName(request.getName());
-
-        favoriteGroupRepository.save(group);
     }
 
 

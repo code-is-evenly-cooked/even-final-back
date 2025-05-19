@@ -35,7 +35,15 @@ public class EmailServiceImpl implements EmailService {
 
     @Override
     public void sendPasswordResetEmail(String email, String token) {
-       
+
+        String link = frontendUrl + "/password-reset?token=" + token;
+        String subject = "[ZARO] 비밀번호 재설정";
+        String text = """
+            비밀번호 재설정을 원하신다면 아래 링크를 클릭해주세요.
+            %s
+        """.formatted(link);
+
+        send(email, subject, text);
     }
 
     private void send(String to, String subject, String body) {

@@ -87,7 +87,6 @@ public class AuthController {
     @PostMapping("/email/password")
     public ResponseEntity<ApiResponse<PasswordResetEmailResponseDto>> sendResetEmail(
             @RequestBody PasswordResetEmailRequestDto requestDto) {
-        authService.sendPasswordResetEmail(requestDto);
         PasswordResetEmailResponseDto response = authService.sendPasswordResetEmail(requestDto);
         return ResponseEntity.ok(ApiResponse.success("비밀번호 재설정 메일이 전송되었습니다.", response));
     }

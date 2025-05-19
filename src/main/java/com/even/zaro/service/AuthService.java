@@ -7,6 +7,7 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.repository.EmailTokenRepository;
+import com.even.zaro.repository.PasswordResetRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -33,8 +34,9 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final EmailVerifyService emailService;
+    private final EmailService emailService;
     private final EmailTokenRepository emailTokenRepository;
+    private final PasswordResetRepository passwordResetRepository;
     private final RedisTemplate<String, String> redisTemplate;
 
 
@@ -193,5 +195,23 @@ public class AuthService {
         }
 
         sendEmailVerification(user);
+    }
+
+
+    // 비밀번호 재설정 메일 전송
+    @Transactional
+    public void sendPasswordResetEmail(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        passwordResetRepository.deleteByEmail(email);
+        passwordResetRepository.flush();
+
+        String token = UUID.randomUUID().toString();
+        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
+
+        passwordResetRepository.save(new PasswordResetToken(email, token, expiredAt, false));
+
+        emailService.sendPasswordResetEmail(email, token);
     }
 }

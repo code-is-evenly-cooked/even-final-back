@@ -50,6 +50,19 @@ public enum ErrorCode {
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레쉬 토큰을 찾을 수 없습니다."),
 
     // 게시글 Post
+    IMAGE_REQUIRED_FOR_RANDOM_BUY(HttpStatus.BAD_REQUEST, "이미지는 필수입니다."),
+    INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "올바르지 않은 카테고리입니다."),
+    INVALID_TAG(HttpStatus.BAD_REQUEST, "올바르지 않은 태그입니다."),
+    POST_NOT_FOUND(HttpStatus.NOT_FOUND,"게시글을 찾을 수 없습니다."),
+    INVALID_POST_OWNER(HttpStatus.FORBIDDEN, "권한이 없습니다."),
+    INVALID_TAG_FOR_CATEGORY(HttpStatus.BAD_REQUEST, "해당 카테고리에는 사용할 수 없는 태그입니다."),
+    THUMBNAIL_NOT_IN_IMAGE_LIST(HttpStatus.BAD_REQUEST, "썸네일은 이미지 목록에 포함되어야 합니다."),
+    INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
+    EMAIL_NOT_VERIFIED(HttpStatus.FORBIDDEN, "이메일 인증이 완료되지 않았습니다."),
+    NEED_LOGIN_POST_CREATE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 작성이 가능합니다."),
+    NEED_LOGIN_POST_UPDATE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 수정이 가능합니다."),
+    NEED_LOGIN_POST_DELETE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 삭제가 가능합니다."),
+    NEED_LOGIN_POST(HttpStatus.UNAUTHORIZED, "로그인을 해야 조회가 가능합니다."),
 
     // 댓글 Comments
     COMMENT_NO_ASSOCIATED_POST(HttpStatus.INTERNAL_SERVER_ERROR, "댓글에 연결된 게시글이 존재하지 않습니다."),

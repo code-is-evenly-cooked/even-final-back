@@ -7,6 +7,8 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import lombok.*;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
@@ -57,6 +59,7 @@ public class User {
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @UpdateTimestamp
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
@@ -69,10 +72,15 @@ public class User {
     @Column(name = "following_count")
     private int followingCount = 0;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false)
     private Provider provider;
 
     public void updateLastLoginAt(LocalDateTime time) {
         this.lastLoginAt = time;
+    }
+
+    public void verify() {
+        this.status = Status.ACTIVE;
     }
 }

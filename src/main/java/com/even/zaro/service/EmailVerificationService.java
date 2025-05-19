@@ -49,10 +49,12 @@ public class EmailVerificationService {
             throw new UserException(ErrorCode.EMAIL_TOKEN_EXPIRED);
         }
 
+        User user = emailToken.getUser();
+
         emailToken.verify();
         emailTokenRepository.save(emailToken);
-        emailToken.getUser().changeStatusToActive();
-        userRepository.save(emailToken.getUser());
+        user.changeStatusToActive();
+        userRepository.save(user);
     }
 
     // 회원가입 인증 메일 재전송

@@ -2,6 +2,7 @@ package com.even.zaro.service;
 
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
+import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
@@ -24,7 +25,7 @@ public class PostService {
     private final UserRepository userRepository;
 
     @Transactional
-    public Long createPost(PostCreateRequest request, Long userId) {
+    public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
 
         Post.Category category = parseCategory(request.getCategory());
         validateImageRequirement(category, request.getImageUrlList());
@@ -35,7 +36,7 @@ public class PostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
 
-        if (!user.isVerified()) {
+        if (user.getStatus() != Status.ACTIVE) {
             throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
@@ -52,7 +53,23 @@ public class PostService {
                 .build();
 
         postRepository.save(post);
-        return post.getId();
+        return PostDetailResponse.builder()
+                .postId(post.getId())
+                .title(post.getTitle())
+                .content(post.getContent())
+                .likeCount(post.getLikeCount())
+                .commentCount(post.getCommentCount())
+                .createdAt(post.getCreatedAt())
+                .category(post.getCategory().name())
+                .tag(post.getTag().name())
+                .thumbnailUrl(post.getThumbnailUrl())
+                .imageUrlList(post.getImageUrlList())
+                .user(new PostDetailResponse.UserInfo(
+                        user.getId(),
+                        user.getNickname(),
+                        user.getProfileImage()
+                ))
+                .build();
     }
 
     @Transactional
@@ -67,7 +84,7 @@ public class PostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
 
-        if (!user.isVerified()) {
+        if (user.getStatus() != Status.ACTIVE) {
             throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
@@ -138,7 +155,7 @@ public class PostService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
 
-        if (!user.isVerified()) {
+        if (user.getStatus() != Status.ACTIVE) {
             throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 

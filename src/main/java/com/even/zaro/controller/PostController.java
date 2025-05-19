@@ -16,6 +16,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.context.request.RequestAttributes;
 
 import java.util.Map;
 
@@ -30,14 +31,14 @@ public class PostController {
 
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     @PostMapping
-    public ResponseEntity<ApiResponse<Long>> createPost(
+    public ResponseEntity<ApiResponse<PostDetailResponse>> createPost(
             @RequestBody @Valid PostCreateRequest request,
             HttpServletRequest servletRequest
     ) {
-        Long userId = getAuthenticatedUserId(servletRequest);
-        Long postId = postService.createPost(request, userId);
+        Long userId = getAuthenticatedUserId(servletRequest, ErrorCode.NEED_LOGIN_POST_CREATE);
+        PostDetailResponse response = postService.createPost(request, userId);
         return ResponseEntity.ok(
-                ApiResponse.success("게시글이 작성 되었습니다.",postId)
+                ApiResponse.success("게시글이 작성 되었습니다.", response)
         );
     }
 
@@ -48,7 +49,7 @@ public class PostController {
             @RequestBody @Valid PostUpdateRequest request,
             HttpServletRequest servletRequest
     ) {
-        Long userId = getAuthenticatedUserId(servletRequest);
+        Long userId = getAuthenticatedUserId(servletRequest, ErrorCode.NEED_LOGIN_POST_UPDATE);
         postService.updatePost(postId, request, userId);
         return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다."));
     }
@@ -57,8 +58,10 @@ public class PostController {
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getPostList(
             @RequestParam(required = false) String category,
-            @PageableDefault(size = 10) Pageable pageable
+            @PageableDefault(size = 10) Pageable pageable,
+            HttpServletRequest request
     ){
+        getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
         Page<PostPreviewDto> posts = postService.getPostListPage(category, pageable);
 
         return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공했습니다.", Map.of(
@@ -73,7 +76,10 @@ public class PostController {
 
     @Operation(summary = "게시글 상세 조회", description = "게시글의 상세 내용을 조회합니다.")
     @GetMapping("/{postId}")
-    public ResponseEntity<ApiResponse<PostDetailResponse>> getPostDetail(@PathVariable Long postId) {
+    public ResponseEntity<ApiResponse<PostDetailResponse>> getPostDetail(
+            @PathVariable Long postId,
+            HttpServletRequest request) {
+        getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
         PostDetailResponse response = postService.getPostDetail(postId);
         return ResponseEntity.ok(ApiResponse.success("게시글 상세 조회가 성공 했습니다.", response));
     }
@@ -85,7 +91,7 @@ public class PostController {
             @PathVariable Long postId,
             HttpServletRequest servletRequest
     ) {
-        Long userId = getAuthenticatedUserId(servletRequest);
+        Long userId = getAuthenticatedUserId(servletRequest, ErrorCode.NEED_LOGIN_POST_DELETE);
         postService.deletePost(postId, userId);
         return ResponseEntity.ok(ApiResponse.success("게시글이 삭제되었습니다."));
     }
@@ -98,10 +104,10 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("홈 게시글 조회가 성공했습니다.", homePost));
     }
 
-    private Long getAuthenticatedUserId(HttpServletRequest request) {
+    private Long getAuthenticatedUserId(HttpServletRequest request, ErrorCode errorCode) {
         String token = jwtUtil.resolveToken(request);
         if (token == null || !jwtUtil.validateAccessToken(token)) {
-            throw new CustomException(ErrorCode.INVALID_TOKEN);
+            throw new CustomException(errorCode);
         }
         return Long.valueOf(jwtUtil.getUserIdFromToken(token));
     }

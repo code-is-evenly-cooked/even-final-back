@@ -40,6 +40,10 @@ public enum ErrorCode {
     THUMBNAIL_NOT_IN_IMAGE_LIST(HttpStatus.BAD_REQUEST, "썸네일은 이미지 목록에 포함되어야 합니다."),
     INVALID_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 토큰입니다."),
     EMAIL_NOT_VERIFIED(HttpStatus.FORBIDDEN, "이메일 인증이 완료되지 않았습니다."),
+    NEED_LOGIN_POST_CREATE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 작성이 가능합니다."),
+    NEED_LOGIN_POST_UPDATE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 수정이 가능합니다."),
+    NEED_LOGIN_POST_DELETE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 삭제가 가능합니다."),
+    NEED_LOGIN_POST(HttpStatus.UNAUTHORIZED, "로그인을 해야 조회가 가능합니다."),
 
     // 프로필 Profile
 

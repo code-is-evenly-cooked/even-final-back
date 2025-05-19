@@ -9,24 +9,40 @@ import org.springframework.stereotype.Service;
 
 @Service
 @RequiredArgsConstructor
-public class EmailVerifyService implements EmailService {
+public class EmailServiceImpl implements EmailService {
 
     private final JavaMailSender mailSender;
 
     @Value("${email.verification.url}")
     private String emailVerificationUrl;
 
+    @Value("${frontend.url}")
+    private String frontendUrl;
+
     @Override
     public void sendVerificationEmail(User user, String token) {
 
         String link = emailVerificationUrl + "?token=" + token;
         String subject = "[ZARO] 회원가입 이메일 인증";
-        String text = "아래 링크를 클릭하여 이메일 인증을 완료해주세요:\n" + link;
+        String text = """
+            안녕하세요 %s님,
+            아래 링크를 클릭하여 회원가입을 완료해주세요.
+            %s
+        """.formatted(user.getNickname(), link);
 
+        send(user.getEmail(), subject, text);
+    }
+
+    @Override
+    public void sendPasswordResetEmail(String email, String token) {
+       
+    }
+
+    private void send(String to, String subject, String body) {
         SimpleMailMessage message = new SimpleMailMessage();
-        message.setTo(user.getEmail());
+        message.setTo(to);
         message.setSubject(subject);
-        message.setText(text);
+        message.setText(body);
         mailSender.send(message);
     }
 }

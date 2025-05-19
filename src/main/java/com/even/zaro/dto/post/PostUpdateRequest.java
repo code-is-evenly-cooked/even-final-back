@@ -10,10 +10,10 @@ import java.util.List;
 @NoArgsConstructor
 public class PostUpdateRequest {
 
-    @NotBlank
+    @NotBlank(message = "제목은 필수입니다.")
     private String title;
 
-    @NotBlank
+    @NotBlank(message = "내용은 필수입니다.")
     private String content;
 
     private String tag;

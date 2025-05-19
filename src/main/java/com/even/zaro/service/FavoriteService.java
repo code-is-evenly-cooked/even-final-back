@@ -43,6 +43,13 @@ public class FavoriteService {
         Place place = placeRepository.findById(request.getPlaceId())
                 .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
 
+        List<Favorite> placeList = favoriteRepository.findByPlace(place);
+
+        // 해당 placeId와 일치하는 장소가 이미 추가되어있다면
+        if (placeList.size() > 0) {
+            throw new FavoriteException(ErrorCode.FAVORITE_ALREADY_EXISTS);
+        }
+
         Favorite favorite = Favorite.builder()
                 .user(user)
                 .group(group)

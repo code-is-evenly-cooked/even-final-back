@@ -52,10 +52,9 @@ public class FavoriteService {
                 .build();
 
         // 즐겨찾기 개수 1 증가
-        place.setFavoriteCount(place.getFavoriteCount() + 1);
+        place.incrementFavoriteCount();
 
         favoriteRepository.save(favorite);
-        placeRepository.save(place);
 
         FavoriteAddResponse favoriteAddResponse = FavoriteAddResponse.builder()
                 .placeId(favorite.getPlace().getId())
@@ -105,8 +104,6 @@ public class FavoriteService {
         }
 
         favorite.setMemo(request.getMemo());
-
-        favoriteRepository.save(favorite);
     }
 
     // 해당 즐겨찾기를 soft 삭제
@@ -119,18 +116,14 @@ public class FavoriteService {
             throw new FavoriteException(ErrorCode.UNAUTHORIZED_FAVORITE_DELETE);
         }
 
-
         long placeId = favorite.getPlace().getId();
 
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
 
         // 즐겨찾기 개수 1 감소
-        place.setFavoriteCount(place.getFavoriteCount() - 1);
-
-        favorite.setDeleted(true);
-
-        favoriteRepository.save(favorite);
-        placeRepository.save(place);
+        place.decrementFavoriteCount();
+        // 삭제 상태 변경
+        favorite.setDeleteTrue();
     }
 }

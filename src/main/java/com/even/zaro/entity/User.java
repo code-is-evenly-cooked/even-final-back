@@ -82,7 +82,7 @@ public class User {
         this.lastLoginAt = time;
     }
 
-    public void verify() {
+    public void changeStatusToActive() {
         this.status = Status.ACTIVE;
     }
 }

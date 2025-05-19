@@ -158,6 +158,7 @@ public class AuthService {
         emailService.sendVerificationEmail(user, token);
     }
 
+    // 회원가입 인증 메일 토큰 검증 및 status 변경
     @Transactional
     public void verifyEmailToken(String token) {
         EmailToken emailToken = emailTokenRepository.findByToken(token)
@@ -173,10 +174,11 @@ public class AuthService {
 
         emailToken.verify();
         emailTokenRepository.save(emailToken);
-        emailToken.getUser().verify(); // PENDING->ACTIVE user 엔티티 메서드
+        emailToken.getUser().changeStatusToActive();
         userRepository.save(emailToken.getUser());
     }
 
+    // 회원가입 인증 메일 재전송
     @Transactional
     public void resendVerificationEmail(String email) {
         User user = userRepository.findByEmail(email)

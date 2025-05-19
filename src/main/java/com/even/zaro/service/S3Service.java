@@ -31,8 +31,8 @@ public class S3Service {
         return "images/profile/" + userId + "-" + UUID.randomUUID() + "." + ext;
     }
 
-    public String generatePostImageKey(Long postId, String ext) {
-        return "images/post/" + postId + "-" + UUID.randomUUID() + "." + ext;
+    public String generatePostImageKey(String ext) {
+        return "images/post/" + UUID.randomUUID() + "." + ext;
     }
 
     public String generatePresignedUrl(String key) {
@@ -57,7 +57,7 @@ public class S3Service {
         s3Client.deleteObject(bucket, key);
     }
 
-    public PresignedUrlResponse issuePresignedUrl(String type, Long userId, Long postId, String ext, Long currentUserId) {
+    public PresignedUrlResponse issuePresignedUrl(String type, Long userId, String ext, Long currentUserId) {
         validateExtension(ext);
 
         String key = switch (type) {
@@ -69,8 +69,7 @@ public class S3Service {
                 yield generateProfileKey(userId, ext);
             }
             case "post" -> {
-                if (postId == null) throw new CustomException(ErrorCode.INVALID_POST_ID);
-                yield generatePostImageKey(postId, ext);
+                yield generatePostImageKey(ext);
             }
             default -> throw new CustomException(ErrorCode.INVALID_UPLOAD_TYPE);
         };

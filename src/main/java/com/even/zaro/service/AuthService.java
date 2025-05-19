@@ -39,6 +39,7 @@ public class AuthService {
 
 
     // 메서드
+    // 회원가입
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
@@ -87,6 +88,7 @@ public class AuthService {
         return new SignUpResponseDto(user.getId(), user.getEmail(), user.getNickname());
     }
 
+    // 로그인
     @Transactional
     public SignInResponseDto signIn(SignInRequestDto requestDto) {
         User user = userRepository.findByEmail(requestDto.getEmail())
@@ -122,6 +124,7 @@ public class AuthService {
         );
     }
 
+    // 로그인 연장
     @Transactional
     public RefreshResponseDto refreshAccessToken(String refreshToken) {
         String token = jwtUtil.extractBearerPrefix(refreshToken);
@@ -146,6 +149,7 @@ public class AuthService {
         return new RefreshResponseDto(newAccessToken);
     }
 
+    // 회원가입 인증 메일 토큰 발급
     @Transactional
     public void sendEmailVerification(User user) {
         emailTokenRepository.deleteByUser(user);

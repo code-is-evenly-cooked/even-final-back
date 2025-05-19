@@ -34,8 +34,10 @@ public class ProfileController {
 
     private final JwtUtil jwtUtil;
   
-    // 유저 기본 프로필 조회
-    @Operation(summary = "유저 기본 프로필 조회", description = "특정 유저의 프로필 정보를 조회합니다.")
+    // 유저 기본 프로필 조회 (Profile 기능들 중 유일하게 인증 불필요 !)
+    @Operation(
+            summary = "유저 기본 프로필 조회 (인증 불필요)",
+            description = "특정 유저의 프로필 정보를 조회합니다.")
     @GetMapping("/{userId}")
     public ResponseEntity<?> getUserProfile(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId) {
@@ -44,7 +46,11 @@ public class ProfileController {
     }
 
     // 유저가 쓴 게시물 list 조회
-    @Operation(summary = "유저가 쓴 게시글 조회", description = "특정 유저가 작성한 게시글 목록을 조회합니다.")
+    @Operation(
+            summary = "유저가 쓴 게시글 list 조회 (인증 필요)",
+            description = "특정 유저가 작성한 게시글 목록을 조회합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")}
+    )
     @GetMapping("/{userId}/posts")
     public ResponseEntity<?> getUserPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
@@ -61,6 +67,11 @@ public class ProfileController {
     }
 
     // 유저가 좋아요 누른 게시물 list 조회
+    @Operation(
+            summary = "유저가 좋아요 한 게시글 list 조회 (인증 필요)",
+            description = "특정 유저가 좋아요 한 게시글 목록을 조회합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")}
+    )
     @GetMapping("/{userId}/likes")
     public ResponseEntity<?> getUserLikedPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
@@ -77,6 +88,11 @@ public class ProfileController {
     }
 
     // 유저가 쓴 댓글 list 조회
+    @Operation(
+            summary = "유저가 쓴 댓글 list 조회 (인증 필요)",
+            description = "특정 유저가 쓴 댓글 목록을 조회합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")}
+    )
     @GetMapping("/{userId}/comments")
     public ResponseEntity<?> getUserComments(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
@@ -94,7 +110,10 @@ public class ProfileController {
     }
 
     // 다른 유저 팔로우 하기
-    @Operation(summary = "(로그인 된 상태) 팔로우 하기", description = "AccessToken 기반으로 다른 사용자를 팔로우합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(
+            summary = "팔로우 하기 (인증 필요)",
+            description = "로그인 된 사용자의 AccessToken 기반으로, 다른 사용자를 팔로우합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/{userId}/follow")
     public ResponseEntity<?> followUser(
             @Parameter(description = "팔로우할 유저 ID") @PathVariable("userId") Long userId,
@@ -105,7 +124,10 @@ public class ProfileController {
     }
 
     // 다른 유저 언팔로우 하기
-    @Operation(summary = "(로그인 된 상태) 언팔로우 하기", description = "AccessToken 기반으로 다른 사용자를 언팔로우합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(
+            summary = "언팔로우 하기 (인증 필요)",
+            description = "로그인 된 사용자의 AccessToken 기반으로, 다른 사용자를 언팔로우합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping("/{userId}/follow")
     public ResponseEntity<?> unfollowUser(
             @Parameter(description = "언팔로우할 유저 ID") @PathVariable("userId") Long userId,
@@ -116,7 +138,10 @@ public class ProfileController {
     }
 
     // 팔로잉 목록 조회
-    @Operation(summary = "팔로잉 목록 조회", description = "특정 유저가 팔로우한 사용자 목록을 조회합니다.")
+    @Operation(
+            summary = "팔로잉 목록 조회 (인증 필요)",
+            description = "특정 유저가 팔로우한 사용자 목록을 조회합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/{userId}/followings")
     public ResponseEntity<?> getUserFollowings(
             @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId,
@@ -126,7 +151,10 @@ public class ProfileController {
     }
 
     // 팔로워 목록 조회
-    @Operation(summary = "팔로워 목록 조회", description = "특정 유저를 팔로우하는 사용자 목록을 조회합니다.")
+    @Operation(
+            summary = "팔로워 목록 조회 (인증 필요)",
+            description = "특정 유저를 팔로우하는 사용자 목록을 조회합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/{userId}/followers")
     public ResponseEntity<?> getUserFollowers(
             @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId,

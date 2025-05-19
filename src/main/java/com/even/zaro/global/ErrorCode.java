@@ -61,10 +61,12 @@ public enum ErrorCode {
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹을 찾지 못했습니다."),
     GROUP_ALREADY_DELETE(HttpStatus.NOT_FOUND, "이미 삭제한 그룹입니다."),
     GROUP_ALREADY_EXIST(HttpStatus.NOT_FOUND, "이미 존재하는 그룹 이름입니다."),
-
-    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 즐겨찾기를 찾지 못했습니다."),
     UNAUTHORIZED_GROUP_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 삭제 시도입니다."),
     UNAUTHORIZED_GROUP_UPDATE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 수정 시도입니다."),
+
+    // 즐겨찾기 favorite
+    FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 즐겨찾기에 존재하는 장소는 추가할 수 없습니다."),
+    FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 즐겨찾기를 찾지 못했습니다."),
     UNAUTHORIZED_FAVORITE_UPDATE(HttpStatus.UNAUTHORIZED, "다른 사용자의 즐겨찾기 메모 수정 시도입니다."),
     UNAUTHORIZED_FAVORITE_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 즐겨찾기 삭제 시도입니다."),
 

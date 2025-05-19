@@ -45,4 +45,12 @@ public class Place {
 
     @Column(name = "favorite_count", nullable = false)
     private int favoriteCount = 0;
+
+    public void incrementFavoriteCount() {
+        favoriteCount++;
+    }
+
+    public void decrementFavoriteCount() {
+        favoriteCount--;
+    }
 }

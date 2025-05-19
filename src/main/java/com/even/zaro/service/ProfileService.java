@@ -1,15 +1,11 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.profile.*;
-import com.even.zaro.dto.UserPostDto;
-import com.even.zaro.dto.UserProfileDto;
 import com.even.zaro.repository.*;
 import com.even.zaro.entity.*;
 
 import com.even.zaro.global.ErrorCode;
-import com.even.zaro.global.exception.CustomException;
 import com.even.zaro.global.exception.comment.CommentException;
-import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
 
@@ -21,7 +17,6 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service

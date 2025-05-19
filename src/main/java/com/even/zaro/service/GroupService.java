@@ -1,8 +1,8 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.profile.GroupCreateRequest;
-import com.even.zaro.dto.profile.GroupEditRequest;
-import com.even.zaro.dto.profile.GroupResponse;
+import com.even.zaro.dto.group.GroupCreateRequest;
+import com.even.zaro.dto.group.GroupEditRequest;
+import com.even.zaro.dto.group.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
@@ -28,7 +28,6 @@ public class GroupService {
 
     public void createGroup(GroupCreateRequest request, long userid) {
 
-
         User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
         boolean dupCheck = groupNameDuplicateCheck(request.getName(), userid);
@@ -38,9 +37,10 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
 
-        FavoriteGroup favoriteGroup = FavoriteGroup.builder().user(user) // 유저 설정
+        FavoriteGroup favoriteGroup = FavoriteGroup.builder()
+                .user(user) // 유저 설정
                 .name(request.getName()) // Group 이름 설정
-                .updatedAt(LocalDateTime.now()).build();
+                .build();
 
         favoriteGroupRepository.save(favoriteGroup);
     }
@@ -79,7 +79,7 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_ALREADY_DELETE);
         }
 
-        group.setDeleted(true);
+        group.setIsDeleted();
 
         favoriteGroupRepository.save(group);
     }
@@ -100,8 +100,6 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
         group.setName(request.getName());
-
-        favoriteGroupRepository.save(group);
     }
 
 

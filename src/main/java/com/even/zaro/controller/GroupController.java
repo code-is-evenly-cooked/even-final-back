@@ -1,9 +1,9 @@
 package com.even.zaro.controller;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
-import com.even.zaro.dto.profile.GroupCreateRequest;
-import com.even.zaro.dto.profile.GroupEditRequest;
-import com.even.zaro.dto.profile.GroupResponse;
+import com.even.zaro.dto.group.GroupCreateRequest;
+import com.even.zaro.dto.group.GroupEditRequest;
+import com.even.zaro.dto.group.GroupResponse;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;

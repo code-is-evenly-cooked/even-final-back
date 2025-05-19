@@ -1,4 +1,4 @@
-package com.even.zaro.dto.profile;
+package com.even.zaro.dto.group;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;

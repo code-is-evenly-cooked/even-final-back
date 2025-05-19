@@ -1,9 +1,6 @@
 package com.even.zaro.entity;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -14,6 +11,7 @@ import java.time.LocalDateTime;
 @Entity
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Getter
+@Table(name = "password_reset_token")
 public class PasswordResetToken {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

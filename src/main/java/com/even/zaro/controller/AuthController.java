@@ -1,6 +1,7 @@
 package com.even.zaro.controller;
 
 import com.even.zaro.dto.auth.*;
+import com.even.zaro.entity.PasswordResetToken;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
@@ -77,5 +78,13 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> resendEmail(@RequestBody ResendEmailRequestDto requestDto) {
         authService.resendVerificationEmail(requestDto.getEmail());
         return ResponseEntity.ok(ApiResponse.success("이메일 인증 메일이 재전송되었습니다."));
+    }
+
+    @PostMapping("/email/password")
+    public ResponseEntity<ApiResponse<PasswordResetEmailResponseDto>> sendResetEmail(
+            @RequestBody PasswordResetEmailRequestDto requestDto) {
+        authService.sendPasswordResetEmail(requestDto);
+        PasswordResetEmailResponseDto response = authService.sendPasswordResetEmail(requestDto);
+        return ResponseEntity.ok(ApiResponse.success("비밀번호 재설정 메일이 전송되었습니다.", response));
     }
 }

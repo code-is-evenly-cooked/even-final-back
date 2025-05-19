@@ -37,15 +37,12 @@ public class S3Controller {
             @Parameter(description = "사용자 ID (type=profile일 때 필수)", example = "1")
             @RequestParam(required = false) Long userId,
 
-            @Parameter(description = "게시글 ID (type=post일 때 필수)", example = "10")
-            @RequestParam(required = false) Long postId,
-
             @Parameter(description = "파일 확장자 (jpg, png, webp)", example = "jpg")
             @RequestParam String ext,
 
             @AuthenticationPrincipal JwtUserInfoDto user
             ) {
-        PresignedUrlResponse response = s3Service.issuePresignedUrl(type, userId, postId, ext, user.getUserId());
+        PresignedUrlResponse response = s3Service.issuePresignedUrl(type, userId, ext, user.getUserId());
         return ResponseEntity.ok(ApiResponse.success("presignedUrl을 발급했습니다.", response));
     }
 

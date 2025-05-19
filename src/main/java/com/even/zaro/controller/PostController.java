@@ -50,7 +50,7 @@ public class PostController {
     ) {
         Long userId = getAuthenticatedUserId(servletRequest);
         postService.updatePost(postId, request, userId);
-        return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다."));
     }
 
     @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
@@ -87,7 +87,7 @@ public class PostController {
     ) {
         Long userId = getAuthenticatedUserId(servletRequest);
         postService.deletePost(postId, userId);
-        return ResponseEntity.ok(ApiResponse.success("게시글이 삭제되었습니다.", null));
+        return ResponseEntity.ok(ApiResponse.success("게시글이 삭제되었습니다."));
     }
 
 

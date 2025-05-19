@@ -79,7 +79,7 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_ALREADY_DELETE);
         }
 
-        group.setDeleted(true);
+        group.setIsDeleted();
 
         favoriteGroupRepository.save(group);
     }

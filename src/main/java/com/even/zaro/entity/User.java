@@ -67,9 +67,11 @@ public class User {
     private LocalDateTime lastLoginAt;
 
     @Column(name = "follower_count")
+    @Builder.Default
     private int followerCount = 0;
 
     @Column(name = "following_count")
+    @Builder.Default
     private int followingCount = 0;
 
     @Enumerated(EnumType.STRING)

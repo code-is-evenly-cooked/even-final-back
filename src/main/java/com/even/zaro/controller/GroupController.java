@@ -27,11 +27,10 @@ public class GroupController {
     private final GroupService groupService;
 
 
-    @Operation(summary = "사용자의 그룹 리스트 조회", description = "해당 유저의 그룹 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "사용자의 그룹 리스트 조회", description = "해당 유저의 그룹 리스트를 조회합니다.")
     @GetMapping("/user/{userId}/group")
     public ResponseEntity<ApiResponse<List<GroupResponse>>> getFavoriteGroupsByUserId(
-            @PathVariable("userId") long userId,
-            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+            @PathVariable("userId") long userId) {
         List<GroupResponse> groupList = groupService.getFavoriteGroups(userId);
 
         return ResponseEntity.ok(ApiResponse.success("해당 유저의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));

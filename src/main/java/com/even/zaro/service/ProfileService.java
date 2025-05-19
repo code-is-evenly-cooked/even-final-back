@@ -1,30 +1,22 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.UserPostDto;
-import com.even.zaro.dto.UserProfileDto;
-import com.even.zaro.dto.profileDto.GroupCreateRequest;
-import com.even.zaro.dto.profileDto.GroupEditRequest;
-import com.even.zaro.dto.profileDto.GroupResponse;
-import com.even.zaro.entity.FavoriteGroup;
-import com.even.zaro.entity.User;
+import com.even.zaro.dto.profile.*;
+import com.even.zaro.repository.*;
+import com.even.zaro.entity.*;
+
 import com.even.zaro.global.ErrorCode;
-import com.even.zaro.global.exception.CustomException;
-import com.even.zaro.global.exception.favoriteGroupEx.FavoriteGroupException;
+import com.even.zaro.global.exception.comment.CommentException;
+import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
-import com.even.zaro.repository.FavoriteGroupRepository;
-import com.even.zaro.repository.FavoriteRepository;
-import com.even.zaro.repository.PlaceRepository;
-import com.even.zaro.repository.PostLikeRepository;
-import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.UserRepository;
+
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -32,17 +24,16 @@ import java.util.List;
 @AllArgsConstructor
 @Transactional
 public class ProfileService {
-    private final FavoriteRepository favoriteRepository;
     private final UserRepository userRepository;
-    private final PlaceRepository placeRepository;
-    private final FavoriteGroupRepository favoriteGroupRepository;
     private final PostRepository postRepository;
     private final PostLikeRepository postLikeRepository;
+    private final CommentRepository commentRepository;
+    private final FollowRepository followRepository;
 
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         int postCount = postRepository.countByUserAndIsDeletedFalse(user);
 
@@ -61,7 +52,7 @@ public class ProfileService {
     // 유저가 쓴 게시물 list 조회
     public Page<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()
@@ -80,7 +71,7 @@ public class ProfileService {
     // 유저가 좋아요 누른 게시물 list 조회
     public Page<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new CustomException(ErrorCode.NO_RESULT));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         return postLikeRepository.findByUser(user, pageable)
                 .map(postLike -> UserPostDto.builder()
@@ -95,75 +86,115 @@ public class ProfileService {
                         .createdAt(postLike.getPost().getCreatedAt())
                         .build());
     }
-  
-    public void createGroup(GroupCreateRequest request) {
 
-        User user = userRepository.findById(request.getUserId()).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+    // 유저가 작성한 댓글 list 조회
+    public Page<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        boolean dupCheck = groupNameDuplicateCheck(request.getName(), request.getUserId());
+        return commentRepository.findByUserAndIsDeletedFalse(user, pageable)
+                .map(comment -> {
+                    Post post = comment.getPost();
+                    if (post == null) {
+                        throw new CommentException(ErrorCode.COMMENT_NO_ASSOCIATED_POST);
+                    }
 
-        // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
-        if (dupCheck) {
-            throw FavoriteGroupException.DuplicateGroupException();
+                    return UserCommentDto.builder()
+                            .postId(post.getId())
+                            .title(post.getTitle())
+                            .category(post.getCategory().name())
+                            .tag(post.getTag() != null ? post.getTag().name() : null)
+                            .likeCount(post.getLikeCount())
+                            .commentCount(post.getCommentCount())
+                            .commentContent(comment.getContent())
+                            .commentCreatedAt(comment.getCreatedAt())
+                            .build();
+                });
+    }
+
+    ////////////// 팔로우 관련
+
+    // 다른 유저 팔로우 하기
+    public void followUser(Long followerId, Long followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new ProfileException(ErrorCode.FOLLOW_SELF_NOT_ALLOWED);
         }
 
-        FavoriteGroup favoriteGroup = FavoriteGroup.builder().user(user) // 유저 설정
-                .name(request.getName()) // Group 이름 설정
-                .updatedAt(LocalDateTime.now()).build();
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        favoriteGroupRepository.save(favoriteGroup);
-    }
-
-    @Transactional(readOnly = true)
-    public List<GroupResponse> getFavoriteGroups(long userId) {
-
-        User user = userRepository.findById(userId).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
-
-
-        // userId 값이 일치하는 데이터 조회
-        List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
-
-
-        // GroupResponse 리스트로 변환
-        List<GroupResponse> responseList = groupList.stream().map(group -> GroupResponse.builder().id(group.getId()).name(group.getName()).build()).toList();
-
-        return responseList;
-    }
-
-    public void deleteGroup(long groupId) {
-        FavoriteGroup group = favoriteGroupRepository.findById(groupId).orElseThrow(FavoriteGroupException::NotFoundGroupException);
-
-        // 이미 삭제 처리 된 경우
-        if (group.isDeleted()) {
-            throw FavoriteGroupException.AlreadyDeletedGroupException();
+        // 이미 팔로우되어 있는지 확인
+        boolean alreadyFollowing = followRepository.existsByFollowerAndFollowee(follower, followee);
+        if (alreadyFollowing) {
+            throw new ProfileException(ErrorCode.FOLLOW_ALREADY_EXISTS);
         }
 
-        group.setDeleted(true);
+        // 팔로우 저장
+        Follow follow = Follow.builder()
+                .follower(follower)
+                .followee(followee)
+                .build();
+        followRepository.save(follow);
 
-        favoriteGroupRepository.save(group);
+        // 팔로잉 & 팔로워 카운트 증가
+        follower.setFollowingCount(follower.getFollowingCount() + 1);
+        followee.setFollowerCount(followee.getFollowerCount() + 1);
+
+        userRepository.save(follower);
+        userRepository.save(followee);
     }
-  
-    public void editGroup(GroupEditRequest request) {
-        FavoriteGroup group = favoriteGroupRepository.findById(request.getGroupId()).orElseThrow(FavoriteGroupException::NotFoundGroupException);
 
-        boolean dupCheck = groupNameDuplicateCheck(group.getName(), group.getUser().getId());
-
-        // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
-        if (dupCheck) {
-            throw FavoriteGroupException.DuplicateGroupException();
+    // 다른 유저 언팔로우 하기
+    public void unfollowUser(Long followerId, Long followeeId) {
+        if (followerId.equals(followeeId)) {
+            throw new ProfileException(ErrorCode.FOLLOW_UNFOLLOW_SELF_NOT_ALLOWED);
         }
 
+        User follower = userRepository.findById(followerId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        User followee = userRepository.findById(followeeId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        group.setName(request.getName());
-        group.setUpdatedAt(LocalDateTime.now());
+        Follow follow = followRepository.findByFollowerAndFollowee(follower, followee)
+                .orElseThrow(() -> new ProfileException(ErrorCode.FOLLOW_NOT_EXIST));
 
+        followRepository.delete(follow);
 
-        favoriteGroupRepository.save(group);
+        // 팔로잉 & 팔로워 카운트 감소
+        follower.setFollowingCount(follower.getFollowingCount() - 1);
+        followee.setFollowerCount(followee.getFollowerCount() - 1);
+
+        userRepository.save(follower);
+        userRepository.save(followee);
     }
 
+    // 팔로잉 목록 조회
+    public List<FollowerFollowingListDto> getUserFollowings(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-    // 입력한 그룹 이름이 이미 해당 userId가 가지고 있는지 확인
-    public boolean groupNameDuplicateCheck(String groupName, long userId) {
-        return favoriteGroupRepository.existsByUser_IdAndName(userId, groupName);
+        return followRepository.findByFollower(user).stream()
+                .map(follow -> FollowerFollowingListDto.builder()
+                        .userId(follow.getFollowee().getId())
+                        .userName(follow.getFollowee().getNickname())
+                        .profileImage(follow.getFollowee().getProfileImage())
+                        .build())
+                .toList();
+    }
+
+    // 팔로워 목록 조회
+    public List<FollowerFollowingListDto> getUserFollowers(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        return followRepository.findByFollowee(user).stream()
+                .map(follow -> FollowerFollowingListDto.builder()
+                        .userId(follow.getFollower().getId())
+                        .userName(follow.getFollower().getNickname())
+                        .profileImage(follow.getFollower().getProfileImage())
+                        .build())
+                .toList();
     }
 }

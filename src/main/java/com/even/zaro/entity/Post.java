@@ -7,7 +7,6 @@ import lombok.NoArgsConstructor;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
-
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -57,11 +56,13 @@ public class Post {
     @Column(name = "is_deleted")
     private boolean isDeleted = false;
 
-    @Column(name = "like_count")
+    @Column(name = "like_count", nullable = false)
     private int likeCount = 0;
-    @Column(name = "comment_count")
+
+    @Column(name = "comment_count", nullable = false)
     private int commentCount = 0;
-    @Column(name = "report_count")
+
+    @Column(name = "report_count", nullable = false)
     private int reportCount = 0;
 
     @CreationTimestamp
@@ -135,9 +136,4 @@ public class Post {
         // 아무거나 샀어요 - 소중한 꿀템, 후회막심
         TREASURE, REGRET
     }
-
-
-
-
-
 }

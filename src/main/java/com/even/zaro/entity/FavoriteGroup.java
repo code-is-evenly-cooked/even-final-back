@@ -1,15 +1,13 @@
 package com.even.zaro.entity;
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -28,6 +26,7 @@ public class FavoriteGroup {
 
     // Group 이름
     @Column(name = "name", nullable = false)
+    @Setter
     private String name;
 
     @Column(name = "is_deleted", nullable = false)
@@ -38,5 +37,10 @@ public class FavoriteGroup {
     private LocalDateTime createdAt;
 
     @Column(name = "updated_at")
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
+
+    public void setIsDeleted() {
+        this.isDeleted = true;
+    }
 }

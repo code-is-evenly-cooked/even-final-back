@@ -2,15 +2,13 @@ package com.even.zaro.entity;
 
 
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
 @Entity
 @AllArgsConstructor
 @NoArgsConstructor
@@ -36,12 +34,22 @@ public class Favorite {
     private Place place;
 
     @Column(name = "memo")
+    @Setter
     private String memo;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
+    @Column(name = "updated_at", nullable = false)
+    @UpdateTimestamp
+    private LocalDateTime updatedAt;
+
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
+
+
+    public void setDeleteTrue() {
+        isDeleted = true;
+    }
 }

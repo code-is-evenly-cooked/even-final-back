@@ -198,7 +198,7 @@ public class AuthService {
     }
 
 
-    // 비밀번호 재설정 메일 전송
+    // 비밀번호 재설정 토큰 생성 및 메일 전송
     @Transactional
     public void sendPasswordResetEmail(String email) {
         User user = userRepository.findByEmail(email)
@@ -213,5 +213,29 @@ public class AuthService {
         passwordResetRepository.save(new PasswordResetToken(email, token, expiredAt, false));
 
         emailService.sendPasswordResetEmail(email, token);
+    }
+
+    // 메일 토큰 검증 및 비밀번호 재설정
+    @Transactional
+    public void resetPassword(String token, String newPassword) {
+        PasswordResetToken resetToken = passwordResetRepository.findByToken(token)
+                .orElseThrow(() -> new UserException(ErrorCode.RESET_TOKEN_NOT_FOUND));
+
+        if (resetToken.isUsed()) {
+            throw new UserException(ErrorCode.RESET_TOKEN_ALREADY_USED);
+        }
+
+        if (resetToken.isExpired()) {
+            throw new UserException(ErrorCode.RESET_TOKEN_EXPIRED);
+        }
+
+        User user = userRepository.findByEmail(resetToken.getEmail())
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        user.changePassword(passwordEncoder.encode(newPassword));
+        userRepository.save(user);
+
+        resetToken.markUsed();
+        passwordResetRepository.save(resetToken);
     }
 }

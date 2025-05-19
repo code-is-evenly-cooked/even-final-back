@@ -197,7 +197,6 @@ public class AuthService {
         sendEmailVerification(user);
     }
 
-
     // 비밀번호 재설정 토큰 생성 및 메일 전송
     @Transactional
     public PasswordResetEmailResponseDto sendPasswordResetEmail(PasswordResetEmailRequestDto requestDto) {
@@ -219,10 +218,12 @@ public class AuthService {
         return new PasswordResetEmailResponseDto(email);
     }
 
-
     // 메일 토큰 검증 및 비밀번호 재설정
     @Transactional
-    public void resetPassword(String token, String newPassword) {
+    public void resetPassword(PasswordResetRequestDto requestDto) {
+        String token = requestDto.getToken();
+        String newPassword = requestDto.getNewPassword();
+
         PasswordResetToken resetToken = passwordResetRepository.findByToken(token)
                 .orElseThrow(() -> new UserException(ErrorCode.RESET_TOKEN_NOT_FOUND));
 

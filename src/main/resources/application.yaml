@@ -85,7 +85,8 @@ server:
 
 # 이메일 인증
 email:
-  verification-url: ${EMAIL_VERIFICATION_URL}
+  verification:
+    url: ${EMAIL_VERIFICATION_URL}
 frontend:
   url: ${FRONTEND_URL}
 

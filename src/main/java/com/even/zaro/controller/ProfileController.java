@@ -49,7 +49,8 @@ public class ProfileController {
     public ResponseEntity<?> getUserPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
             @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<UserPostDto> posts = profileService.getUserPosts(userId, pageRequest);
@@ -64,7 +65,8 @@ public class ProfileController {
     public ResponseEntity<?> getUserLikedPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
             @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userId, pageRequest);
@@ -79,7 +81,8 @@ public class ProfileController {
     public ResponseEntity<?> getUserComments(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
             @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size) {
+            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
         PageRequest pageRequest = PageRequest.of(page, size);
         Page<UserCommentDto> comments = profileService.getUserComments(userId, pageRequest);
@@ -116,7 +119,8 @@ public class ProfileController {
     @Operation(summary = "팔로잉 목록 조회", description = "특정 유저가 팔로우한 사용자 목록을 조회합니다.")
     @GetMapping("/{userId}/followings")
     public ResponseEntity<?> getUserFollowings(
-            @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId) {
+            @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         List<FollowerFollowingListDto> followings = profileService.getUserFollowings(userId);
         return ResponseEntity.ok(ApiResponse.success("유저의 팔로잉 목록 조회 성공 !", followings));
     }
@@ -125,7 +129,8 @@ public class ProfileController {
     @Operation(summary = "팔로워 목록 조회", description = "특정 유저를 팔로우하는 사용자 목록을 조회합니다.")
     @GetMapping("/{userId}/followers")
     public ResponseEntity<?> getUserFollowers(
-            @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId) {
+            @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userId);
         return ResponseEntity.ok(ApiResponse.success("유저의 팔로워 목록 조회 성공 !", followers));
     }

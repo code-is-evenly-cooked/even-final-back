@@ -169,6 +169,22 @@ public class GroupAPITest {
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.GROUP_ALREADY_DELETE);
     }
 
+    @Test
+    void 이미_존재하는_그룹_이름_추가_시도_GROUP_ALREADY_EXIST() {
+        // Given
+        User user = createUser();
+            // 그룹 생성
+        GroupCreateRequest request = GroupCreateRequest.builder().name("의정부 맛집은 여기라던데~?").build();
+        groupService.createGroup(request, user.getId());
+
+        // When & Then : 이미 추가한 그룹이름으로 한번 더 추가
+        GroupException exception = Assertions.assertThrows(GroupException.class, () -> {
+            groupService.createGroup(request, user.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.GROUP_ALREADY_EXIST);
+    }
+
 
 
     // 임시 유저 생성 메서드

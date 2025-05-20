@@ -6,8 +6,6 @@ import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.jwt.JwtUtil;
-import com.even.zaro.repository.EmailTokenRepository;
-import com.even.zaro.repository.PasswordResetRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -18,7 +16,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.UUID;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -34,11 +31,8 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
-    private final EmailService emailService;
-    private final EmailTokenRepository emailTokenRepository;
-    private final PasswordResetRepository passwordResetRepository;
+    private final EmailVerificationService emailVerificationService;
     private final RedisTemplate<String, String> redisTemplate;
-
 
     // 메서드
     // 회원가입
@@ -85,7 +79,7 @@ public class AuthService {
         );
 
         // 이메일 인증 메일 발송
-        sendEmailVerification(user);
+        emailVerificationService.sendEmailVerification(user);
 
         return new SignUpResponseDto(user.getId(), user.getEmail(), user.getNickname());
     }
@@ -126,7 +120,7 @@ public class AuthService {
         );
     }
 
-    // 로그인 연장
+    // 로그인 연장 refresh
     @Transactional
     public RefreshResponseDto refreshAccessToken(String refreshToken) {
         String token = jwtUtil.extractBearerPrefix(refreshToken);
@@ -149,99 +143,5 @@ public class AuthService {
         String newAccessToken = jwtUtil.generateAccessToken(new JwtUserInfoDto(user.getId()));
 
         return new RefreshResponseDto(newAccessToken);
-    }
-
-    // 회원가입 인증 메일 토큰 발급
-    @Transactional
-    public void sendEmailVerification(User user) {
-        emailTokenRepository.deleteByUser(user);
-        emailTokenRepository.flush();
-
-        String token = UUID.randomUUID().toString();
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
-        emailTokenRepository.save(new EmailToken(token, user, expiredAt));
-
-        emailService.sendVerificationEmail(user, token);
-    }
-
-    // 회원가입 인증 메일 토큰 검증 및 status 변경
-    @Transactional
-    public void verifyEmailToken(String token) {
-        EmailToken emailToken = emailTokenRepository.findByToken(token)
-                .orElseThrow(() -> new UserException(ErrorCode.EMAIL_TOKEN_NOT_FOUND));
-
-        if (emailToken.isVerified()) {
-            throw new UserException(ErrorCode.EMAIL_TOKEN_ALREADY_VERIFIED);
-        }
-
-        if (emailToken.isExpired()) {
-            throw new UserException(ErrorCode.EMAIL_TOKEN_EXPIRED);
-        }
-
-        emailToken.verify();
-        emailTokenRepository.save(emailToken);
-        emailToken.getUser().changeStatusToActive();
-        userRepository.save(emailToken.getUser());
-    }
-
-    // 회원가입 인증 메일 재전송
-    @Transactional
-    public void resendVerificationEmail(String email) {
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(ErrorCode.EMAIL_NOT_FOUND));
-
-        if (user.getStatus() == Status.ACTIVE) {
-            throw new UserException(ErrorCode.EMAIL_TOKEN_ALREADY_VERIFIED);
-        }
-
-        sendEmailVerification(user);
-    }
-
-    // 비밀번호 재설정 토큰 생성 및 메일 전송
-    @Transactional
-    public PasswordResetEmailResponseDto sendPasswordResetEmail(PasswordResetEmailRequestDto requestDto) {
-        String email = requestDto.getEmail();
-
-        User user = userRepository.findByEmail(email)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        passwordResetRepository.deleteByEmail(email);
-        passwordResetRepository.flush();
-
-        String token = UUID.randomUUID().toString();
-        LocalDateTime expiredAt = LocalDateTime.now().plusMinutes(30);
-
-        passwordResetRepository.save(new PasswordResetToken(email, token, expiredAt, false));
-
-        emailService.sendPasswordResetEmail(email, token);
-
-        return new PasswordResetEmailResponseDto(email);
-    }
-
-    // 메일 토큰 검증 및 비밀번호 재설정
-    @Transactional
-    public void resetPassword(PasswordResetRequestDto requestDto) {
-        String token = requestDto.getToken();
-        String newPassword = requestDto.getNewPassword();
-
-        PasswordResetToken resetToken = passwordResetRepository.findByToken(token)
-                .orElseThrow(() -> new UserException(ErrorCode.RESET_TOKEN_NOT_FOUND));
-
-        if (resetToken.isUsed()) {
-            throw new UserException(ErrorCode.RESET_TOKEN_ALREADY_USED);
-        }
-
-        if (resetToken.isExpired()) {
-            throw new UserException(ErrorCode.RESET_TOKEN_EXPIRED);
-        }
-
-        User user = userRepository.findByEmail(resetToken.getEmail())
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        user.changePassword(passwordEncoder.encode(newPassword));
-        userRepository.save(user);
-
-        resetToken.markUsed();
-        passwordResetRepository.save(resetToken);
     }
 }

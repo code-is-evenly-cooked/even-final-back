@@ -65,6 +65,8 @@ public enum ErrorCode {
     NEED_LOGIN_POST_UPDATE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 수정이 가능합니다."),
     NEED_LOGIN_POST_DELETE(HttpStatus.UNAUTHORIZED, "로그인을 해야 게시글 삭제가 가능합니다."),
     NEED_LOGIN_POST(HttpStatus.UNAUTHORIZED, "로그인을 해야 조회가 가능합니다."),
+    ALREADY_LIKED(HttpStatus.BAD_REQUEST, "이미 좋아요를 누른 게시글입니다."),
+    LIKE_NOT_POST(HttpStatus.NOT_FOUND, "좋아요 정보가 존재하지 않습니다."),
 
     // 댓글 Comments
     COMMENT_NO_ASSOCIATED_POST(HttpStatus.INTERNAL_SERVER_ERROR, "댓글에 연결된 게시글이 존재하지 않습니다."),

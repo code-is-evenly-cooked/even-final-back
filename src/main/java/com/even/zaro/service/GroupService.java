@@ -54,6 +54,11 @@ public class GroupService {
         // userId 값이 일치하는 데이터 조회
         List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
 
+        if (groupList.isEmpty()) {
+            throw new GroupException(ErrorCode.GROUP_NOT_FOUND);
+        }
+
+
         // GroupResponse 리스트로 변환
         List<GroupResponse> responseList = groupList.stream().map(group ->
                         GroupResponse.builder()

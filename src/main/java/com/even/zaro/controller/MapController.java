@@ -1,5 +1,6 @@
 package com.even.zaro.controller;
 
+import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.map.MarkerInfoResponse;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.MapService;
@@ -28,7 +29,7 @@ public class MapController {
     @GetMapping("/place/{placeId}")
     public ResponseEntity<ApiResponse<MarkerInfoResponse>> getPlaceInfo(
             @PathVariable("placeId") long placeId,
-            @AuthenticationPrincipal UserInfo userInfo) {
+            @AuthenticationPrincipal JwtUserInfoDto userInfo) {
 
         MarkerInfoResponse placeInfo = mapService.getPlaceInfo(placeId);
 

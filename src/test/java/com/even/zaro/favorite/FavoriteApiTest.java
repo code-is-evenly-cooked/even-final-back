@@ -9,6 +9,7 @@ import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.map.MapException;
+import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.UserRepository;
@@ -22,7 +23,9 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static com.even.zaro.entity.QUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
 
@@ -43,6 +46,8 @@ public class FavoriteApiTest {
     private PlaceRepository placeRepository;
     @Autowired
     private FavoriteRepository favoriteRepository;
+    @Autowired
+    private FavoriteGroupRepository favoriteGroupRepository;
 
     @Test
     void 그룹에_즐겨찾기_추가_성공_테스트() {
@@ -220,6 +225,34 @@ public class FavoriteApiTest {
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FAVORITE_NOT_FOUND);
     }
+
+    @Test
+    void 다른_유저의_즐겨찾기_메모_수정_시도_UNAUTHORIZED_FAVORITE_UPDATE() {
+        // Given : user 객체와 그룹 생성
+        User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕");
+
+            // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();
+
+            // 그룹 추가
+        craeteFavoriteGroup(user1.getId(), "서울 맛집");
+
+        List<Long> GroupIdList = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
+
+            // 그룹에 즐겨찾기 추가
+        addFavoriteGroup(placeIdList.getFirst(), GroupIdList.getFirst(), "이자카야 맛집", user1.getId());
+
+        // When & Then : 다른 유저의 즐겨찾기 메모 수정 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            editFavoriteGroup(placeIdList.getFirst(), "다른 유저의 즐겨찾기 메모 수정 시도", user2.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED_FAVORITE_UPDATE);
+    }
+
 
 
     // 임시 유저 생성 메서드

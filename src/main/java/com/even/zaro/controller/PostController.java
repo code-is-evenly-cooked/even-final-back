@@ -5,6 +5,7 @@ import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.CustomException;
 import com.even.zaro.jwt.JwtUtil;
+import com.even.zaro.service.PostLikeService;
 import com.even.zaro.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
@@ -18,6 +19,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.context.request.RequestAttributes;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = "게시판", description = "게시판 API")
@@ -28,6 +30,7 @@ public class PostController {
 
     private final PostService postService;
     private final JwtUtil jwtUtil;
+    private final PostLikeService postLikeService;
 
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
     @PostMapping
@@ -111,5 +114,33 @@ public class PostController {
         }
         return Long.valueOf(jwtUtil.getUserIdFromToken(token));
     }
+
+    @Operation(summary = "게시글 좋아요", description = "게시글에 좋아요를 누릅니다.")
+    @PostMapping("/{postId}/like")
+    public ResponseEntity<ApiResponse<Void>> likePost(
+            @PathVariable Long postId,
+            HttpServletRequest request) {
+        Long userId = getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
+        postLikeService.likePost(postId, userId);
+        return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요를 성공했습니다."));
+    }
+
+    @Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요를 취소합니다.")
+    @DeleteMapping("/{postId}/like")
+    public ResponseEntity<ApiResponse<Void>> unlikePost(@PathVariable Long postId, HttpServletRequest request) {
+        Long userId = getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
+        postLikeService.unlikePost(postId, userId);
+        return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 취소를 성공했습니다."));
+    }
+
+    @Operation(summary = "게시글 좋아요 단일 조회", description = "현재 사용자가 해당 게시글에 좋아요를 눌렀는지 확인합니다.")
+    @GetMapping("/{postId}/like")
+    public ResponseEntity<ApiResponse<Boolean>> checkLiked(@PathVariable Long postId, HttpServletRequest request) {
+        Long userId = getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
+        boolean liked = postLikeService.hasLiked(userId, postId);
+        return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 여부 조회가 성공했습니다.", liked));
+    }
+
+
 
 }

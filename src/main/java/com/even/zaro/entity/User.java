@@ -18,7 +18,10 @@ import java.time.LocalDateTime;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-@Table(name = "`user`")
+@Table(
+    name = "`user`",
+    uniqueConstraints = @UniqueConstraint(columnNames = {"provider", "provider_id"})
+)
 public class User {
 
     @Id
@@ -77,6 +80,9 @@ public class User {
     @Enumerated(EnumType.STRING)
     @Column(name = "provider", nullable = false)
     private Provider provider;
+
+    @Column(name = "provider_id")
+    private String providerId;
 
     public void updateLastLoginAt(LocalDateTime time) {
         this.lastLoginAt = time;

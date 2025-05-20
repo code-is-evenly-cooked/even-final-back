@@ -6,6 +6,8 @@ import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.service.AuthService;
+import com.even.zaro.service.EmailVerificationService;
+import com.even.zaro.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -28,6 +30,8 @@ import java.io.IOException;
 public class AuthController {
 
     private final AuthService authService;
+    private final EmailVerificationService emailVerificationService;
+    private final PasswordResetService passwordResetService;
 
     @Value("${FRONTEND_URL}")
     private String frontendUrl;
@@ -60,7 +64,7 @@ public class AuthController {
     @GetMapping("/email/verify")
     public void verifyEmail(@RequestParam String token, HttpServletResponse response) throws IOException {
         try {
-            authService.verifyEmailToken(token);
+            emailVerificationService.verifyEmailToken(token);
         } catch (UserException e) {
             if (e.getErrorCode() == ErrorCode.EMAIL_TOKEN_EXPIRED) {
                 response.sendRedirect(frontendUrl + "/login?status=expired");
@@ -76,7 +80,7 @@ public class AuthController {
     @Operation(summary = "이메일 인증 메일 전송", description = "회원가입 시 입력한 이메일로 인증 메일을 보냅니다.")
     @PostMapping("/email/resend")
     public ResponseEntity<ApiResponse<Void>> resendEmail(@RequestBody ResendEmailRequestDto requestDto) {
-        authService.resendVerificationEmail(requestDto.getEmail());
+        emailVerificationService.resendVerificationEmail(requestDto.getEmail());
         return ResponseEntity.ok(ApiResponse.success("이메일 인증 메일이 재전송되었습니다."));
     }
 
@@ -87,7 +91,7 @@ public class AuthController {
     @PostMapping("/email/password")
     public ResponseEntity<ApiResponse<PasswordResetEmailResponseDto>> sendResetEmail(
             @RequestBody PasswordResetEmailRequestDto requestDto) {
-        PasswordResetEmailResponseDto response = authService.sendPasswordResetEmail(requestDto);
+        PasswordResetEmailResponseDto response = passwordResetService.sendPasswordResetEmail(requestDto);
         return ResponseEntity.ok(ApiResponse.success("비밀번호 재설정 메일이 전송되었습니다.", response));
     }
 
@@ -99,7 +103,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<Void>> resetPassword(
             @RequestBody PasswordResetRequestDto requestDto
     ) {
-        authService.resetPassword(requestDto);
+        passwordResetService.resetPassword(requestDto);
         return ResponseEntity.ok(ApiResponse.success("비밀번호 재설정이 완료되었습니다."));
     }
 }

@@ -13,7 +13,9 @@ import java.time.LocalDateTime;
 @AllArgsConstructor
 @NoArgsConstructor
 @Builder
-@Table(name = "favorite")
+@Table(name = "favorite", uniqueConstraints = {
+        @UniqueConstraint(columnNames = {"user_id", "place_id"})
+})
 public class Favorite {
 
     @Id

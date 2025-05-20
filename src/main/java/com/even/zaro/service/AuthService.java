@@ -108,8 +108,9 @@ public class AuthService {
         String profileImage = kakaoUser.getKakaoAccount().getProfile().getProfileImageUrl();
         String gender = kakaoUser.getKakaoAccount().getGender();
 
-        // 이메일 없는 경우 더미로 추가
+        // 이메일, 프로필 사진이 없는 경우 더미로 추가
         String safeEmail = (email != null) ? email : "kakao_" + kakaoId + "@kakao-user.com";
+        String safeProfileImage = (profileImage != null) ? profileImage : "https://your-cdn.com/default.png";
 
         User user = userRepository.findByProviderAndProviderId(Provider.KAKAO, kakaoId.toString())
                 .orElseGet(() -> userRepository.save(User.builder()
@@ -117,7 +118,7 @@ public class AuthService {
                                 .providerId(kakaoId.toString())
                                 .email(safeEmail)
                                 .nickname(nickname)
-                                .profileImage(profileImage)
+                                .profileImage(safeProfileImage)
                                 .gender(gender)
                                 .status(Status.ACTIVE)
                                 .build()));

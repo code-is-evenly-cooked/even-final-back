@@ -51,9 +51,11 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", responseDto));
     }
 
+    @Operation(summary = "카카오 로그인", description = "카카오 access token을 받아 로그인 처리합니다.")
     @PostMapping("/signin/kakao")
-    public ResponseEntity<ApiResponse<SignInResponseDto>> signInWithKakao(@RequestBody KakaoSignInRequestDto requestDto) {
-        SignInResponseDto responseDto = authService.SignInWithKakao(requestDto.getKakaoToken());
+    public ResponseEntity<ApiResponse<SignInResponseDto>> signInWithKakao(
+            @RequestBody @Parameter(description = "카카오 access token") KakaoSignInRequestDto requestDto) {
+        SignInResponseDto responseDto = authService.SignInWithKakao(requestDto.getAccessToken());
         return ResponseEntity.ok(ApiResponse.success("카카오 로그인에 성공했습니다.", responseDto));
     }
 

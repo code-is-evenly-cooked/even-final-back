@@ -1,7 +1,6 @@
 package com.even.zaro.listener;
 
 import com.even.zaro.entity.Notification;
-import com.even.zaro.entity.Post;
 import com.even.zaro.entity.User;
 import com.even.zaro.entity.PostLike;
 import com.even.zaro.repository.NotificationRepository;
@@ -10,8 +9,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
-
-import static com.even.zaro.entity.QPostLike.postLike;
 
 @Component
 @RequiredArgsConstructor

@@ -146,6 +146,29 @@ public class GroupAPITest {
         assertThat(groupException.getErrorCode()).isEqualTo(ErrorCode.GROUP_NOT_FOUND);
     }
 
+    @Test
+    void 이미_삭제한_그룹_삭제시도_GROUP_ALREADY_DELETE() {
+        // Given
+        User user = createUser();
+            // 그룹 생성
+        GroupCreateRequest request = GroupCreateRequest.builder().name("의정부 맛집은 여기라던데~?").build();
+        groupService.createGroup(request, user.getId());
+            // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
+        long firstGroupId = favoriteGroups.getFirst().getId();
+
+            // 삭제 요청
+        groupService.deleteGroup(firstGroupId, user.getId());
+
+        // When & Then
+            // 이미 삭제된 그룹에 대해서 다시 한번 삭제 요청
+        GroupException exception = Assertions.assertThrows(GroupException.class, () -> {
+            groupService.deleteGroup(firstGroupId, user.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.GROUP_ALREADY_DELETE);
+    }
+
 
 
     // 임시 유저 생성 메서드

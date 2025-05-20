@@ -46,9 +46,15 @@ public class AuthController {
 
     @Operation(summary = "로그인", description = "이메일과 비밀번호로 로그인합니다.")
     @PostMapping("/signin")
-    public ResponseEntity<ApiResponse<SignInResponseDto>> signin(@RequestBody SignInRequestDto requestDto) {
+    public ResponseEntity<ApiResponse<SignInResponseDto>> signIn(@RequestBody SignInRequestDto requestDto) {
         SignInResponseDto responseDto = authService.signIn(requestDto);
         return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", responseDto));
+    }
+
+    @PostMapping("/signin/kakao")
+    public ResponseEntity<ApiResponse<SignInResponseDto>> signInWithKakao(@RequestBody KakaoSignInRequestDto requestDto) {
+        SignInResponseDto responseDto = authService.SignInWithKakao(requestDto.getKakaoToken());
+        return ResponseEntity.ok(ApiResponse.success("카카오 로그인에 성공했습니다.", responseDto));
     }
 
     @Operation(summary = "Access Token 재발급", description = "Refresh 토큰을 입력해 Access Token을 재발급 받습니다. 상단 Authorize에 Refresh Token을 입력하세요.",

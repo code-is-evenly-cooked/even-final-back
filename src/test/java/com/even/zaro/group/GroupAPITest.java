@@ -1,7 +1,7 @@
 package com.even.zaro.group;
 
-import com.even.zaro.controller.GroupController;
 import com.even.zaro.dto.group.GroupCreateRequest;
+import com.even.zaro.dto.group.GroupEditRequest;
 import com.even.zaro.dto.group.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.Provider;
@@ -12,7 +12,6 @@ import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.service.GroupService;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -21,7 +20,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -111,6 +109,28 @@ public class GroupAPITest {
         assertThat(group.isDeleted()).isTrue();
     }
 
+
+    @Test
+    void 사용자의_그룹수정_성공_테스트() {
+        // Given
+        User user = createUser();
+        groupService.createGroup(GroupCreateRequest.builder().name("원래 이름").build(), user.getId());
+
+        long groupId = groupService.getFavoriteGroups(user.getId()).getFirst().getId();
+
+        // When
+        GroupEditRequest editRequest = GroupEditRequest.builder().name("수정된 이름").build();
+        groupService.editGroup(groupId, editRequest, user.getId());
+
+        // Then
+        GroupResponse updatedGroup = groupService.getFavoriteGroups(user.getId())
+                .stream()
+                .filter(gr -> gr.getId() == groupId)
+                .findFirst()
+                .orElseThrow();
+
+        assertThat(updatedGroup.getName()).isEqualTo("수정된 이름");
+    }
 
 
     // 임시 유저 생성 메서드

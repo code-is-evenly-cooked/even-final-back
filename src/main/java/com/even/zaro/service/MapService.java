@@ -34,29 +34,24 @@ public class MapService {
         // 해당 지역에 메모를 남긴 사용자들 리스트를 가져와야 함.
         List<Favorite> allByPlace = favoriteRepository.findAllByPlace(selectPlace);
 
-        // 사용자들의 id 리스트를 저장
-        List<Long> userIds = allByPlace.stream()
-                .map(fav -> fav.getUser().getId())
+//        // 사용자들의 id 리스트를 저장
+//        List<Long> userIds = allByPlace.stream()
+//                .map(fav -> fav.getUser().getId())
+//                .toList();
+//
+//        List<String> userMemos = allByPlace.stream()
+//                .map(Favorite::getMemo)
+//                .toList();
+
+        // 유저 요약 정보 순회하며 리스트에 저장
+        List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponses = allByPlace.stream()
+                .map(fav -> MarkerInfoResponse.UserSimpleResponse.builder()
+                        .userId(fav.getUser().getId())
+                        .profileImage(fav.getUser().getProfileImage())
+                        .nickname(fav.getUser().getNickname())
+                        .memo(fav.getMemo())
+                        .build())
                 .toList();
-
-        List<String> userMemos = allByPlace.stream()
-                .map(Favorite::getMemo)
-                .toList();
-
-        // User 리스트 조회
-        List<User> userList = userRepository.findAllById(userIds);
-
-        List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponses =
-                IntStream.range(0, userList.size())
-                        .mapToObj(i -> MarkerInfoResponse.UserSimpleResponse.builder()
-                                .userId(userList.get(i).getId())
-                                .profileImage(userList.get(i).getProfileImage())
-                                .nickname(userList.get(i).getNickname())
-                                .memo(userMemos.get(i))
-                                .build())
-                        .toList();
-
-        log.info("userSimpleResponses {}", userSimpleResponses);
 
         // 생성자를 이용해 응답하도록 수정
         MarkerInfoResponse markerInfo = new MarkerInfoResponse(

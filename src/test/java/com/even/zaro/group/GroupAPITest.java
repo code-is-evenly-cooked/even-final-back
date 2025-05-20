@@ -7,6 +7,8 @@ import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.Provider;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.service.GroupService;
@@ -18,6 +20,8 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -38,7 +42,7 @@ public class GroupAPITest {
     FavoriteGroupRepository favoriteGroupRepository;
 
     @Test
-    void 해당_사용자의_그룹리스트_조회_성공테스트() {
+    void 해당_사용자의_그룹리스트_조회_성공_테스트() {
 
         // Given : 유저 객체 생성
         User user = createUser();
@@ -60,7 +64,7 @@ public class GroupAPITest {
     }
 
     @Test
-    void 사용자의_그룹추가_성공테스트() {
+    void 사용자의_그룹추가_성공_테스트() {
 
         // Given : User 객체와 request 생성
         User user = createUser();
@@ -75,6 +79,36 @@ public class GroupAPITest {
 
         assertThat(favoriteGroups.size()).isEqualTo(1); // 개수 검증
         assertThat(favoriteGroups.stream().map(GroupResponse::getName)).containsExactlyInAnyOrder("의정부 맛집은 여기라던데~?"); // 그룹 이름 일치 여부
+    }
+
+    @Test
+    void 사용자의_그룹삭제_성공_테스트() {
+        // Given : 유저 객체 생성, 그룹 3개 생성
+        User user = createUser();
+
+        // 여러개의 그룹 생성 요청 생성
+        GroupCreateRequest request1 = GroupCreateRequest.builder().name("groupName1").build();
+        GroupCreateRequest request2 = GroupCreateRequest.builder().name("groupName2").build();
+        GroupCreateRequest request3 = GroupCreateRequest.builder().name("groupName3").build();
+
+        groupService.createGroup(request1, user.getId());
+        groupService.createGroup(request2, user.getId());
+        groupService.createGroup(request3, user.getId());
+
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId()); // 그룹 리스트 조회
+        List<Long> favoriteGroupIds = favoriteGroups.stream().map(GroupResponse::getId).toList(); // 그룹 id 리스트
+        long delete_id = favoriteGroupIds.getLast(); // 마지막 그룹의 id : groupName3
+
+        // When : 마지막 그룹 삭제 요청
+        groupService.deleteGroup(delete_id, user.getId());
+
+        // Then : 해당 그룹의 is_deleted가 true로 변경되었는지 검증
+
+        // 해당 그룹의 is_deleted 상태가 1인지 확인해야함.
+        FavoriteGroup group = favoriteGroupRepository.findById(delete_id)
+                .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
+
+        assertThat(group.isDeleted()).isTrue();
     }
 
 

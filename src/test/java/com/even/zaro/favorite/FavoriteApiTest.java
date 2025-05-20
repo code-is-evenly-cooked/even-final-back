@@ -220,7 +220,7 @@ public class FavoriteApiTest {
 
         // WHen & Then : 즐겨찾기를 추가하지 않은 상태에서 삭제 시도
         FavoriteException exception = assertThrows(FavoriteException.class, () -> {
-            editFavoriteGroup(0, "존재하지 않는 메모를 숮어해볼까요", user.getId());
+            editFavoriteGroup(0, "존재하지 않는 메모를 수정해볼까요", user.getId());
         });
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FAVORITE_NOT_FOUND);

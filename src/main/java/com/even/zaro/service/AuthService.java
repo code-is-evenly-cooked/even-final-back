@@ -100,7 +100,7 @@ public class AuthService {
 
     // 소셜 로그인 (카카오)
     @Transactional
-    public SignInResponseDto loginWithKakao(String kakaoAccessToken) {
+    public SignInResponseDto SignInWithKakao(String kakaoAccessToken) {
         KakaoUserInfoDto kakaoUser = kakaoOAuthService.getUserInfo(kakaoAccessToken);
         Long kakaoId = kakaoUser.getId();
         String email = kakaoUser.getKakaoAccount().getEmail();

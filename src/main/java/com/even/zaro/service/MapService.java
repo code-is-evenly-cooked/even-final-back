@@ -34,15 +34,6 @@ public class MapService {
         // 해당 지역에 메모를 남긴 사용자들 리스트를 가져와야 함.
         List<Favorite> allByPlace = favoriteRepository.findAllByPlace(selectPlace);
 
-//        // 사용자들의 id 리스트를 저장
-//        List<Long> userIds = allByPlace.stream()
-//                .map(fav -> fav.getUser().getId())
-//                .toList();
-//
-//        List<String> userMemos = allByPlace.stream()
-//                .map(Favorite::getMemo)
-//                .toList();
-
         // 유저 요약 정보 순회하며 리스트에 저장
         List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponses = allByPlace.stream()
                 .map(fav -> MarkerInfoResponse.UserSimpleResponse.builder()

@@ -34,22 +34,17 @@ class TokenCleanupSchedulerTest {
     @Autowired
     UserRepository userRepository;
 
-    private User user;
-
-    @BeforeEach
-    void setupUser() {
-        user = userRepository.save(User.builder()
+    @Test
+    void deleteExpiredEmailToken_givenExpiredToken_shouldDeleteIt() {
+        //given
+        User user = userRepository.save(User.builder()
                 .email("test@example.com")
                 .password("Password1234!")
                 .nickname("테스트유저")
                 .provider(Provider.LOCAL)
                 .status(Status.PENDING)
                 .build());
-    }
 
-    @Test
-    void deleteExpiredEmailToken_givenExpiredToken_shouldDeleteIt() {
-        //given
         LocalDateTime expiredAt = LocalDateTime.now().minusDays(2);
         EmailToken token = new EmailToken("token-1", user, expiredAt);
         emailTokenRepository.save(token);

@@ -214,6 +214,33 @@ public class GroupAPITest {
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED_GROUP_DELETE);
     }
 
+    @Test
+    void 다른_사용자의_그룹_수정_시도_UNAUTHORIZED_GROUP_UPDATE() {
+
+        // When
+        User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
+
+        User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕2");
+
+
+        // 그룹 생성
+        GroupCreateRequest request = GroupCreateRequest.builder().name("user1의 그룹").build();
+        groupService.createGroup(request, user1.getId());
+
+        // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user1.getId());
+        long firstGroupId = favoriteGroups.getFirst().getId();
+
+        // Given & Then
+        // user2가 user1의 그룹 수정 시도
+        GroupException exception = assertThrows(GroupException.class, () -> {
+            GroupEditRequest editRequest = GroupEditRequest.builder().name("user2가 user1의 그룹이름 수정 시도").build();
+            groupService.editGroup(firstGroupId, editRequest, user2.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED_GROUP_UPDATE);
+    }
+
 
 
     // 임시 유저 생성 메서드

@@ -42,4 +42,12 @@ public class Notification {
         COMMENT,
         FOLLOW
     }
+
+    public boolean isRead() {
+        return isRead;
+    }
+
+    public void setRead(boolean read) {
+        this.isRead = read;
+    }
 }

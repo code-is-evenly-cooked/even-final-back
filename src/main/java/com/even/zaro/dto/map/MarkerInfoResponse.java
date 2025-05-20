@@ -1,5 +1,6 @@
 package com.even.zaro.dto.map;
 
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 import lombok.Setter;
@@ -7,8 +8,8 @@ import lombok.Setter;
 import java.util.List;
 
 @Builder
-@Setter
 @Getter
+@AllArgsConstructor
 public class MarkerInfoResponse {
 
     long placeId;
@@ -25,7 +26,6 @@ public class MarkerInfoResponse {
     List<UserSimpleResponse> usersInfo;
 
     @Builder
-    @Setter
     @Getter
     public static class UserSimpleResponse {
         long userId;

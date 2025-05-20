@@ -58,15 +58,17 @@ public class MapService {
 
         log.info("userSimpleResponses {}", userSimpleResponses);
 
-        MarkerInfoResponse markerInfo = MarkerInfoResponse.builder()
-                .placeId(selectPlace.getId())
-                .placeName(selectPlace.getName())
-                .address(selectPlace.getAddress())
-                .lat(selectPlace.getLat())
-                .lng(selectPlace.getLng())
-                .favoriteCount(selectPlace.getFavoriteCount())
-                .usersInfo(userSimpleResponses)
-                .build();
+        // 생성자를 이용해 응답하도록 수정
+        MarkerInfoResponse markerInfo = new MarkerInfoResponse(
+                selectPlace.getId(),
+                selectPlace.getName(),
+                selectPlace.getAddress(),
+                selectPlace.getLat(),
+                selectPlace.getLng(),
+                selectPlace.getFavoriteCount(),
+                userSimpleResponses
+        );
+
 
         return markerInfo;
     }

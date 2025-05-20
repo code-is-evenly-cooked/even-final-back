@@ -153,8 +153,7 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // 그룹 생성
-        GroupCreateRequest request = GroupCreateRequest.builder().name("의정부 맛집은 여기라던데~?").build();
-        groupService.createGroup(request, user.getId());
+        craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -178,12 +177,11 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // 그룹 생성
-        GroupCreateRequest request = GroupCreateRequest.builder().name("의정부 맛집은 여기라던데~?").build();
-        groupService.createGroup(request, user.getId());
+        craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
 
         // When & Then : 이미 추가한 그룹이름으로 한번 더 추가
         GroupException exception = assertThrows(GroupException.class, () -> {
-            groupService.createGroup(request, user.getId());
+            craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
         });
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.GROUP_ALREADY_EXIST);
@@ -198,10 +196,9 @@ public class GroupAPITest {
 
 
         // 그룹 생성
-        GroupCreateRequest request = GroupCreateRequest.builder().name("user1의 그룹").build();
-        groupService.createGroup(request, user1.getId());
+        craeteFavoriteGroup(user1.getId(), "user1의 그룹");
 
-            // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+        // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user1.getId());
         long firstGroupId = favoriteGroups.getFirst().getId();
 
@@ -219,13 +216,11 @@ public class GroupAPITest {
 
         // When
         User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
-
         User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕2");
 
 
         // 그룹 생성
-        GroupCreateRequest request = GroupCreateRequest.builder().name("user1의 그룹").build();
-        groupService.createGroup(request, user1.getId());
+        craeteFavoriteGroup(user1.getId(), "user1의 그룹");
 
         // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user1.getId());
@@ -254,9 +249,9 @@ public class GroupAPITest {
                 .build());
     }
 
-
-
-
-
-
+    // 그룹 추가 메서드
+    void craeteFavoriteGroup(long userId, String groupName) {
+        GroupCreateRequest request = GroupCreateRequest.builder().name(groupName).build();
+        groupService.createGroup(request, userId);
+    }
 }

@@ -11,7 +11,9 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.service.FavoriteService;
 import com.even.zaro.service.GroupService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -29,6 +31,9 @@ public class GroupAPITest {
 
     @Autowired
     GroupService groupService;
+
+    @Autowired
+    FavoriteService favoriteService;
 
     // repository --------
     @Autowired
@@ -130,6 +135,18 @@ public class GroupAPITest {
         assertThat(updatedGroup.getName()).isEqualTo("수정된 이름");
     }
 
+    @Test
+    void 존재하지_않는_그룹_조회시_GROUP_NOT_FOUND_예외_발생() {
+
+        // When & Then : 아직 그룹을 생성하지 않은 유저에 대해서 그룹 조회 요청
+        GroupException groupException = Assertions.assertThrows(GroupException.class, () -> {
+            favoriteService.getGroupItems(1);
+        });
+
+        assertThat(groupException.getErrorCode()).isEqualTo(ErrorCode.GROUP_NOT_FOUND);
+    }
+
+
 
     // 임시 유저 생성 메서드
     User createUser() {
@@ -141,6 +158,8 @@ public class GroupAPITest {
                 .status(Status.PENDING)
                 .build());
     }
+
+
 
 
 

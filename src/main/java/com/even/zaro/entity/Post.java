@@ -1,6 +1,5 @@
 package com.even.zaro.entity;
 
-import com.even.zaro.listener.PostListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -18,7 +17,6 @@ import java.util.List;
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor
 @Builder
-@EntityListeners(PostListener.class)
 public class Post {
 
     @Id

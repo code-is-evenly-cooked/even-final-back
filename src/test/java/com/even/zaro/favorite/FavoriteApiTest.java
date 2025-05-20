@@ -56,15 +56,15 @@ public class FavoriteApiTest {
             // 예시 장소 1개 추가
         createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
 
-        List<Long> all = placeRepository.findAll().stream()
+        List<Long> placeIdList = placeRepository.findAll().stream()
                 .map(Place::getId).toList();
 
         // When
             // 예시 장소 그룹에 즐겨찾기 추가
-        addFavoriteGroup(all.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
 
         // Then
-        Place place = placeRepository.findById(all.getFirst())
+        Place place = placeRepository.findById(placeIdList.getFirst())
                 .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
 
         assertThat(place.getName()).isEqualTo("이자카야 하나");
@@ -87,20 +87,20 @@ public class FavoriteApiTest {
         createPlace(2, "카페 드롭탑", "서울특별시 종로구 종로 1길 1", 313.21, 533.21);
         createPlace(3, "삼겹살 맛집", "서울특별시 중구 퇴계로 200", 36123.21, 12.21);
 
-        List<Long> all = placeRepository.findAll().stream()
+        List<Long> placeIdList = placeRepository.findAll().stream()
                 .map(Place::getId).toList();
 
         // When
             // 예시 장소 3개 그룹에 즐겨찾기 추가
-        addFavoriteGroup(all.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
-        addFavoriteGroup(all.get(1), firstGroupId, "드롭다운 예예", user.getId());
-        addFavoriteGroup(all.getLast(), firstGroupId, "삼겹살은 여기로", user.getId());
+        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+        addFavoriteGroup(placeIdList.get(1), firstGroupId, "드롭다운 예예", user.getId());
+        addFavoriteGroup(placeIdList.getLast(), firstGroupId, "삼겹살은 여기로", user.getId());
 
         // Then
             // 그룹의 즐겨찾기 리스트 조회
         List<FavoriteResponse> groupItems = favoriteService.getGroupItems(firstGroupId);
 
-        assertThat(all).hasSize(3); // 현재 DB에 저장된 장소의 개수 검증
+        assertThat(placeIdList).hasSize(3); // 현재 DB에 저장된 장소의 개수 검증
         assertThat(groupItems.size()).isEqualTo(3); // 개수 검증
         assertThat(groupItems.stream().map(FavoriteResponse::getMemo) // 그룹의 즐겨찾기 이름 리스트 검증
                 .toList()).containsExactlyInAnyOrder("드롭다운 예예", "삼겹살은 여기로", "친구랑 가고 싶은 감성카페");
@@ -119,17 +119,17 @@ public class FavoriteApiTest {
             // 예시 장소 1개 추가
         createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
 
-        List<Long> all = placeRepository.findAll().stream()
+        List<Long> placeIdList = placeRepository.findAll().stream()
                 .map(Place::getId).toList();
 
             // 예시 장소 그룹에 즐겨찾기 추가
-        addFavoriteGroup(all.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
 
         // When : 즐겨찾기의 메모를 수정
-        editFavoriteGroup(all.getFirst(), "친구랑 절대 가기 싫은 카페", user.getId());
+        editFavoriteGroup(placeIdList.getFirst(), "친구랑 절대 가기 싫은 카페", user.getId());
 
         // Then : 해당 즐겨찾기의 메모가 수정한 메모 텍스트와 일치하는지 확인
-        Favorite favorite = favoriteRepository.findById(all.getFirst())
+        Favorite favorite = favoriteRepository.findById(placeIdList.getFirst())
                 .orElseThrow(() -> new MapException(ErrorCode.FAVORITE_NOT_FOUND));
 
         assertThat(favorite.getMemo()).isEqualTo("친구랑 절대 가기 싫은 카페");
@@ -137,7 +137,31 @@ public class FavoriteApiTest {
 
     @Test
     void 즐겨찾기_삭제_성공_테스트() {
+        // Given : user 객체와 그룹 생성
+        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        craeteFavoriteGroup(user.getId(), "서울 맛집");
 
+            // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
+        long firstGroupId = favoriteGroups.getFirst().getId();
+
+            // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> placeIdList = placeRepository.findAll().stream()
+                .map(Place::getId).toList();
+
+            // 예시 장소 그룹에 즐겨찾기 추가
+        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+
+        // When : 즐겨찾기를 삭제
+        favoriteService.deleteFavorite(placeIdList.getFirst(), user.getId());
+
+        // Then : 해당 즐겨찾기의 메모가 수정한 메모 텍스트와 일치하는지 확인
+        Favorite favorite = favoriteRepository.findById(placeIdList.getFirst())
+                .orElseThrow(() -> new MapException(ErrorCode.FAVORITE_NOT_FOUND));
+
+        assertThat(favorite.isDeleted()).isEqualTo(true);
     }
 
 

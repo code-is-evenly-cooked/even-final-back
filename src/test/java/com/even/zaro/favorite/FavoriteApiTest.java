@@ -108,7 +108,7 @@ public class FavoriteApiTest {
 
     @Test
     void 즐겨찾기_메모_수정_성공_테스트() {
-        // Given
+        // Given : user 객체와 그룹 생성
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
         craeteFavoriteGroup(user.getId(), "서울 맛집");
 
@@ -125,10 +125,10 @@ public class FavoriteApiTest {
             // 예시 장소 그룹에 즐겨찾기 추가
         addFavoriteGroup(all.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
 
-        // When
+        // When : 즐겨찾기의 메모를 수정
         editFavoriteGroup(all.getFirst(), "친구랑 절대 가기 싫은 카페", user.getId());
 
-        // Then
+        // Then : 해당 즐겨찾기의 메모가 수정한 메모 텍스트와 일치하는지 확인
         Favorite favorite = favoriteRepository.findById(all.getFirst())
                 .orElseThrow(() -> new MapException(ErrorCode.FAVORITE_NOT_FOUND));
 

@@ -195,6 +195,20 @@ public class FavoriteApiTest {
     }
 
 
+    @Test
+    void 존재하지_않는_즐겨찾기_삭제_시도_FAVORITE_NOT_FOUND() {
+        // Given : user 객체와 그룹 생성
+        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+
+        // WHen & Then : 즐겨찾기를 추가하지 않은 상태에서 삭제 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            favoriteService.deleteFavorite(0, user.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FAVORITE_NOT_FOUND);
+    }
+
+
     // 임시 유저 생성 메서드
     User createUser(String email, String password, String nickname) {
         return userRepository.save(User.builder()

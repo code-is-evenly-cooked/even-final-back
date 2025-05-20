@@ -7,6 +7,7 @@ import com.even.zaro.dto.group.GroupCreateRequest;
 import com.even.zaro.dto.group.GroupResponse;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
@@ -23,6 +24,7 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -162,6 +164,34 @@ public class FavoriteApiTest {
                 .orElseThrow(() -> new MapException(ErrorCode.FAVORITE_NOT_FOUND));
 
         assertThat(favorite.isDeleted()).isEqualTo(true);
+    }
+
+    @Test
+    void 이미_존재하는_즐겨찾기_추가_시도_예외_FAVORITE_ALREADY_EXISTS() {
+        // Given : user 객체와 그룹 생성
+        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        craeteFavoriteGroup(user.getId(), "서울 맛집");
+
+            // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
+        long firstGroupId = favoriteGroups.getFirst().getId();
+
+            // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> placeIdList = placeRepository.findAll().stream()
+                .map(Place::getId).toList();
+
+            // 예시 장소 그룹에 즐겨찾기 추가
+        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+
+
+        // When & Then : 같은 placeId 추가 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FAVORITE_ALREADY_EXISTS);
     }
 
 

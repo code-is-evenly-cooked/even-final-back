@@ -155,6 +155,7 @@ public class GroupAPITest {
         // 그룹 생성
         GroupCreateRequest request = GroupCreateRequest.builder().name("의정부 맛집은 여기라던데~?").build();
         groupService.createGroup(request, user.getId());
+
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
         long firstGroupId = favoriteGroups.getFirst().getId();
@@ -193,7 +194,6 @@ public class GroupAPITest {
 
         // When
         User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
-
         User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕2");
 
 
@@ -253,6 +253,7 @@ public class GroupAPITest {
                 .status(Status.PENDING)
                 .build());
     }
+
 
 
 

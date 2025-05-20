@@ -21,7 +21,7 @@ public class FollowListener {
     @Transactional
     public void onFollowCreated(Follow follow) {
         User followee = follow.getFollowee(); // 팔로우 당한 사용자 (알림 대상)
-        User follower = follow.getFollower();   // 팔로우 한 사용자
+        User follower = follow.getFollower(); // 팔로우 한 사용자
 
         Notification notification = new Notification();
         notification.setUser(followee);

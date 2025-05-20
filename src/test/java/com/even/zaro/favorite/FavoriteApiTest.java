@@ -253,6 +253,33 @@ public class FavoriteApiTest {
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED_FAVORITE_UPDATE);
     }
 
+    @Test
+    void 다른_유저의_즐겨찾기_삭제_시도_UNAUTHORIZED_FAVORITE_DELETE() {
+        // Given : user 객체와 그룹 생성
+        User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕");
+
+        // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();
+
+        // 그룹 추가
+        craeteFavoriteGroup(user1.getId(), "서울 맛집");
+
+        List<Long> GroupIdList = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
+
+        // 그룹에 즐겨찾기 추가
+        addFavoriteGroup(placeIdList.getFirst(), GroupIdList.getFirst(), "이자카야 맛집", user1.getId());
+
+        // When & Then : 다른 유저의 즐겨찾기 삭제 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            favoriteService.deleteFavorite(placeIdList.getFirst(), user2.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED_FAVORITE_DELETE);
+    }
+
 
 
     // 임시 유저 생성 메서드

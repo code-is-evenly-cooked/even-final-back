@@ -49,12 +49,10 @@ public class GroupAPITest {
         // Given : 유저 객체 생성
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
-        // 즐겨찾기 그룹 예시 데이터
-        FavoriteGroup group1 = FavoriteGroup.builder().user(user).name("맛집 모음").build();
-        FavoriteGroup group2 = FavoriteGroup.builder().user(user).name("데이트 코스").build();
-        FavoriteGroup group3 = FavoriteGroup.builder().user(user).name("가보고 싶은 곳").build();
-
-        favoriteGroupRepository.saveAll(List.of(group1, group2, group3));// 한꺼번에 그룹 리스트 저장
+        // 즐겨찾기 그룹 예시 데이터 추가
+        craeteFavoriteGroup(user.getId(), "맛집 모음");
+        craeteFavoriteGroup(user.getId(), "데이트 코스");
+        craeteFavoriteGroup(user.getId(), "가보고 싶은 곳");
 
         // When : 유저의 그룹 리스트 조회 요청
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -71,10 +69,8 @@ public class GroupAPITest {
         // Given : User 객체와 request 생성
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
-        GroupCreateRequest request = GroupCreateRequest.builder().name("의정부 맛집은 여기라던데~?").build();
-
         // When : 그룹 생성 요청
-        groupService.createGroup(request, user.getId());
+        craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
 
         // Then : 그룹이 정상적으로 추가되었는지 확인
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId()); // 해당 유저의 아이디로 그룹 리스트를 조회
@@ -89,13 +85,9 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // 여러개의 그룹 생성 요청 생성
-        GroupCreateRequest request1 = GroupCreateRequest.builder().name("groupName1").build();
-        GroupCreateRequest request2 = GroupCreateRequest.builder().name("groupName2").build();
-        GroupCreateRequest request3 = GroupCreateRequest.builder().name("groupName3").build();
-
-        groupService.createGroup(request1, user.getId());
-        groupService.createGroup(request2, user.getId());
-        groupService.createGroup(request3, user.getId());
+        craeteFavoriteGroup(user.getId(), "groupName1");
+        craeteFavoriteGroup(user.getId(), "groupName2");
+        craeteFavoriteGroup(user.getId(), "groupName3");
 
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId()); // 그룹 리스트 조회
         List<Long> favoriteGroupIds = favoriteGroups.stream().map(GroupResponse::getId).toList(); // 그룹 id 리스트

@@ -40,13 +40,7 @@ public class GroupAPITest {
     void 해당_사용자의_그룹리스트_조회_성공테스트() {
 
         // Given
-        User user = userRepository.save(User.builder()
-                .email("test@example.com")
-                .password("Password1234!")
-                .nickname("테스트유저")
-                .provider(Provider.LOCAL)
-                .status(Status.PENDING)
-                .build());
+        User user = createUser();
 
         // 즐겨찾기 그룹 예시 데이터
         FavoriteGroup group1 = FavoriteGroup.builder().user(user).name("맛집 모음").build();
@@ -64,6 +58,24 @@ public class GroupAPITest {
                 .toList()).containsExactlyInAnyOrder("맛집 모음", "데이트 코스", "가보고 싶은 곳");
     }
 
+    @Test
+    void 사용자의_그룹추가_성공테스트() {
+
+        //
+    }
+
+
+
+    // 임시 유저 생성 메서드
+    User createUser() {
+        return userRepository.save(User.builder()
+                .email("test@example.com")
+                .password("Password1234!")
+                .nickname("테스트유저")
+                .provider(Provider.LOCAL)
+                .status(Status.PENDING)
+                .build());
+    }
 
 
 

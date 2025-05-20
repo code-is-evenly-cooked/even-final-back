@@ -31,6 +31,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtUtil jwtUtil;
+    private final KakaoOAuthService kakaoOAuthService;
     private final EmailVerificationService emailVerificationService;
     private final RedisTemplate<String, String> redisTemplate;
 
@@ -94,30 +95,34 @@ public class AuthService {
             throw new UserException(ErrorCode.INCORRECT_PASSWORD);
         }
 
-        String[] tokens = jwtUtil.generateToken(new JwtUserInfoDto(user.getId()));
-        String accessToken = tokens[0];
-        String refreshToken = tokens[1];
+        return generateLoginResponse(user);
+    }
 
-        user.updateLastLoginAt(LocalDateTime.now());
-        userRepository.save(user);
+    // 소셜 로그인 (카카오)
+    @Transactional
+    public SignInResponseDto loginWithKakao(String kakaoAccessToken) {
+        KakaoUserInfoDto kakaoUser = kakaoOAuthService.getUserInfo(kakaoAccessToken);
+        Long kakaoId = kakaoUser.getId();
+        String email = kakaoUser.getKakaoAccount().getEmail();
+        String nickname = kakaoUser.getKakaoAccount().getProfile().getNickname();
+        String profileImage = kakaoUser.getKakaoAccount().getProfile().getProfileImageUrl();
+        String gender = kakaoUser.getKakaoAccount().getGender();
 
-        try {
-            redisTemplate.opsForValue()
-                    .set("refresh:" + user.getId(), refreshToken, Duration.ofDays(7));
-        } catch (Exception e) {
-            log.error("Redis 토큰 저장 실패: {}", e.getMessage());
-            // redis 저장 실패시 우선 로그만, 이후 로그인 실패 처리 등 확장 가능
-        }
+        // 이메일 없는 경우 더미로 추가
+        String safeEmail = (email != null) ? email : "kakao_" + kakaoId + "@kakao-user.com";
 
-        return new SignInResponseDto(
-                accessToken,
-                refreshToken,
-                user.getId(),
-                user.getEmail(),
-                user.getNickname(),
-                user.getProfileImage(),
-                user.getProvider()
-        );
+        User user = userRepository.findByProviderAndProviderId(Provider.KAKAO, kakaoId.toString())
+                .orElseGet(() -> userRepository.save(User.builder()
+                                .provider(Provider.KAKAO)
+                                .providerId(kakaoId.toString())
+                                .email(safeEmail)
+                                .nickname(nickname)
+                                .profileImage(profileImage)
+                                .gender(gender)
+                                .status(Status.ACTIVE)
+                                .build()));
+
+        return generateLoginResponse(user);
     }
 
     // 로그인 연장 refresh
@@ -143,5 +148,34 @@ public class AuthService {
         String newAccessToken = jwtUtil.generateAccessToken(new JwtUserInfoDto(user.getId()));
 
         return new RefreshResponseDto(newAccessToken);
+    }
+
+    public SignInResponseDto generateLoginResponse(User user) {
+        // 로그인 토큰 생성
+        String[] tokens = jwtUtil.generateToken(new JwtUserInfoDto(user.getId()));
+        String accessToken = tokens[0];
+        String refreshToken = tokens[1];
+
+        // lastLoginAt
+        user.updateLastLoginAt(LocalDateTime.now());
+        userRepository.save(user);
+
+        try {
+            redisTemplate.opsForValue()
+                    .set("refresh:" + user.getId(), refreshToken, Duration.ofDays(7));
+        } catch (Exception e) {
+            log.error("Redis 토큰 저장 실패: {}", e.getMessage());
+            // redis 저장 실패시 우선 로그만, 이후 로그인 실패 처리 등 확장 가능
+        }
+
+        return new SignInResponseDto(
+                accessToken,
+                refreshToken,
+                user.getId(),
+                user.getEmail(),
+                user.getNickname(),
+                user.getProfileImage(),
+                user.getProvider()
+        );
     }
 }

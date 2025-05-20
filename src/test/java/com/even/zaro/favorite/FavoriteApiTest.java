@@ -8,6 +8,8 @@ import com.even.zaro.entity.Place;
 import com.even.zaro.entity.Provider;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.service.FavoriteService;
@@ -19,6 +21,7 @@ import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
 
@@ -40,6 +43,35 @@ public class FavoriteApiTest {
 
     @Test
     void 그룹에_즐겨찾기_추가_성공_테스트() {
+
+        // Given
+        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        craeteFavoriteGroup(user.getId(), "서울 맛집");
+
+            // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
+        long firstGroupId = favoriteGroups.getFirst().getId();
+
+            // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> all = placeRepository.findAll().stream()
+                .map(Place::getId).toList();
+
+        // When
+            // 예시 장소 그룹에 즐겨찾기 추가
+        addFavoriteGroup(all.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+
+        // Then
+        Place place = placeRepository.findById(all.getFirst())
+                .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
+
+        assertThat(place.getName()).isEqualTo("이자카야 하나");
+        assertThat(place.getAddress()).isEqualTo("서울특별시 중구 을지로 100");
+    }
+
+    @Test
+    void 그룹의_즐겨찾기_리스트_조회_성공_테스트() {
 
         // Given
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
@@ -74,13 +106,31 @@ public class FavoriteApiTest {
     }
 
     @Test
-    void 그룹의_즐겨찾기_리스트_조회_성공_테스트() {
-
-    }
-
-    @Test
     void 즐겨찾기_메모_수정_성공_테스트() {
-
+//        // Given
+//        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+//        craeteFavoriteGroup(user.getId(), "서울 맛집");
+//
+//        // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+//        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
+//        long firstGroupId = favoriteGroups.getFirst().getId();
+//
+//        // 예시 장소 1개 추가
+//        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+//
+//        List<Long> all = placeRepository.findAll().stream()
+//                .map(Place::getId).toList();
+//
+//        // When
+//        // 예시 장소 그룹에 즐겨찾기 추가
+//        addFavoriteGroup(all.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+//
+//        // Then
+//        Place place = placeRepository.findById(all.getFirst())
+//                .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
+//
+//        assertThat(place.getName()).isEqualTo("이자카야 하나");
+//        assertThat(place.getAddress()).isEqualTo("서울특별시 중구 을지로 100");
     }
 
     @Test

@@ -1,6 +1,7 @@
 package com.even.zaro.group;
 
 import com.even.zaro.controller.GroupController;
+import com.even.zaro.dto.group.GroupCreateRequest;
 import com.even.zaro.dto.group.GroupResponse;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.Provider;
@@ -39,7 +40,7 @@ public class GroupAPITest {
     @Test
     void 해당_사용자의_그룹리스트_조회_성공테스트() {
 
-        // Given
+        // Given : 유저 객체 생성
         User user = createUser();
 
         // 즐겨찾기 그룹 예시 데이터
@@ -49,10 +50,10 @@ public class GroupAPITest {
 
         favoriteGroupRepository.saveAll(List.of(group1, group2, group3));// 한꺼번에 그룹 리스트 저장
 
-        // When
+        // When : 유저의 그룹 리스트 조회 요청
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
 
-        // Then
+        // Then : 그룹 리스트의 개수와 그룹 이름 일치 여부 검증
         assertThat(favoriteGroups.size()).isEqualTo(3); // 개수 검증
         assertThat(favoriteGroups.stream().map(GroupResponse::getName) // 그룹 이름 리스트 검증
                 .toList()).containsExactlyInAnyOrder("맛집 모음", "데이트 코스", "가보고 싶은 곳");
@@ -61,7 +62,19 @@ public class GroupAPITest {
     @Test
     void 사용자의_그룹추가_성공테스트() {
 
-        //
+        // Given : User 객체와 request 생성
+        User user = createUser();
+
+        GroupCreateRequest request = GroupCreateRequest.builder().name("의정부 맛집은 여기라던데~?").build();
+
+        // When : 그룹 생성 요청
+        groupService.createGroup(request, user.getId());
+
+        // Then : 그룹이 정상적으로 추가되었는지 확인
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId()); // 해당 유저의 아이디로 그룹 리스트를 조회
+
+        assertThat(favoriteGroups.size()).isEqualTo(1); // 개수 검증
+        assertThat(favoriteGroups.stream().map(GroupResponse::getName)).containsExactlyInAnyOrder("의정부 맛집은 여기라던데~?"); // 그룹 이름 일치 여부
     }
 
 

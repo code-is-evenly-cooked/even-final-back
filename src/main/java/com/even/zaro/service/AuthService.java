@@ -73,7 +73,6 @@ public class AuthService {
                         .email(email)
                         .password(passwordEncoder.encode(password))
                         .nickname(nickname)
-                        .profileImage("https://your-cdn.com/default.png")
                         .provider(Provider.LOCAL)
                         .status(Status.PENDING)
                         .build()
@@ -110,7 +109,6 @@ public class AuthService {
 
         // 이메일, 프로필 사진이 없는 경우 더미로 추가
         String safeEmail = (email != null) ? email : "kakao_" + kakaoId + "@kakao-user.com";
-        String safeProfileImage = (profileImage != null) ? profileImage : "https://your-cdn.com/default.png";
 
         User user = userRepository.findByProviderAndProviderId(Provider.KAKAO, kakaoId.toString())
                 .orElseGet(() -> userRepository.save(User.builder()
@@ -118,7 +116,7 @@ public class AuthService {
                                 .providerId(kakaoId.toString())
                                 .email(safeEmail)
                                 .nickname(nickname)
-                                .profileImage(safeProfileImage)
+                                .profileImage(profileImage)
                                 .gender(gender)
                                 .status(Status.ACTIVE)
                                 .build()));

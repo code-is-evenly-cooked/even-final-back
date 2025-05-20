@@ -34,12 +34,17 @@ public class EmailService {
 
     public void sendPasswordResetEmail(String email, String token) {
 
+        String linkDev = "http://localhost:3000/password-reset?token=" + token; // 개발용 프론트 작업 완료 후 삭제 예정
         String link = frontendUrl + "/password-reset?token=" + token;
         String subject = "[ZARO] 비밀번호 재설정";
         String text = """
             비밀번호 재설정을 원하신다면 아래 링크를 클릭해주세요.
+            [local 개발용]
             %s
-        """.formatted(link);
+        
+            [배포용]
+            %s
+        """.formatted(linkDev, link);
 
         send(email, subject, text);
     }

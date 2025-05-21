@@ -7,6 +7,7 @@ import org.springframework.stereotype.Repository;
 
 import java.util.List;
 import java.util.Optional;
+import java.time.LocalDateTime;
 
 @Repository
 public interface NotificationRepository extends JpaRepository<Notification, Long> {
@@ -16,4 +17,6 @@ public interface NotificationRepository extends JpaRepository<Notification, Long
     Optional<Notification> findByIdAndUserId(Long notificationId, Long userId);
 
     List<Notification> findAllByUserIdAndIsReadFalse(Long userId);
+
+    void deleteByCreatedAtBefore(LocalDateTime deletingDate);
 }

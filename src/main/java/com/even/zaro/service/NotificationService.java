@@ -47,4 +47,12 @@ public class NotificationService {
         notification.markAsRead(); // isRead = true
     }
 
+    public void markAllAsRead(Long userId) {
+        List<Notification> notifications = notificationRepository.findAllByUserIdAndIsReadFalse(userId);
+        notifications.forEach(n -> {
+            if (!n.isRead()) {
+                n.setRead(true);
+            }
+        });
+    }
 }

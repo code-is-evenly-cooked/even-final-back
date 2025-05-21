@@ -8,6 +8,7 @@ import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.PostLikeService;
 import com.even.zaro.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
@@ -115,7 +116,7 @@ public class PostController {
         return Long.valueOf(jwtUtil.getUserIdFromToken(token));
     }
 
-    @Operation(summary = "게시글 좋아요", description = "게시글에 좋아요를 누릅니다.")
+    @Operation(summary = "게시글 좋아요", description = "게시글에 좋아요를 누릅니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/{postId}/like")
     public ResponseEntity<ApiResponse<Void>> likePost(
             @PathVariable Long postId,
@@ -125,28 +126,12 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요를 성공했습니다."));
     }
 
-    @Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요를 취소합니다.")
+    @Operation(summary = "게시글 좋아요 취소", description = "게시글 좋아요를 취소합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping("/{postId}/like")
     public ResponseEntity<ApiResponse<Void>> unlikePost(@PathVariable Long postId, HttpServletRequest request) {
         Long userId = getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
         postLikeService.unlikePost(postId, userId);
         return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 취소를 성공했습니다."));
-    }
-
-    @Operation(summary = "게시글 좋아요 단일 조회", description = "현재 사용자가 해당 게시글에 좋아요를 눌렀는지 확인합니다.")
-    @GetMapping("/{postId}/like")
-    public ResponseEntity<ApiResponse<Boolean>> checkLiked(@PathVariable Long postId, HttpServletRequest request) {
-        Long userId = getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
-        boolean liked = postLikeService.hasLiked(userId, postId);
-        return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 여부 조회가 성공했습니다.", liked));
-    }
-
-    @Operation(summary = "좋아요한 게시글 전체 조회", description = "현재 사용자가 좋아요한 게시글 전체를 조회합니다.")
-    @GetMapping("/like")
-    public ResponseEntity<ApiResponse<List<PostLikeResponse>>> getLikedPosts(HttpServletRequest request) {
-        Long userId = getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
-        List<PostLikeResponse> likedPosts = postLikeService.getMyLikedPosts(userId);
-        return ResponseEntity.ok(ApiResponse.success("좋아요한 게시글 조회가 성공했습니다.", likedPosts));
     }
 
 }

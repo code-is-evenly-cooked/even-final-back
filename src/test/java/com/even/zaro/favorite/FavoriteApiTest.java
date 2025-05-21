@@ -7,7 +7,9 @@ import com.even.zaro.dto.group.GroupCreateRequest;
 import com.even.zaro.dto.group.GroupResponse;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.map.MapException;
+import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.UserRepository;
@@ -21,8 +23,11 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
+import static com.even.zaro.entity.QUser.user;
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -41,6 +46,8 @@ public class FavoriteApiTest {
     private PlaceRepository placeRepository;
     @Autowired
     private FavoriteRepository favoriteRepository;
+    @Autowired
+    private FavoriteGroupRepository favoriteGroupRepository;
 
     @Test
     void 그룹에_즐겨찾기_추가_성공_테스트() {
@@ -163,6 +170,116 @@ public class FavoriteApiTest {
 
         assertThat(favorite.isDeleted()).isEqualTo(true);
     }
+
+    @Test
+    void 이미_존재하는_즐겨찾기_추가_시도_예외_FAVORITE_ALREADY_EXISTS() {
+        // Given : user 객체와 그룹 생성
+        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        craeteFavoriteGroup(user.getId(), "서울 맛집");
+
+            // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
+        List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
+        long firstGroupId = favoriteGroups.getFirst().getId();
+
+            // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> placeIdList = placeRepository.findAll().stream()
+                .map(Place::getId).toList();
+
+            // 예시 장소 그룹에 즐겨찾기 추가
+        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+
+
+        // When & Then : 같은 placeId 추가 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FAVORITE_ALREADY_EXISTS);
+    }
+
+
+    @Test
+    void 존재하지_않는_즐겨찾기_삭제_시도_FAVORITE_NOT_FOUND() {
+        // Given : user 객체와 그룹 생성
+        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+
+        // WHen & Then : 즐겨찾기를 추가하지 않은 상태에서 삭제 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            favoriteService.deleteFavorite(0, user.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FAVORITE_NOT_FOUND);
+    }
+
+    @Test
+    void 존재하지_않는_즐겨찾기_메모_수정_시도_FAVORITE_NOT_FOUND() {
+        // Given : user 객체와 그룹 생성
+        User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+
+        // WHen & Then : 즐겨찾기를 추가하지 않은 상태에서 삭제 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            editFavoriteGroup(0, "존재하지 않는 메모를 수정해볼까요", user.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FAVORITE_NOT_FOUND);
+    }
+
+    @Test
+    void 다른_유저의_즐겨찾기_메모_수정_시도_UNAUTHORIZED_FAVORITE_UPDATE() {
+        // Given : user 객체와 그룹 생성
+        User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕");
+
+            // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();
+
+            // 그룹 추가
+        craeteFavoriteGroup(user1.getId(), "서울 맛집");
+
+        List<Long> GroupIdList = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
+
+            // 그룹에 즐겨찾기 추가
+        addFavoriteGroup(placeIdList.getFirst(), GroupIdList.getFirst(), "이자카야 맛집", user1.getId());
+
+        // When & Then : 다른 유저의 즐겨찾기 메모 수정 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            editFavoriteGroup(placeIdList.getFirst(), "다른 유저의 즐겨찾기 메모 수정 시도", user2.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED_FAVORITE_UPDATE);
+    }
+
+    @Test
+    void 다른_유저의_즐겨찾기_삭제_시도_UNAUTHORIZED_FAVORITE_DELETE() {
+        // Given : user 객체와 그룹 생성
+        User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
+        User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕");
+
+        // 예시 장소 1개 추가
+        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
+
+        List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();
+
+        // 그룹 추가
+        craeteFavoriteGroup(user1.getId(), "서울 맛집");
+
+        List<Long> GroupIdList = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
+
+        // 그룹에 즐겨찾기 추가
+        addFavoriteGroup(placeIdList.getFirst(), GroupIdList.getFirst(), "이자카야 맛집", user1.getId());
+
+        // When & Then : 다른 유저의 즐겨찾기 삭제 시도
+        FavoriteException exception = assertThrows(FavoriteException.class, () -> {
+            favoriteService.deleteFavorite(placeIdList.getFirst(), user2.getId());
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.UNAUTHORIZED_FAVORITE_DELETE);
+    }
+
 
 
     // 임시 유저 생성 메서드

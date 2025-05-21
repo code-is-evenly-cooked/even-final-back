@@ -1,7 +1,9 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.post.PostLikeResponse;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.PostLike;
+import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
@@ -11,6 +13,8 @@ import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,10 @@ public class PostLikeService {
         }
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
 
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
@@ -55,4 +63,11 @@ public class PostLikeService {
         return postLikeRepository.existsByUserIdAndPostId(userId, postId);
     }
 
+    @Transactional(readOnly = true)
+    public List<PostLikeResponse> getMyLikedPosts(Long userId) {
+        List<PostLike> likes = postLikeRepository.findAllByUserId(userId);
+        return likes.stream()
+                .map(postLike -> PostLikeResponse.from(postLike.getPost()))
+                .toList();
+    }
 }

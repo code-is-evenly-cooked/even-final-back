@@ -28,15 +28,9 @@ public class PostLikeService {
         if (postLikeRepository.existsByUserIdAndPostId(userId, postId)) {
             throw new PostException(ErrorCode.ALREADY_LIKED);
         }
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
 
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
-
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+        User user = validateActiveUser(userId);
+        Post post = validatePost(postId);
 
         postLikeRepository.save(PostLike.builder()
                 .user(user)
@@ -48,26 +42,46 @@ public class PostLikeService {
 
     @Transactional
     public void unlikePost(Long postId, Long userId) {
+        validateActiveUser(userId);
+        Post post = validatePost(postId);
+
         PostLike postLike = postLikeRepository.findByUserIdAndPostId(userId, postId)
                 .orElseThrow(() -> new PostException(ErrorCode.LIKE_NOT_POST));
 
         postLikeRepository.delete(postLike);
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-
         post.changeLikeCount(Math.max(0,post.getLikeCount() - 1));
     }
 
     public boolean hasLiked(Long userId, Long postId) {
+        validateActiveUser(userId);
+        validatePost(postId);
         return postLikeRepository.existsByUserIdAndPostId(userId, postId);
     }
 
     @Transactional(readOnly = true)
     public List<PostLikeResponse> getMyLikedPosts(Long userId) {
+        validateActiveUser(userId);
         List<PostLike> likes = postLikeRepository.findAllByUserId(userId);
         return likes.stream()
                 .map(postLike -> PostLikeResponse.from(postLike.getPost()))
                 .toList();
+    }
+
+    // 공통로직
+    private User validateActiveUser(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED_LIKE); // ✅ 개선된 예외코드 사용
+        }
+
+        return user;
+    }
+
+    private Post validatePost(Long postId) {
+        return postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
     }
 }

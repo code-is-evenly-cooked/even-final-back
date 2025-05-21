@@ -1,5 +1,6 @@
 package com.even.zaro.entity;
 
+import com.even.zaro.listener.CommentListener;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(CommentListener.class)
 public class Comment {
 
     @Id

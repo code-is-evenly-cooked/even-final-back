@@ -1,5 +1,6 @@
 package com.even.zaro.entity;
 
+import com.even.zaro.listener.PostLikeListener;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(PostLikeListener.class)
 public class PostLike {
 
     @Id

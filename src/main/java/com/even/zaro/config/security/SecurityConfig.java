@@ -39,7 +39,7 @@ public class SecurityConfig {
                         .requestMatchers("/health/**").permitAll() // health  
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // 스웨거
                         .requestMatchers("/api/auth/**").permitAll() // auth 인증 없이
-                                .requestMatchers("/api/posts/**").permitAll()
+                                .requestMatchers("/api/posts/home").permitAll()
                                 .requestMatchers("/api/profile/{userId}").permitAll()
 //                        .requestMatchers("/**").permitAll() // 전체 인증 없이 개발용
                         .anyRequest().authenticated()

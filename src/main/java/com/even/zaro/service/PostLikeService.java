@@ -1,6 +1,5 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.post.PostLikeResponse;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.PostLike;
 import com.even.zaro.entity.Status;
@@ -14,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -51,21 +49,6 @@ public class PostLikeService {
         postLikeRepository.delete(postLike);
 
         post.changeLikeCount(Math.max(0,post.getLikeCount() - 1));
-    }
-
-    public boolean hasLiked(Long userId, Long postId) {
-        validateActiveUser(userId);
-        validatePost(postId);
-        return postLikeRepository.existsByUserIdAndPostId(userId, postId);
-    }
-
-    @Transactional(readOnly = true)
-    public List<PostLikeResponse> getMyLikedPosts(Long userId) {
-        validateActiveUser(userId);
-        List<PostLike> likes = postLikeRepository.findAllByUserId(userId);
-        return likes.stream()
-                .map(postLike -> PostLikeResponse.from(postLike.getPost()))
-                .toList();
     }
 
     // 공통로직

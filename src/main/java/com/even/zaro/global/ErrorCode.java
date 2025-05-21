@@ -51,6 +51,9 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레쉬 토큰을 찾을 수 없습니다."),
 
+    // 알림 Notification
+    NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "조회된 알림이 없습니다."),
+
     // 게시글 Post
     IMAGE_REQUIRED_FOR_RANDOM_BUY(HttpStatus.BAD_REQUEST, "이미지는 필수입니다."),
     INVALID_CATEGORY(HttpStatus.BAD_REQUEST, "올바르지 않은 카테고리입니다."),

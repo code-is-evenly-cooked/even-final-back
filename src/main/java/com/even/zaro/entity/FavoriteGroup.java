@@ -30,6 +30,7 @@ public class FavoriteGroup {
     private String name;
 
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private boolean isDeleted = false;
 
     @CreationTimestamp

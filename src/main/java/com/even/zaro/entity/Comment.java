@@ -36,9 +36,11 @@ public class Comment {
     private String content;
 
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private boolean isDeleted = false;
 
     @Column(name = "is_reported", nullable = false)
+    @Builder.Default
     private boolean isReported = false;
 
     @Column(name = "created_at", nullable = false)
@@ -50,6 +52,7 @@ public class Comment {
     private LocalDateTime updatedAt;
 
     @Column(name = "like_count", nullable = false)
+    @Builder.Default
     private int likeCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

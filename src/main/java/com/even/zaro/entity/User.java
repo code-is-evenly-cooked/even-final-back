@@ -35,7 +35,7 @@ public class User {
     @Column(name = "password")
     private String password;
 
-    @Column(name = "nickname", nullable = false)
+    @Column(name = "nickname", nullable = false, unique = true)
     private String nickname;
 
     @Column(name = "profile_image")

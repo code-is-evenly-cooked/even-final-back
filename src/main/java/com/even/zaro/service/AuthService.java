@@ -66,6 +66,9 @@ public class AuthService {
         if (userRepository.existsByEmail(email)) {
             throw new UserException(ErrorCode.EMAIL_ALREADY_EXISTED);
         }
+        if (userRepository.existsByNickname(nickname)) {
+            throw new UserException(ErrorCode.NICKNAME_ALREADY_EXISTED);
+        }
 
         // 저장
         User user = userRepository.save(

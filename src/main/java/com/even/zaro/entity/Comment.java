@@ -2,10 +2,7 @@ package com.even.zaro.entity;
 
 import com.even.zaro.listener.CommentListener;
 import jakarta.persistence.*;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.Data;
-import lombok.NoArgsConstructor;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
@@ -13,7 +10,7 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "comment")
-@Data
+@Getter
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
@@ -50,6 +47,7 @@ public class Comment {
     private LocalDateTime updatedAt;
 
     @Column(name = "like_count", nullable = false)
+    @Builder.Default
     private int likeCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)

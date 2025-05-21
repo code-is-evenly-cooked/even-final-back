@@ -141,6 +141,12 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 여부 조회가 성공했습니다.", liked));
     }
 
-
+    @Operation(summary = "좋아요한 게시글 전체 조회", description = "현재 사용자가 좋아요한 게시글 전체를 조회합니다.")
+    @GetMapping("/like")
+    public ResponseEntity<ApiResponse<List<PostLikeResponse>>> getLikedPosts(HttpServletRequest request) {
+        Long userId = getAuthenticatedUserId(request, ErrorCode.NEED_LOGIN_POST);
+        List<PostLikeResponse> likedPosts = postLikeService.getMyLikedPosts(userId);
+        return ResponseEntity.ok(ApiResponse.success("좋아요한 게시글 조회가 성공했습니다.", likedPosts));
+    }
 
 }

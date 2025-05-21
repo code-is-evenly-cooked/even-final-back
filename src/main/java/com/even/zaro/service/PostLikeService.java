@@ -74,7 +74,7 @@ public class PostLikeService {
                 .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
 
         if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED_LIKE); // ✅ 개선된 예외코드 사용
+            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED_LIKE);
         }
 
         return user;

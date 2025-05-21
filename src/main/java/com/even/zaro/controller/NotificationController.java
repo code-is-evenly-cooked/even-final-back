@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -35,5 +33,14 @@ public class NotificationController {
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         List<NotificationDto> notifications = notificationService.getNotificationsList(userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("로그인 한 사용자의 알림 목록 조회 성공 !", notifications));
+    }
+
+    @PatchMapping("/api/notifications/{notificationId}")
+    public ResponseEntity<ApiResponse<Void>> readNotification(
+            @PathVariable Long notificationId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfo
+    ) {
+        notificationService.markAsRead(notificationId, userInfo.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("선택한 알림 읽음 처리 성공 !"));
     }
 }

@@ -29,7 +29,7 @@ public class PostController {
     private final PostService postService;
     private final PostLikeService postLikeService;
 
-    @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.")
+    @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping
     public ResponseEntity<ApiResponse<PostDetailResponse>> createPost(
             @RequestBody @Valid PostCreateRequest request,
@@ -41,7 +41,7 @@ public class PostController {
         );
     }
 
-    @Operation(summary = "게시글 수정", description = "기존 게시글을 수정합니다.")
+    @Operation(summary = "게시글 수정", description = "기존 게시글을 수정합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> updatePost(
             @PathVariable Long postId,
@@ -52,7 +52,7 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다."));
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
+    @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getPostList(
             @RequestParam(required = false) String category,
@@ -71,7 +71,7 @@ public class PostController {
 
 
 
-    @Operation(summary = "게시글 상세 조회", description = "게시글의 상세 내용을 조회합니다.")
+    @Operation(summary = "게시글 상세 조회", description = "게시글의 상세 내용을 조회합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/{postId}")
     public ResponseEntity<ApiResponse<PostDetailResponse>> getPostDetail(
             @PathVariable Long postId,
@@ -81,7 +81,7 @@ public class PostController {
     }
 
 
-    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.")
+    @Operation(summary = "게시글 삭제", description = "게시글을 삭제합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping("/{postId}")
     public ResponseEntity<ApiResponse<Void>> deletePost(
             @PathVariable Long postId,

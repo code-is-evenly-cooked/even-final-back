@@ -33,9 +33,11 @@ public class Comment {
     private String content;
 
     @Column(name = "is_deleted", nullable = false)
+    @Builder.Default
     private boolean isDeleted = false;
 
     @Column(name = "is_reported", nullable = false)
+    @Builder.Default
     private boolean isReported = false;
 
     @Column(name = "created_at", nullable = false)

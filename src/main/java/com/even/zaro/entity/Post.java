@@ -52,17 +52,22 @@ public class Post {
     private String thumbnailUrl;
 
     @Column(name = "is_reported")
+    @Builder.Default
     private boolean isReported = false;
     @Column(name = "is_deleted")
+    @Builder.Default
     private boolean isDeleted = false;
 
     @Column(name = "like_count", nullable = false)
+    @Builder.Default
     private int likeCount = 0;
 
     @Column(name = "comment_count", nullable = false)
+    @Builder.Default
     private int commentCount = 0;
 
     @Column(name = "report_count", nullable = false)
+    @Builder.Default
     private int reportCount = 0;
 
     @CreationTimestamp

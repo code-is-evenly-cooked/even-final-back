@@ -1,5 +1,6 @@
 package com.even.zaro.entity;
 
+import com.even.zaro.listener.FollowListener;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
@@ -15,6 +16,7 @@ import java.time.LocalDateTime;
 @Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@EntityListeners(FollowListener.class)
 public class Follow {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

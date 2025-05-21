@@ -1,6 +1,7 @@
 package com.even.zaro.config.security;
 
 import com.even.zaro.jwt.JwtAuthFilter;
+import com.even.zaro.jwt.JwtAuthenticationEntryPoint;
 import com.even.zaro.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
@@ -25,6 +26,7 @@ import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
 public class SecurityConfig {
 
     private final JwtUtil jwtUtil;
+    private final JwtAuthenticationEntryPoint jwtAuthenticationEntryPoint;
 
     @Value("${cors.backend-origin}")
     private String backendOrigin;
@@ -35,6 +37,7 @@ public class SecurityConfig {
                 .cors(cors -> cors.configurationSource(corsConfigurationSource()))
                 .csrf(AbstractHttpConfigurer::disable) // JWT 사용으로 필요 없음
                 .sessionManagement(session -> session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
+                .exceptionHandling(e -> e.authenticationEntryPoint(jwtAuthenticationEntryPoint))
                 .authorizeHttpRequests(request -> request
                         .requestMatchers("/health/**").permitAll() // health  
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // 스웨거

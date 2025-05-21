@@ -36,7 +36,7 @@ public class NotificationController {
     }
 
     @Operation(
-            summary = "유저 개별 알림 읽음 처리 (인증 필요)",
+            summary = "개별 알림 읽음 처리 (인증 필요)",
             description = "로그인 된 유저의 개별 알림을 읽음 처리합니다.",
             security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/api/notifications/{notificationId}")
@@ -47,4 +47,17 @@ public class NotificationController {
         notificationService.markAsRead(notificationId, userInfo.getUserId());
         return ResponseEntity.ok(ApiResponse.success("선택한 개별 알림 읽음 처리 성공 !"));
     }
+
+    @Operation(
+            summary = "전체 알림 읽음 처리 (인증 필요)",
+            description = "로그인 된 유저의 전체 알림을 읽음 처리합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    @PatchMapping("/api/notifications/bulk")
+    public ResponseEntity<ApiResponse<Void>> readAllNotifications(
+            @AuthenticationPrincipal JwtUserInfoDto userInfo
+    ) {
+        notificationService.markAllAsRead(userInfo.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("모든 알림이 읽음 처리되었습니다."));
+    }
+
 }

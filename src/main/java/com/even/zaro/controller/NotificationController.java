@@ -35,12 +35,16 @@ public class NotificationController {
         return ResponseEntity.ok(ApiResponse.success("로그인 한 사용자의 알림 목록 조회 성공 !", notifications));
     }
 
+    @Operation(
+            summary = "유저 개별 알림 읽음 처리 (인증 필요)",
+            description = "로그인 된 유저의 개별 알림을 읽음 처리합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/api/notifications/{notificationId}")
     public ResponseEntity<ApiResponse<Void>> readNotification(
             @PathVariable Long notificationId,
             @AuthenticationPrincipal JwtUserInfoDto userInfo
     ) {
         notificationService.markAsRead(notificationId, userInfo.getUserId());
-        return ResponseEntity.ok(ApiResponse.success("선택한 알림 읽음 처리 성공 !"));
+        return ResponseEntity.ok(ApiResponse.success("선택한 개별 알림 읽음 처리 성공 !"));
     }
 }

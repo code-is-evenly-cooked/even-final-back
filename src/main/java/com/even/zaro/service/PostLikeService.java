@@ -64,7 +64,7 @@ public class PostLikeService {
     }
 
     private Post validatePost(Long postId) {
-        return postRepository.findById(postId)
+        return postRepository.findByIdAndIsDeletedFalse(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
     }
 }

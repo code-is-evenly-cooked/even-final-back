@@ -1,5 +1,7 @@
 package com.even.zaro.jwt;
 
+import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,11 +24,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
 
-        Map<String, Object> body = new HashMap<>();
-        body.put("code", "AUTH_REQUIRED");
-        body.put("message", "로그인이 필요합니다.");
-        body.put("data", null);
-
+        ApiResponse<Object> body = ApiResponse.fail(ErrorCode.AUTH_REQUIRED);
         objectMapper.writeValue(response.getWriter(), body);
     }
 }

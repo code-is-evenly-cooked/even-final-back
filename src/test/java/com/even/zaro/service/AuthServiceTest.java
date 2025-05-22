@@ -1,42 +1,34 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.auth.SignUpRequestDto;
-import com.even.zaro.entity.Provider;
-import com.even.zaro.entity.Status;
-import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.UserRepository;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.test.context.ActiveProfiles;
-import org.springframework.transaction.annotation.Transactional;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+import static org.mockito.Mockito.when;
 
-@SpringBootTest
-@ActiveProfiles("test")
-@Transactional
+@ExtendWith(MockitoExtension.class)
 class AuthServiceTest {
 
-    @Autowired
+    @InjectMocks
     private AuthService authService;
 
-    @Autowired
+    @Mock
     private UserRepository userRepository;
 
+    @DisplayName("회원가입시 닉네임 중복 예외처리")
     @Test
     void nicknameAlreadyExists_shouldThrowException() {
         //given
-        User user = User.builder()
-                .email("test@even.com")
-                .nickname("이브니")
-                .password("Password1!")
-                .provider(Provider.LOCAL)
-                .status(Status.ACTIVE)
-                .build();
-        userRepository.save(user);
+        when(userRepository.existsByNickname("이브니")).thenReturn(true);
 
         //when
         SignUpRequestDto requestDto = new SignUpRequestDto("test2@even.com", "Test1234!", "이브니");

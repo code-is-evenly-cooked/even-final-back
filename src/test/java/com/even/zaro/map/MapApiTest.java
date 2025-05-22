@@ -43,6 +43,8 @@ public class MapApiTest {
     private MapService mapService;
     @Autowired
     private FavoriteGroupRepository favoriteGroupRepository;
+    @Autowired
+    private MapQueryRepository mapQueryRepository;
 
 
     @Test
@@ -108,6 +110,33 @@ public class MapApiTest {
                 .containsExactlyInAnyOrderElementsOf(markerInfoResponse.getUsersInfo());
     }
 
+    @Test
+    void 좌표_기반_인근_장소_리스트_조회_성공_테스트() {
+        // Given : 장소 추가
+        createPlace(1001, "서울역", "서울 중구 한강대로 405", 37.554722, 126.970833);     // ✅ 기준 점
+        createPlace(1002, "남대문시장", "서울 중구 남대문시장길", 37.559500, 126.975000); // ✅ 1KM 안
+        createPlace(1003, "서울시청", "서울 중구 세종대로", 37.562000, 126.974000);       // ✅ 1KM 안
+        createPlace(1004, "광화문", "서울 종로구 세종대로", 37.575000, 126.980000);       // ❌
+        createPlace(1005, "신촌역", "서울 서대문구 신촌로", 37.556000, 126.936000);       // ❌
+        createPlace(1006, "숙대입구역", "서울 용산구 청파로", 37.542000, 126.975000);     // ❌
+        createPlace(1007, "강남역", "서울 강남구 강남대로", 37.498000, 127.028000);       // ❌
+
+        // When : 서울역 기준으로 1KM 반경 장소 조회
+        List<Place> placeByCoordinate = mapQueryRepository.findPlaceByCoordinate(37.554722, 126.970833, 1);
+        placeByCoordinate.forEach(place -> {
+            double distance = calculateHaversine(37.554722, 126.970833, place.getLat(), place.getLng());
+            System.out.printf("📍 %s → %.2fkm\n", place.getName(), distance);
+        });
+
+        // Then : 1Km 반경 기준 데이터 검증
+        List<String> names = placeByCoordinate.stream().map(Place::getName).toList();
+
+        assertThat(names).containsExactlyInAnyOrder("서울역", "서울시청", "남대문시장"); // 1Km 안의 장소가 조회됐는지 검증
+        assertThat(names).doesNotContain("광화문", "신촌역", "숙대입구역", "강남역"); // 반경 밖의 장소가 데이터에 포함이 안 됐는지 검증
+    }
+
+
+
     // 임시 유저 생성 메서드
     User createUser(String email, String password, String nickname) {
         return userRepository.save(User.builder()
@@ -146,6 +175,18 @@ public class MapApiTest {
                 .build();
 
         favoriteService.addFavorite(groupId, request, userId);
+    }
+
+    public static double calculateHaversine(double lat1, double lng1, double lat2, double lng2) {
+        double R = 6371; // 지구 반지름 (km)
+        double dLat = Math.toRadians(lat2 - lat1);
+        double dLng = Math.toRadians(lng2 - lng1);
+
+        double a = Math.sin(dLat / 2) * Math.sin(dLat / 2)
+                + Math.cos(Math.toRadians(lat1)) * Math.cos(Math.toRadians(lat2))
+                * Math.sin(dLng / 2) * Math.sin(dLng / 2);
+        double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+        return R * c;
     }
 
 }

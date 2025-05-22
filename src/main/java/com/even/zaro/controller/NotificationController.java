@@ -11,9 +11,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -36,4 +34,30 @@ public class NotificationController {
         List<NotificationDto> notifications = notificationService.getNotificationsList(userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("로그인 한 사용자의 알림 목록 조회 성공 !", notifications));
     }
+
+    @Operation(
+            summary = "개별 알림 읽음 처리 (인증 필요)",
+            description = "로그인 된 유저의 개별 알림을 읽음 처리합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    @PatchMapping("/{notificationId}")
+    public ResponseEntity<ApiResponse<Void>> readNotification(
+            @PathVariable Long notificationId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfo
+    ) {
+        notificationService.markAsRead(notificationId, userInfo.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("선택한 개별 알림 읽음 처리 성공 !"));
+    }
+
+    @Operation(
+            summary = "전체 알림 읽음 처리 (인증 필요)",
+            description = "로그인 된 유저의 전체 알림을 읽음 처리합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    @PatchMapping("/bulk")
+    public ResponseEntity<ApiResponse<Void>> readAllNotifications(
+            @AuthenticationPrincipal JwtUserInfoDto userInfo
+    ) {
+        notificationService.markAllAsRead(userInfo.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("모든 알림이 읽음 처리되었습니다."));
+    }
+
 }

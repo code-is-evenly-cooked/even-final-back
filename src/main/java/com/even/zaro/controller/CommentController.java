@@ -61,4 +61,16 @@ public class CommentController {
         CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글을 수정했습니다.", responseDto));
     }
+
+    @Operation(summary = "댓글 삭제", description = "{commentId}에 해당하는 댓글을 삭제합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    @DeleteMapping("comments/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> softDeleteComment(
+            @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        commentService.softDeleteComment(commentId, userInfoDto);
+        return ResponseEntity.ok(ApiResponse.success("댓글을 삭제했습니다."));
+    }
+
+
 }

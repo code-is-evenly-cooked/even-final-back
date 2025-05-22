@@ -25,7 +25,7 @@ import java.util.List;
 public class MapService {
     private final PlaceRepository placeRepository;
     private final FavoriteRepository favoriteRepository;
-    private MapQueryRepository mapQueryRepository;
+    private final MapQueryRepository mapQueryRepository;
 
     public MarkerInfoResponse getPlaceInfo(long placeId) {
 

@@ -7,6 +7,7 @@ import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.MapService;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -42,8 +43,13 @@ public class MapController {
     @Operation(summary = "사용자 위치 기반 인근 맛집? 조회", description = "사용자의 위치를 이용해 인근 맛집 또는 장소를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/place")
     public ResponseEntity<ApiResponse<PlaceResponse>> getPlacesByCoordinate(
+            @Parameter(description = "사용자의 현재 위도", example = "37.554722")
             @RequestParam double lat,
+
+            @Parameter(description = "사용자의 현재 경도", example = "126.970833")
             @RequestParam double lng,
+
+            @Parameter(description = "조회 반경 (단위: km)", example = "1.0")
             @RequestParam double distanceKm,
             @AuthenticationPrincipal JwtUserInfoDto userInfo) {
 

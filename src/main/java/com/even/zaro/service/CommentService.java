@@ -13,6 +13,8 @@ import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +46,30 @@ public class CommentService {
                 user.getNickname(),
                 user.getProfileImage(),
                 user.getLiveAloneDate(),
-                comment.getCreatedAt()
+                comment.getCreatedAt(),
+                true
         );
+    }
+
+    @Transactional(readOnly = true)
+    public Page<CommentResponseDto> readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
+        Long currentUserId = userInfoDto.getUserId();
+
+        return commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId, pageable)
+                .map(comment -> {
+                    User writer = comment.getUser();
+
+                    boolean isMine = writer.getId().equals(currentUserId);
+
+                    return new CommentResponseDto(
+                            comment.getId(),
+                            comment.getContent(),
+                            comment.getUser().getNickname(),
+                            comment.getUser().getProfileImage(),
+                            comment.getUser().getLiveAloneDate(),
+                            comment.getCreatedAt(),
+                            isMine
+                    );
+                });
     }
 }

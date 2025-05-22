@@ -55,4 +55,8 @@ public class Comment {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "tagged_user_id")
     private User taggedUser;
+
+    public void updateContent(String content) {
+        this.content = content;
+    }
 }

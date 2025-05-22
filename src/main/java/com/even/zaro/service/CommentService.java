@@ -85,6 +85,19 @@ public class CommentService {
         return toDto(comment, currentUserId);
     }
 
+    @Transactional
+    public void softDeleteComment(Long commentId, JwtUserInfoDto userInfoDto) {
+        Long currentUserId = userInfoDto.getUserId();
+        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(currentUserId)) {
+            throw new CommentException(ErrorCode.NOT_COMMENT_OWNER);
+        }
+
+        comment.softDelete();
+    }
+
     // 공통 응답
     private CommentResponseDto toDto(Comment comment, Long currentUserId) {
         User writer = comment.getUser();

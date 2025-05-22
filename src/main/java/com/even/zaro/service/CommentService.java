@@ -1,5 +1,6 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.comment.CommentRequestDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
@@ -52,10 +53,10 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public Page<CommentResponseDto> readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
+    public PageResponse<CommentResponseDto> readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
 
-        return commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId, pageable)
+        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId, pageable)
                 .map(comment -> {
                     User writer = comment.getUser();
 
@@ -71,5 +72,6 @@ public class CommentService {
                             isMine
                     );
                 });
+        return new PageResponse<>(page);
     }
 }

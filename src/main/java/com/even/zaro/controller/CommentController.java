@@ -1,5 +1,6 @@
 package com.even.zaro.controller;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.comment.CommentRequestDto;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
@@ -38,12 +39,12 @@ public class CommentController {
     }
 
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<ApiResponse<Page<CommentResponseDto>>> readAllComments(
+    public ResponseEntity<ApiResponse<PageResponse<CommentResponseDto>>> readAllComments(
             @PathVariable Long postId,
             @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
-        Page<CommentResponseDto> responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
+        PageResponse<CommentResponseDto> responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글 리스트를 불러왔습니다.", responseDto));
     }
 }

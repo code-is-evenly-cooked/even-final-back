@@ -8,6 +8,7 @@ import com.even.zaro.entity.Comment;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.CommentRepository;
@@ -77,5 +78,29 @@ public class CommentService {
                     );
                 });
         return new PageResponse<>(page);
+    }
+
+    @Transactional
+    public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
+        if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
+            throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
+        }
+
+        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (!comment.getUser().getId().equals(userInfoDto.getUserId())) {
+            throw new CommentException(ErrorCode.NOT_COMMENT_OWNER);
+        }
+
+        comment.updateContent(requestDto.getContent());
+
+        return new CommentResponseDto(comment.getId(),
+                comment.getContent(),
+                comment.getUser().getNickname(),
+                comment.getUser().getProfileImage(),
+                comment.getUser().getLiveAloneDate(),
+                comment.getCreatedAt(),
+                true);
     }
 }

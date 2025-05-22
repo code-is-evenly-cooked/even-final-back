@@ -29,4 +29,7 @@ public class CommentResponseDto {
 
     @Schema(description = "댓글 작성 시간", example = "2025-05-21T14:33:00")
     private LocalDateTime createdAt;
+
+    @Schema(description = "댓글 작성자 여부", example = "true")
+    private boolean isMine;
 }

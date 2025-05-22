@@ -30,6 +30,10 @@ public class CommentService {
 
     @Transactional
     public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
+        if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
+            throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
+        }
+
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
         User user = userRepository.findById(userInfoDto.getUserId())

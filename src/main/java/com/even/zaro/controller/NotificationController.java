@@ -39,7 +39,7 @@ public class NotificationController {
             summary = "개별 알림 읽음 처리 (인증 필요)",
             description = "로그인 된 유저의 개별 알림을 읽음 처리합니다.",
             security = {@SecurityRequirement(name = "bearer-key")})
-    @PatchMapping("/api/notifications/{notificationId}")
+    @PatchMapping("/{notificationId}")
     public ResponseEntity<ApiResponse<Void>> readNotification(
             @PathVariable Long notificationId,
             @AuthenticationPrincipal JwtUserInfoDto userInfo
@@ -52,7 +52,7 @@ public class NotificationController {
             summary = "전체 알림 읽음 처리 (인증 필요)",
             description = "로그인 된 유저의 전체 알림을 읽음 처리합니다.",
             security = {@SecurityRequirement(name = "bearer-key")})
-    @PatchMapping("/api/notifications/bulk")
+    @PatchMapping("/bulk")
     public ResponseEntity<ApiResponse<Void>> readAllNotifications(
             @AuthenticationPrincipal JwtUserInfoDto userInfo
     ) {

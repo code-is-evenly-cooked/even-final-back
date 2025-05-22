@@ -1,0 +1,44 @@
+package com.even.zaro.service;
+
+import com.even.zaro.repository.FavoriteRepository;
+import com.even.zaro.repository.MapQueryRepository;
+import com.even.zaro.repository.PlaceRepository;
+import org.junit.jupiter.api.extension.ExtendWith;
+import org.mockito.InjectMocks;
+import org.mockito.Mock;
+import org.mockito.junit.jupiter.MockitoExtension;
+
+import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.assertThrows;
+
+@ExtendWith(MockitoExtension.class)
+public class MapServiceTest {
+
+    @InjectMocks
+    MapService mapService;
+
+    @Mock
+    PlaceRepository placeRepository;
+
+    @Mock
+    FavoriteRepository favoriteRepository;
+
+    @Mock
+    MapQueryRepository mapQueryRepository;
+
+
+
+//    @DisplayName("장소 정보 조회 성공 테스트")
+//    @Test
+//    void nicknameAlreadyExists_shouldThrowException() {
+//        //given
+//        when(userRepository.existsByNickname("이브니")).thenReturn(true);
+//
+//        //when
+//        SignUpRequestDto requestDto = new SignUpRequestDto("test2@even.com", "Test1234!", "이브니");
+//
+//        //then
+//        UserException userException = assertThrows(UserException.class, () -> authService.signUp(requestDto));
+//        assertEquals(ErrorCode.NICKNAME_ALREADY_EXISTED, userException.getErrorCode());
+//    }
+}

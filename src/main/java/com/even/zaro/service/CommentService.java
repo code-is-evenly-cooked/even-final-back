@@ -42,6 +42,8 @@ public class CommentService {
                 comment.getId(),
                 comment.getContent(),
                 user.getNickname(),
+                user.getProfileImage(),
+                user.getLiveAloneDate(),
                 comment.getCreatedAt()
         );
     }

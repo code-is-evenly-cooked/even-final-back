@@ -56,6 +56,10 @@ public class CommentService {
     public PageResponse<CommentResponseDto> readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
 
+        // 게시글 존재 여부 확인
+        Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+
         Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId, pageable)
                 .map(comment -> {
                     User writer = comment.getUser();

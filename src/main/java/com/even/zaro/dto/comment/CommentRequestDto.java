@@ -8,6 +8,6 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 public class CommentRequestDto {
 
-    @Schema(description = "댓글 내용", example = "너무 좋네요!!")
+    @Schema(description = "댓글 내용/수정 내용", example = "너무 좋네요!!")
     private String content;
 }

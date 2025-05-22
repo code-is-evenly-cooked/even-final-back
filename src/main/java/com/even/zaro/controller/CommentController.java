@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -51,9 +50,11 @@ public class CommentController {
         return ResponseEntity.ok(ApiResponse.success("댓글 리스트를 불러왔습니다.", responseDto));
     }
 
+    @Operation(summary = "댓글 수정", description = "{commentId}에 해당하는 댓글 내용을 수정합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
-            @PathVariable Long commentId,
+            @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
             @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {

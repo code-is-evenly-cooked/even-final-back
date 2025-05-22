@@ -2,6 +2,7 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.map.MarkerInfoResponse;
+import com.even.zaro.dto.map.PlaceResponse;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.MapService;
 import com.nimbusds.openid.connect.sdk.claims.UserInfo;
@@ -12,10 +13,9 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/api/map")
@@ -34,5 +34,21 @@ public class MapController {
         MarkerInfoResponse placeInfo = mapService.getPlaceInfo(placeId);
 
         return ResponseEntity.ok(ApiResponse.success("해당 장소의 정보와 유저들의 메모리스트를 조회했습니다.", placeInfo));
+    }
+
+
+
+
+    @Operation(summary = "사용자 위치 기반 인근 맛집? 조회", description = "사용자의 위치를 이용해 인근 맛집 또는 장소를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @GetMapping("/place")
+    public ResponseEntity<ApiResponse<PlaceResponse>> getPlacesByCoordinate(
+            @RequestParam double lat,
+            @RequestParam double lng,
+            @RequestParam double distanceKm,
+            @AuthenticationPrincipal JwtUserInfoDto userInfo) {
+
+        PlaceResponse placesByCoordinate = mapService.getPlacesByCoordinate(lat, lng, distanceKm);
+
+        return ResponseEntity.ok(ApiResponse.success("인근 장소 리스트를 성공적으로 조회했습니다.", placesByCoordinate));
     }
 }

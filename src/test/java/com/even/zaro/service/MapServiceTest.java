@@ -1,17 +1,27 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.map.MarkerInfoResponse;
+import com.even.zaro.dto.map.MarkerInfoResponse.UserSimpleResponse;
 import com.even.zaro.entity.Place;
+import com.even.zaro.entity.Provider;
+import com.even.zaro.entity.Status;
+import com.even.zaro.entity.User;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.MapQueryRepository;
 import com.even.zaro.repository.PlaceRepository;
+import com.even.zaro.repository.UserRepository;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import static org.mockito.Mockito.when;
 
-import static org.junit.jupiter.api.Assertions.assertThrows;
+
+import java.util.List;
+import java.util.Optional;
+
 
 @ExtendWith(MockitoExtension.class)
 public class MapServiceTest {
@@ -28,32 +38,37 @@ public class MapServiceTest {
     @Mock
     MapQueryRepository mapQueryRepository;
 
+    @Mock
+    UserRepository userRepository;
 
-    @DisplayName("장소 정보 조회 성공 테스트")
+
+    @DisplayName("장소 정보 조회 성공")
     @Test
-    void 장소_정보_조회_성공_테스트() {
-        //given
+    void getPlaceInfo_success() {
+        // given
+        long placeId = 1L;
+        Place mockPlace = Place.builder()
+                .id(placeId)
+                .name("서울역")
+                .lat(37)
+                .lng(42)
+                .address("서울 중구 한강대로")
+                .build();
 
+        List<UserSimpleResponse> userSimpleResponses = List.of(
+                new UserSimpleResponse(1L, "img1", "nick1", "memo1"),
+                new UserSimpleResponse(2L, "img2", "nick2", "memo2"));
 
-//        when(userRepository.existsByNickname("이브니")).thenReturn(true);
-//
-//        //when
-//        SignUpRequestDto requestDto = new SignUpRequestDto("test2@even.com", "Test1234!", "이브니");
-//
-//        //then
-//        UserException userException = assertThrows(UserException.class, () -> authService.signUp(requestDto));
-//        assertEquals(ErrorCode.NICKNAME_ALREADY_EXISTED, userException.getErrorCode());
-    }
+        MarkerInfoResponse markerInfoResponse = MarkerInfoResponse.builder()
+                .placeId(mockPlace.getId())
+                .placeName(mockPlace.getName())
+                .lat(mockPlace.getLat())
+                .lng(mockPlace.getLng())
+                .address(mockPlace.getAddress())
+                .usersInfo(userSimpleResponses)
+                .build();
 
-
-    // 임의의 장소를 생성하는 메서드
-    void createPlace(long kakaoplaceId, String name, double lat, double lng, String address) {
-        placeRepository.save(Place.builder()
-                .kakaoPlaceId(1)
-                .name(name)
-                .lat(lat)
-                .lng(lng)
-                .address(address)
-                .build());
+        when(placeRepository.findById(1L)).thenReturn(Optional.of(mockPlace));
+        when(mapService.getPlaceInfo(1L)).thenReturn(markerInfoResponse);
     }
 }

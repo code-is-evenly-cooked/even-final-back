@@ -27,6 +27,7 @@ public class MarkerInfoResponse {
 
     @Builder
     @Getter
+    @AllArgsConstructor
     public static class UserSimpleResponse {
         long userId;
 

@@ -50,4 +50,14 @@ public class CommentController {
         PageResponse<CommentResponseDto> responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글 리스트를 불러왔습니다.", responseDto));
     }
+
+    @PatchMapping("comments/{commentId}")
+    public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
+            @PathVariable Long commentId,
+            @RequestBody CommentRequestDto requestDto,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+    ) {
+        CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userInfoDto);
+        return ResponseEntity.ok(ApiResponse.success("댓글을 수정했습니다.", responseDto));
+    }
 }

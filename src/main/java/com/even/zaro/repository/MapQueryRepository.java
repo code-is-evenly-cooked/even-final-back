@@ -38,23 +38,23 @@ public class MapQueryRepository {
         NumberExpression<Double> maxLng = Expressions.numberTemplate(Double.class, "{0} + {1}", longitude, lngDelta);
 
 
-//        // 원형으로 distance기준으로 조회될 수 있도록 정밀 거리필터 추가
-//        NumberExpression<Double> haversineDistance = Expressions.numberTemplate(
-//                Double.class,
-//                "6371 * acos(cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({0})) * sin(radians({1})))",
-//                Expressions.constant(latitude),              // 사용자 기준 위도
-//                place.lat,                                   // 대상 place의 위도
-//                place.lng,                                   // 대상 place의 경도
-//                Expressions.constant(longitude)              // 사용자 기준 경도
-//        );
+        // 원형으로 distance기준으로 조회될 수 있도록 정밀 거리필터 추가
+        NumberExpression<Double> haversineDistance = Expressions.numberTemplate(
+                Double.class,
+                "6371 * acos(least(1.0, cos(radians({0})) * cos(radians({1})) * cos(radians({2}) - radians({3})) + sin(radians({0})) * sin(radians({1}))))",
+                Expressions.constant(latitude),
+                place.lat,
+                place.lng,
+                Expressions.constant(longitude)
+        );
 
         return jpaQueryFactory
                 .select(place)
                 .from(place)
                 .where(
                         place.lat.between(minLat, maxLat), // 계산된 경도 범위
-                        place.lng.between(minLng, maxLng) // 계산된 위도 범위
-//                        haversineDistance.loe(distanceKm)
+                        place.lng.between(minLng, maxLng), // 계산된 위도 범위
+                        haversineDistance.loe(distanceKm)
                 ).fetch();
     }
 }

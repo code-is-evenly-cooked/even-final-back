@@ -1,5 +1,7 @@
 package com.even.zaro.dto.comment;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -31,5 +33,11 @@ public class CommentResponseDto {
     private LocalDateTime createdAt;
 
     @Schema(description = "댓글 작성자 여부", example = "true")
+    @JsonProperty("isMine")
     private boolean isMine;
+
+    @JsonIgnore
+    public boolean getMine() {
+        return isMine;
+    }
 }

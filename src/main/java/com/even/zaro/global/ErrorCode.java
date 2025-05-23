@@ -105,6 +105,8 @@ public enum ErrorCode {
 
     // 지도 Map
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장소를 찾지 못했습니다."),
+    BY_COORDINATE_NOT_FOUND_PLACE_LIST(HttpStatus.NOT_FOUND, "인근에 조회된 장소가 없습니다."),
+
 
 
     // Health

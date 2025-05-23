@@ -53,8 +53,8 @@ public class Comment {
     private int likeCount = 0;
 
     @ManyToOne(fetch = FetchType.LAZY)
-    @JoinColumn(name = "tagged_user_id")
-    private User taggedUser;
+    @JoinColumn(name = "mentioned_user_id")
+    private User mentionedUser;
 
     public void updateContent(String content) {
         this.content = content;

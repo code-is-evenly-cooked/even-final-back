@@ -43,6 +43,15 @@ public class CommentResponseDto {
     @JsonProperty("isMine")
     private boolean isMine;
 
+    @Schema(description = "멘션된 유저 정보", nullable = true,
+            example = """
+                {
+                  "id": 2,
+                  "nickname": "자취왕"
+                }
+                """)
+    private MentionedUserDto mentionedUser;
+
     @JsonIgnore
     public boolean getMine() {
         return isMine;

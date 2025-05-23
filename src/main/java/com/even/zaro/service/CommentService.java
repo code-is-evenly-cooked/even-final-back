@@ -3,6 +3,7 @@ package com.even.zaro.service;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.comment.CommentRequestDto;
+import com.even.zaro.dto.comment.MentionedUserDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.entity.Comment;
 import com.even.zaro.entity.Post;
@@ -42,10 +43,19 @@ public class CommentService {
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
         User user = userRepository.findById(currentUserId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        User mentionedUser = null;
+        String mentionedNickname = requestDto.getMentionedNickname();
+        if (mentionedNickname != null && !mentionedNickname.isBlank()) {
+            mentionedUser = userRepository.findByNickname(mentionedNickname)
+                    .orElseThrow(() -> new CommentException(ErrorCode.MENTIONED_USER_NOT_FOUND));
+        }
+
         Comment comment = Comment.builder()
                 .post(post)
                 .user(user)
                 .content(requestDto.getContent())
+                .mentionedUser(mentionedUser)
                 .build();
 
         commentRepository.save(comment);
@@ -109,6 +119,13 @@ public class CommentService {
         boolean isEdited = !createdAt.truncatedTo(ChronoUnit.SECONDS)
                 .isEqual(updatedAt.truncatedTo(ChronoUnit.SECONDS));
 
+
+        User mentioned = comment.getMentionedUser();
+        MentionedUserDto mentionedUser = null;
+        if (mentioned != null) {
+            mentionedUser = new MentionedUserDto(mentioned.getId(), mentioned.getNickname());
+        }
+
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getContent(),
@@ -118,7 +135,8 @@ public class CommentService {
                 createdAt,
                 updatedAt,
                 isEdited,
-                isMine
+                isMine,
+                mentionedUser
         );
     }
 }

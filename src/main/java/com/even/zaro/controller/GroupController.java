@@ -54,7 +54,7 @@ public class GroupController {
         long userId = userInfoDto.getUserId();
         groupService.createGroup(request, userId);
 
-        return ResponseEntity.ok(ApiResponse.success("성공적으로 즐겨찾기 그룹이 생성되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹이 생성되었습니다."));
     }
 
     @Operation(summary = "즐겨찾기 그룹 삭제", description = "groupId로 즐겨찾기 그룹 리스트를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})

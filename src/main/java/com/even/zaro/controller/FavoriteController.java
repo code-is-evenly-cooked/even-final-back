@@ -59,7 +59,7 @@ public class FavoriteController {
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기 메모가 수정되었습니다."));
     }
 
-    @Operation(summary = "즐겨찾기 삭제", description = "해당 즐겨찾기를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "즐겨찾기 삭제", description = "즐겨찾기를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping("/{favoriteId}")
     public ResponseEntity<ApiResponse<String>> deleteFavorite(
             @PathVariable("favoriteId") long favoriteId,

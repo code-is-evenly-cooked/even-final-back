@@ -161,7 +161,15 @@ public class MapApiTest {
     }
 
 
-//    @Test
+    @Test
+    void 마커_정보_조회_실패_PLACE_NOT_FOUND() {
+
+        // Given & When & Then
+        MapException exception = Assertions.assertThrows(MapException.class, () -> {
+            mapService.getPlaceInfo(1);
+        });
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.PLACE_NOT_FOUND);
+    }
 
 
     // 임시 유저 생성 메서드

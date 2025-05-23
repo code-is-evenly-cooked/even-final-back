@@ -29,7 +29,7 @@ public class MapService {
     public MarkerInfoResponse getPlaceInfo(long placeId) {
 
         Place selectPlace = placeRepository.findById(placeId)
-                .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND));
+                .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
 
         // 해당 지역에 메모를 남긴 사용자들 리스트를 가져와야 함.
         List<Favorite> allByPlace = favoriteRepository.findAllByPlace(selectPlace);

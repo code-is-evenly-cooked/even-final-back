@@ -40,7 +40,7 @@ public class PostSearchRepositoryImpl implements PostSearchRepositoryCustom {
                         post.id,
                         post.title,
                         post.content,
-                        post.thumbnailUrl,
+                        post.thumbnailImage,
                         post.category.stringValue(),
                         post.tag.stringValue(),
                         post.likeCount,

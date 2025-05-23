@@ -21,7 +21,7 @@ public class UserService {
                 .userId(user.getId())
                 .email(user.getEmail())
                 .nickname(user.getNickname())
-                .profileImageUrl(user.getProfileImage())
+                .profileImage(user.getProfileImage())
                 .birthday(user.getBirthday())
                 .liveAloneDate(user.getLiveAloneDate())
                 .gender(user.getGender())

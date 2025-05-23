@@ -83,4 +83,10 @@ public class S3Service {
             throw new CustomException(ErrorCode.INVALID_FILE_EXTENSION);
         }
     }
+
+    public String getUrl(String key) {
+        if (key == null) return null;
+        if (key.startsWith("http")) return key; //카카오 로그인시 프로필
+        return bucket + key;
+    }
 }

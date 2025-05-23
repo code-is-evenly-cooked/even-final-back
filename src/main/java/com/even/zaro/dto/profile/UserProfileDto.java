@@ -19,7 +19,7 @@ public class UserProfileDto {
     @Schema(description = "사용자 닉네임", example = "카리나")
     private String nickname;
 
-    @Schema(description = "사용자 프로필 이미지 URL", example = "/images/user32.jpg")
+    @Schema(description = "사용자 프로필 이미지 URL", example = "/images/profile/2-uuid.png")
     private String profileImage;
 
     @Schema(description = "자취 시작일", example = "2023-05-01")

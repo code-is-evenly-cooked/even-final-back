@@ -19,8 +19,8 @@ public class UserInfoResponseDto {
     @Schema(description = "닉네임", example = "이브니쨩")
     private String nickname;
 
-    @Schema(description = "프로필 이미지 URL", example = "https://your-cdn.com/default.png")
-    private String profileImageUrl;
+    @Schema(description = "프로필 이미지 URL", example = "/images/profile/2-uuid.png")
+    private String profileImage;
 
     @Schema(description = "생일", example = "1997-05-15")
     private LocalDate birthday;

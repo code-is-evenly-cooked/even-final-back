@@ -28,8 +28,8 @@ public class UserPostDto {
     @Schema(description = "게시글 태그", example = "BUY_TOGETHER")
     private String tag;
 
-    @Schema(description = "게시글 이미지 URL", example = "https://s3.amazonaws.com/bucket/image.jpg")
-    private String thumbnailUrl;
+    @Schema(description = "게시글 이미지 URL", example = "/images/post/uuid.png")
+    private String thumbnailImage;
 
     @Schema(description = "좋아요 수", example = "15")
     private int likeCount;

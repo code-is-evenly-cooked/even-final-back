@@ -7,12 +7,14 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Getter
 @AllArgsConstructor
 @Builder
 @Schema(description = "게시글 목록 응답 DTO")
 public class PostPreviewDto {
+
     @Schema(description = "게시글 ID", example = "1")
     private Long postId;
 
@@ -22,13 +24,13 @@ public class PostPreviewDto {
     @Schema(description = "미리보기용 게시글 내용", example = "이건 제가 진짜 매일 쓰는 꿀템인데요...")
     private String content;
 
-    @Schema(description = "썸네일 이미지 URL", example = "https://example.com/images/thumb1.jpg")
-    private String thumbnailUrl;
+    @Schema(description = "썸네일 이미지 key", example = "/images/post/uuid1.png")
+    private String thumbnailImage;
 
     @Schema(description = "게시글 카테고리", example = "DAILY_LIFE")
     private String category;
 
-    @Schema(description = "게시글 태그", example = "TIP")
+    @Schema(description = "게시글 태그", example = "TIPS")
     private String tag;
 
     @Schema(description = "좋아요 수", example = "5")
@@ -45,7 +47,7 @@ public class PostPreviewDto {
                 .postId(post.getId())
                 .title(post.getTitle())
                 .content(truncate(post.getContent(), 50))
-                .thumbnailUrl(post.getThumbnailUrl())
+                .thumbnailImage(post.getThumbnailImage())
                 .category(post.getCategory().name())
                 .tag(post.getTag() != null ? post.getTag().name() : null)
                 .likeCount(post.getLikeCount())

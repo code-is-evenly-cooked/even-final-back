@@ -47,7 +47,7 @@ public class GroupController {
         return ResponseEntity.ok(ApiResponse.success("나의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));
     }
 
-    @Operation(summary = "즐겨찾기 그룹 추가", description = "그룹 이름을 입력받아 그룹을 추가합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "그룹 추가", description = "그룹 이름을 입력받고 그룹을 생성합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping
     public ResponseEntity<ApiResponse<String>> createGroup(@RequestBody GroupCreateRequest request,
                                                            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {

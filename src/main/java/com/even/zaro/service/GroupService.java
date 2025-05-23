@@ -30,7 +30,7 @@ public class GroupService {
 
         User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
 
-        boolean dupCheck = groupNameDuplicateCheck(request.getName(), userid);
+        boolean dupCheck = groupNameDuplicateCheck(request.getGroupName(), userid);
 
         // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
         if (dupCheck) {
@@ -39,7 +39,7 @@ public class GroupService {
 
         FavoriteGroup favoriteGroup = FavoriteGroup.builder()
                 .user(user) // 유저 설정
-                .name(request.getName()) // Group 이름 설정
+                .name(request.getGroupName()) // Group 이름 설정
                 .build();
 
         favoriteGroupRepository.save(favoriteGroup);

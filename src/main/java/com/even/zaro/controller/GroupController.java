@@ -66,7 +66,7 @@ public class GroupController {
         return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹을 삭제했습니다."));
     }
 
-    @Operation(summary = "즐겨찾기 그룹 수정", description = "그룹 이름을 수정합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "그룹 수정", description = "그룹 이름을 수정합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/{groupId}")
     public ResponseEntity<ApiResponse<String>> editGroup(@PathVariable("groupId") long groupId,
                                                          @RequestBody GroupEditRequest request,

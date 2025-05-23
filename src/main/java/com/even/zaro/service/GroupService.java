@@ -101,13 +101,13 @@ public class GroupService {
             throw new GroupException(ErrorCode.UNAUTHORIZED_GROUP_UPDATE);
         }
 
-        boolean dupCheck = groupNameDuplicateCheck(request.getName(), group.getUser().getId());
+        boolean dupCheck = groupNameDuplicateCheck(request.getGroupName(), group.getUser().getId());
 
         // 해당 유저가 이미 있는 즐겨찾기 그룹 이름을 입력했을 때
         if (dupCheck) {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
-        group.setName(request.getName());
+        group.setName(request.getGroupName());
     }
 
 

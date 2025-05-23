@@ -48,7 +48,7 @@ public class FavoriteController {
     }
 
 
-    @Operation(summary = "즐겨찾기의 메모 수정", description = "해당 즐겨찾기의 메모를 수정합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "즐겨찾기 메모 수정", description = "즐겨찾기의 메모를 수정합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/{favoriteId}")
     public ResponseEntity<ApiResponse<String>> editFavoriteMemo(
             @PathVariable("favoriteId") long favoriteId,
@@ -56,7 +56,7 @@ public class FavoriteController {
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         favoriteService.editFavoriteMemo(favoriteId, request, userInfoDto.getUserId());
 
-        return ResponseEntity.ok(ApiResponse.success("즐겨찾기 메모가 성공적으로 수정되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success("즐겨찾기 메모가 수정되었습니다."));
     }
 
     @Operation(summary = "즐겨찾기 삭제", description = "해당 즐겨찾기를 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})

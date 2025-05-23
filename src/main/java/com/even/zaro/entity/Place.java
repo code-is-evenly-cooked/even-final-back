@@ -44,6 +44,7 @@ public class Place {
     private LocalDateTime createdAt;
 
     @Column(name = "favorite_count", nullable = false)
+    @Builder.Default
     private int favoriteCount = 0;
 
     public void incrementFavoriteCount() {

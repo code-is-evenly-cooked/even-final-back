@@ -1,5 +1,6 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.PostSearchDto;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
@@ -14,7 +15,7 @@ import org.springframework.stereotype.Service;
 public class PostSearchService {
     private final PostSearchRepositoryCustom postSearchRepository;
 
-    public Page<PostSearchDto> searchPosts(String category, String keyword, Pageable pageable) {
+    public PageResponse<PostSearchDto> searchPosts(String category, String keyword, Pageable pageable) {
 
         if (category == null || category.isBlank()) {
             throw new PostException(ErrorCode.CATEGORY_REQUIRED);
@@ -29,6 +30,6 @@ public class PostSearchService {
             throw new PostException(ErrorCode.POST_NOT_FOUND);
         }
 
-        return result;
+        return new PageResponse<>(result);
     }
 }

@@ -137,7 +137,10 @@ public class PostService {
                 .category(String.valueOf(post.getCategory()))
                 .tag(String.valueOf(post.getTag()))
                 .thumbnailUrl(post.getThumbnailUrl())
-                .imageUrlList(post.getImageUrlList())
+                .imageUrlList(post.getImageUrlList()
+                        .stream()
+                        .distinct()
+                        .collect(Collectors.toList()))
                 .user(new PostDetailResponse.UserInfo(
                         user.getId(),
                         user.getNickname(),

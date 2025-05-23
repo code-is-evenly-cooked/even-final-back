@@ -38,7 +38,7 @@ public class GroupController {
     }
 
 
-    @Operation(summary = "나의 즐겨찾기 그룹 리스트 조회", description = "나의 즐겨찾기 그룹 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "내 그룹 리스트 조회", description = "내 그룹 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping
     public ResponseEntity<ApiResponse<List<GroupResponse>>> getMyFavoriteGroups(
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {

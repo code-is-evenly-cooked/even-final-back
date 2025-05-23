@@ -28,9 +28,9 @@ public class GroupService {
 
     public void createGroup(GroupCreateRequest request, long userid) {
 
-        User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+        User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        boolean dupCheck = groupNameDuplicateCheck(request.getName(), userid);
+        boolean dupCheck = groupNameDuplicateCheck(request.getGroupName(), userid);
 
         // 해당 유저가 이미 있는 그룹 이름을 입력했을 때
         if (dupCheck) {
@@ -39,7 +39,7 @@ public class GroupService {
 
         FavoriteGroup favoriteGroup = FavoriteGroup.builder()
                 .user(user) // 유저 설정
-                .name(request.getName()) // Group 이름 설정
+                .name(request.getGroupName()) // Group 이름 설정
                 .build();
 
         favoriteGroupRepository.save(favoriteGroup);
@@ -49,21 +49,24 @@ public class GroupService {
     public List<GroupResponse> getFavoriteGroups(long userId) {
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         // userId 값이 일치하는 데이터 조회
         List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
 
         if (groupList.isEmpty()) {
-            throw new GroupException(ErrorCode.GROUP_NOT_FOUND);
+            throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);
         }
 
 
         // GroupResponse 리스트로 변환
         List<GroupResponse> responseList = groupList.stream().map(group ->
                         GroupResponse.builder()
-                                .id(group.getId())
+                                .groupId(group.getId())
                                 .name(group.getName())
+                                .isDeleted(group.isDeleted())
+                                .createdAt(group.getCreatedAt())
+                                .updatedAt(group.getUpdatedAt())
                                 .build())
                 .toList();
 
@@ -98,13 +101,13 @@ public class GroupService {
             throw new GroupException(ErrorCode.UNAUTHORIZED_GROUP_UPDATE);
         }
 
-        boolean dupCheck = groupNameDuplicateCheck(request.getName(), group.getUser().getId());
+        boolean dupCheck = groupNameDuplicateCheck(request.getGroupName(), group.getUser().getId());
 
         // 해당 유저가 이미 있는 즐겨찾기 그룹 이름을 입력했을 때
         if (dupCheck) {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
-        group.setName(request.getName());
+        group.setName(request.getGroupName());
     }
 
 

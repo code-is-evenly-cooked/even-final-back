@@ -9,5 +9,5 @@ import lombok.Getter;
 public class GroupCreateRequest {
     // Group 이름
     @Schema(description = "그룹 이름", example = "강릉 맛집!!")
-    private String name;
+    private String groupName;
 }

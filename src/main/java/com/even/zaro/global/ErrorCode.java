@@ -80,7 +80,10 @@ public enum ErrorCode {
     SEARCH_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "검색 결과가 없습니다."),
 
     // 댓글 Comments
+    COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),
     COMMENT_NO_ASSOCIATED_POST(HttpStatus.INTERNAL_SERVER_ERROR, "댓글에 연결된 게시글이 존재하지 않습니다."),
+    COMMENT_CONTENT_BLANK(HttpStatus.BAD_REQUEST, "댓글 내용을 입력하지 않았습니다."),
+    NOT_COMMENT_OWNER(HttpStatus.BAD_REQUEST, "댓글 작성자가 아닙니다."),
 
     // 프로필 Profile
     FOLLOW_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우할 수 없습니다."),
@@ -105,6 +108,8 @@ public enum ErrorCode {
 
     // 지도 Map
     PLACE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 장소를 찾지 못했습니다."),
+    BY_COORDINATE_NOT_FOUND_PLACE_LIST(HttpStatus.NOT_FOUND, "인근에 조회된 장소가 없습니다."),
+
 
 
     // Health

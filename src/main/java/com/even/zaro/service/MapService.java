@@ -1,12 +1,13 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.map.MarkerInfoResponse;
+import com.even.zaro.dto.map.PlaceResponse;
 import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.Place;
-import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.place.PlaceException;
 import com.even.zaro.repository.FavoriteRepository;
+import com.even.zaro.repository.MapQueryRepository;
 import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -14,8 +15,8 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.IntStream;
 
 @Service
 @Slf4j
@@ -24,7 +25,7 @@ import java.util.stream.IntStream;
 public class MapService {
     private final PlaceRepository placeRepository;
     private final FavoriteRepository favoriteRepository;
-    private final UserRepository userRepository;
+    private final MapQueryRepository mapQueryRepository;
 
     public MarkerInfoResponse getPlaceInfo(long placeId) {
 
@@ -57,5 +58,34 @@ public class MapService {
 
 
         return markerInfo;
+    }
+
+    public PlaceResponse getPlacesByCoordinate(double lat, double lng, double distanceKm) {
+
+        List<Place> placeByCoordinate = mapQueryRepository.findPlaceByCoordinate(lat, lng, distanceKm);
+
+        // 조회된 장소가 없을 때
+        if (placeByCoordinate.isEmpty()) {
+            throw new PlaceException(ErrorCode.BY_COORDINATE_NOT_FOUND_PLACE_LIST);
+        }
+
+        List<PlaceResponse.PlaceInfo> placeInfos =  placeByCoordinate.stream()
+                .map(place -> PlaceResponse.PlaceInfo.builder()
+                        .place_id(place.getId())
+                        .name(place.getName())
+                        .address(place.getAddress())
+                        .lat(place.getLat())
+                        .lng(place.getLng())
+                        .build()
+                ).toList();
+
+        int totalCount = placeByCoordinate.size();
+
+        PlaceResponse placeResponse = PlaceResponse.builder()
+                .totalCount(totalCount)
+                .placeInfos(placeInfos)
+                .build();
+
+        return placeResponse;
     }
 }

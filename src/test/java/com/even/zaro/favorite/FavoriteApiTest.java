@@ -54,7 +54,7 @@ public class FavoriteApiTest {
 
         // Given
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
-        craeteFavoriteGroup(user.getId(), "서울 맛집");
+        createFavoriteGroup(user.getId(), "서울 맛집");
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -83,7 +83,7 @@ public class FavoriteApiTest {
 
         // Given
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
-        craeteFavoriteGroup(user.getId(), "서울 맛집");
+        createFavoriteGroup(user.getId(), "서울 맛집");
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -117,7 +117,7 @@ public class FavoriteApiTest {
     void 즐겨찾기_메모_수정_성공_테스트() {
         // Given : user 객체와 그룹 생성
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
-        craeteFavoriteGroup(user.getId(), "서울 맛집");
+        createFavoriteGroup(user.getId(), "서울 맛집");
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -146,7 +146,7 @@ public class FavoriteApiTest {
     void 즐겨찾기_삭제_성공_테스트() {
         // Given : user 객체와 그룹 생성
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
-        craeteFavoriteGroup(user.getId(), "서울 맛집");
+        createFavoriteGroup(user.getId(), "서울 맛집");
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -175,7 +175,7 @@ public class FavoriteApiTest {
     void 이미_존재하는_즐겨찾기_추가_시도_예외_FAVORITE_ALREADY_EXISTS() {
         // Given : user 객체와 그룹 생성
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
-        craeteFavoriteGroup(user.getId(), "서울 맛집");
+        createFavoriteGroup(user.getId(), "서울 맛집");
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -238,7 +238,7 @@ public class FavoriteApiTest {
         List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();
 
             // 그룹 추가
-        craeteFavoriteGroup(user1.getId(), "서울 맛집");
+        createFavoriteGroup(user1.getId(), "서울 맛집");
 
         List<Long> GroupIdList = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
 
@@ -265,7 +265,7 @@ public class FavoriteApiTest {
         List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();
 
         // 그룹 추가
-        craeteFavoriteGroup(user1.getId(), "서울 맛집");
+        createFavoriteGroup(user1.getId(), "서울 맛집");
 
         List<Long> GroupIdList = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
 
@@ -306,7 +306,7 @@ public class FavoriteApiTest {
 
 
     // 그룹 추가 메서드
-    void craeteFavoriteGroup(long userId, String groupName) {
+    void createFavoriteGroup(long userId, String groupName) {
         GroupCreateRequest request = GroupCreateRequest.builder().name(groupName).build();
         groupService.createGroup(request, userId);
     }

@@ -82,6 +82,10 @@ public class FavoriteService {
 
         List<Favorite> favoriteList = favoriteRepository.findAllByGroup(group);
 
+        if (favoriteList.isEmpty()) {
+            throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
+        }
+
         List<FavoriteResponse> favoriteResponseList = favoriteList.stream().map(favorite ->
                 FavoriteResponse.builder()
                         .id(favorite.getId())

@@ -99,6 +99,7 @@ public enum ErrorCode {
     // 즐겨찾기 favorite
     FAVORITE_ALREADY_EXISTS(HttpStatus.CONFLICT, "이미 즐겨찾기에 존재하는 장소는 추가할 수 없습니다."),
     FAVORITE_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 즐겨찾기를 찾지 못했습니다."),
+    FAVORITE_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹에 즐겨찾기가 존재하지 않습니다."),
     UNAUTHORIZED_FAVORITE_UPDATE(HttpStatus.UNAUTHORIZED, "다른 사용자의 즐겨찾기 메모 수정 시도입니다."),
     UNAUTHORIZED_FAVORITE_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 즐겨찾기 삭제 시도입니다."),
 

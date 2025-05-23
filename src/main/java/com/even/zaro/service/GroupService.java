@@ -28,7 +28,7 @@ public class GroupService {
 
     public void createGroup(GroupCreateRequest request, long userid) {
 
-        User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+        User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         boolean dupCheck = groupNameDuplicateCheck(request.getGroupName(), userid);
 

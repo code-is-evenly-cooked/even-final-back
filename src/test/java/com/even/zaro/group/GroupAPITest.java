@@ -13,7 +13,6 @@ import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.service.FavoriteService;
 import com.even.zaro.service.GroupService;
-import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -50,9 +49,9 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // 즐겨찾기 그룹 예시 데이터 추가
-        craeteFavoriteGroup(user.getId(), "맛집 모음");
-        craeteFavoriteGroup(user.getId(), "데이트 코스");
-        craeteFavoriteGroup(user.getId(), "가보고 싶은 곳");
+        createFavoriteGroup(user.getId(), "맛집 모음");
+        createFavoriteGroup(user.getId(), "데이트 코스");
+        createFavoriteGroup(user.getId(), "가보고 싶은 곳");
 
         // When : 유저의 그룹 리스트 조회 요청
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -70,7 +69,7 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // When : 그룹 생성 요청
-        craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
+        createFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
 
         // Then : 그룹이 정상적으로 추가되었는지 확인
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId()); // 해당 유저의 아이디로 그룹 리스트를 조회
@@ -85,9 +84,9 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // 여러개의 그룹 생성 요청 생성
-        craeteFavoriteGroup(user.getId(), "groupName1");
-        craeteFavoriteGroup(user.getId(), "groupName2");
-        craeteFavoriteGroup(user.getId(), "groupName3");
+        createFavoriteGroup(user.getId(), "groupName1");
+        createFavoriteGroup(user.getId(), "groupName2");
+        createFavoriteGroup(user.getId(), "groupName3");
 
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId()); // 그룹 리스트 조회
         List<Long> favoriteGroupIds = favoriteGroups.stream().map(GroupResponse::getId).toList(); // 그룹 id 리스트
@@ -145,7 +144,7 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // 그룹 생성
-        craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
+        createFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
@@ -169,11 +168,11 @@ public class GroupAPITest {
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
 
         // 그룹 생성
-        craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
+        createFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
 
         // When & Then : 이미 추가한 그룹이름으로 한번 더 추가
         GroupException exception = assertThrows(GroupException.class, () -> {
-            craeteFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
+            createFavoriteGroup(user.getId(), "의정부 맛집은 여기라던데~?");
         });
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.GROUP_ALREADY_EXIST);
@@ -188,7 +187,7 @@ public class GroupAPITest {
 
 
         // 그룹 생성
-        craeteFavoriteGroup(user1.getId(), "user1의 그룹");
+        createFavoriteGroup(user1.getId(), "user1의 그룹");
 
         // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user1.getId());
@@ -212,7 +211,7 @@ public class GroupAPITest {
 
 
         // 그룹 생성
-        craeteFavoriteGroup(user1.getId(), "user1의 그룹");
+        createFavoriteGroup(user1.getId(), "user1의 그룹");
 
         // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user1.getId());
@@ -242,7 +241,7 @@ public class GroupAPITest {
     }
 
     // 그룹 추가 메서드
-    void craeteFavoriteGroup(long userId, String groupName) {
+    void createFavoriteGroup(long userId, String groupName) {
         GroupCreateRequest request = GroupCreateRequest.builder().name(groupName).build();
         groupService.createGroup(request, userId);
     }

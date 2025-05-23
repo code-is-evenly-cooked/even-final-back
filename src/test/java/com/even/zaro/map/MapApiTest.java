@@ -59,8 +59,8 @@ public class MapApiTest {
         Place place = createPlace(1, "test1", "test1", 30, 42);
 
             // 유저 당 그룹 1개씩 추가
-        craeteFavoriteGroup(user1.getId(), "test1");
-        craeteFavoriteGroup(user2.getId(), "test2");
+        createFavoriteGroup(user1.getId(), "test1");
+        createFavoriteGroup(user2.getId(), "test2");
 
         List<Long> groupIds = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
 
@@ -161,7 +161,7 @@ public class MapApiTest {
 
 
     // 그룹 추가 메서드
-    void craeteFavoriteGroup(long userId, String groupName) {
+    void createFavoriteGroup(long userId, String groupName) {
         GroupCreateRequest request = GroupCreateRequest.builder().name(groupName).build();
         groupService.createGroup(request, userId);
     }

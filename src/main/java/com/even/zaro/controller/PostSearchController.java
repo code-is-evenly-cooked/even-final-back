@@ -28,7 +28,7 @@ public class PostSearchController {
 
     private final PostSearchService postSearchService;
 
-    @Operation(summary = "게시글 검색", description = "카테고리 및 키워드 기반으로 게시글을 검색합니다.",security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "게시글 검색", description = "카테고리 및 키워드 기반으로 게시글을 검색합니다.")
     @GetMapping
     public ResponseEntity<ApiResponse<?>> searchPosts(
             @RequestParam String category,

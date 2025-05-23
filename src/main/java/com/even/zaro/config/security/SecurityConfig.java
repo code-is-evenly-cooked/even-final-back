@@ -43,6 +43,8 @@ public class SecurityConfig {
                         .requestMatchers("/swagger-ui/**", "/v3/api-docs/**").permitAll() // 스웨거
                         .requestMatchers("/api/auth/**").permitAll() // auth 인증 없이
                                 .requestMatchers("/api/posts/home").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/search").permitAll()
                                 .requestMatchers("/api/profile/{userId}").permitAll()
 //                        .requestMatchers("/**").permitAll() // 전체 인증 없이 개발용
                         .anyRequest().authenticated()

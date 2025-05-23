@@ -7,6 +7,9 @@ import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.PostLikeService;
 import com.even.zaro.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
@@ -52,7 +55,12 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("게시글이 수정되었습니다."));
     }
 
-    @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.",security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
+    @Parameters({
+            @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY),
+            @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY),
+            @Parameter(name = "sort", description = "정렬 기준 (예: createdAt,desc)", in = ParameterIn.QUERY)
+    })
     @GetMapping
     public ResponseEntity<ApiResponse<?>> getPostList(
             @RequestParam(required = false) String category,

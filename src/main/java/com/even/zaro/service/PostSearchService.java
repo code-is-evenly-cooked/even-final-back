@@ -3,7 +3,6 @@ package com.even.zaro.service;
 import com.even.zaro.dto.post.PostSearchDto;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
-import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.PostSearchRepositoryCustom;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;

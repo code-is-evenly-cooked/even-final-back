@@ -1,5 +1,6 @@
 package com.even.zaro.controller;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.global.ApiResponse;
@@ -14,6 +15,7 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -56,25 +58,16 @@ public class PostController {
     }
 
     @Operation(summary = "게시글 목록 조회", description = "게시글 리스트 목록을 조회합니다.")
-    @Parameters({
-            @Parameter(name = "page", description = "페이지 번호 (0부터 시작)", in = ParameterIn.QUERY),
-            @Parameter(name = "size", description = "페이지 크기", in = ParameterIn.QUERY),
-            @Parameter(name = "sort", description = "정렬 기준 (예: createdAt,desc)", in = ParameterIn.QUERY)
-    })
     @GetMapping
-    public ResponseEntity<ApiResponse<?>> getPostList(
+    public ResponseEntity<ApiResponse<PageResponse<PostPreviewDto>>> getPostList(
             @RequestParam(required = false) String category,
-            @PageableDefault(size = 10) Pageable pageable,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC)
+            Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ){
-        Page<PostPreviewDto> posts = postService.getPostListPage(category, pageable);
+        PageResponse<PostPreviewDto> posts = postService.getPostListPage(category, pageable);
 
-        return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공했습니다.", Map.of(
-                "content", posts.getContent(),
-                "totalPages", posts.getTotalPages(),
-                "currentPage", posts.getNumber() + 1,
-                "totalElements", posts.getTotalElements()
-        )));
+        return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공했습니다.",posts));
     }
 
 

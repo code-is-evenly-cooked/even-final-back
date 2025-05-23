@@ -89,12 +89,12 @@ public class Post {
         this.tag = tag;
     }
 
-    public void changeImageUrlList(List<String> imageUrlList) {
-        this.imageUrlList = imageUrlList;
+    public void changeImageList(List<String> postImageList) {
+        this.postImageList = postImageList;
     }
 
-    public void changeThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
+    public void changeThumbnail(String thumbnailImage) {
+        this.thumbnailImage = thumbnailImage;
     }
 
     public void changeLikeCount(int likeCount) {

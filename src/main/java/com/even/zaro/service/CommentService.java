@@ -1,5 +1,6 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.comment.CommentRequestDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
@@ -13,6 +14,8 @@ import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -44,7 +47,35 @@ public class CommentService {
                 user.getNickname(),
                 user.getProfileImage(),
                 user.getLiveAloneDate(),
-                comment.getCreatedAt()
+                comment.getCreatedAt(),
+                true
         );
+    }
+
+    @Transactional(readOnly = true)
+    public PageResponse<CommentResponseDto> readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
+        Long currentUserId = userInfoDto.getUserId();
+
+        // 게시글 존재 여부 확인
+        Post post = postRepository.findByIdAndIsDeletedFalse(postId)
+                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+
+        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId, pageable)
+                .map(comment -> {
+                    User writer = comment.getUser();
+
+                    boolean isMine = writer.getId().equals(currentUserId);
+
+                    return new CommentResponseDto(
+                            comment.getId(),
+                            comment.getContent(),
+                            comment.getUser().getNickname(),
+                            comment.getUser().getProfileImage(),
+                            comment.getUser().getLiveAloneDate(),
+                            comment.getCreatedAt(),
+                            isMine
+                    );
+                });
+        return new PageResponse<>(page);
     }
 }

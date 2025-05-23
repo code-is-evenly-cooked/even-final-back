@@ -38,10 +38,11 @@ public class FavoriteController {
     }
 
 
-    @Operation(summary = "그룹의 즐겨찾기 리스트 조회", description = "해당 그룹의 즐겨찾기 리스트를 조회합니다.")
+    @Operation(summary = "그룹의 즐겨찾기 조회", description = "그룹의 즐겨찾기 리스트를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/{groupId}/items")
     public ResponseEntity<ApiResponse<List<FavoriteResponse>>> getGroupItems(
-            @PathVariable("groupId") long groupId) {
+            @PathVariable("groupId") long groupId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         List<FavoriteResponse> groupItems = favoriteService.getGroupItems(groupId);
 
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기 그룹의 장소 목록을 성공적으로 조회했습니다.", groupItems));

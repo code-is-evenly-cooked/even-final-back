@@ -4,6 +4,9 @@ import com.even.zaro.dto.post.PostPreviewDto;
 import com.even.zaro.dto.post.PostSearchDto;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.PostSearchService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -15,9 +18,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
 import java.util.Map;
 
+@Tag(name = "게시글 검색 API", description = "카테고리 + 키워드 기반 게시글 검색 기능")
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/search")
@@ -25,6 +28,7 @@ public class PostSearchController {
 
     private final PostSearchService postSearchService;
 
+    @Operation(summary = "게시글 검색", description = "카테고리 및 키워드 기반으로 게시글을 검색합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping
     public ResponseEntity<ApiResponse<?>> searchPosts(
             @RequestParam String category,

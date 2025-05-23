@@ -62,7 +62,7 @@ public class GroupService {
         // GroupResponse 리스트로 변환
         List<GroupResponse> responseList = groupList.stream().map(group ->
                         GroupResponse.builder()
-                                .id(group.getId())
+                                .groupId(group.getId())
                                 .name(group.getName())
                                 .isDeleted(group.isDeleted())
                                 .createdAt(group.getCreatedAt())

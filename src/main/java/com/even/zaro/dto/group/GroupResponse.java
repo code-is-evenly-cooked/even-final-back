@@ -11,7 +11,7 @@ import java.time.LocalDateTime;
 public class GroupResponse {
 
     @Schema(description = "그룹 id", example = "1")
-    private long id;
+    private long groupId;
 
     @Schema(description = "그룹 이름", example = "부산 맛집!~")
     private String name;

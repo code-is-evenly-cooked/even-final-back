@@ -12,7 +12,6 @@ import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
-import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
@@ -50,4 +49,28 @@ public class CommentController {
         PageResponse<CommentResponseDto> responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글 리스트를 불러왔습니다.", responseDto));
     }
+
+    @Operation(summary = "댓글 수정", description = "{commentId}에 해당하는 댓글 내용을 수정합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    @PatchMapping("comments/{commentId}")
+    public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
+            @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
+            @RequestBody CommentRequestDto requestDto,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+    ) {
+        CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userInfoDto);
+        return ResponseEntity.ok(ApiResponse.success("댓글을 수정했습니다.", responseDto));
+    }
+
+    @Operation(summary = "댓글 삭제", description = "{commentId}에 해당하는 댓글을 삭제합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    @DeleteMapping("comments/{commentId}")
+    public ResponseEntity<ApiResponse<Void>> softDeleteComment(
+            @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        commentService.softDeleteComment(commentId, userInfoDto);
+        return ResponseEntity.ok(ApiResponse.success("댓글을 삭제했습니다."));
+    }
+
+
 }

@@ -25,4 +25,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     Optional<Post> findByIdAndIsDeletedFalse(Long postId);
 
     List<Post> findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category category);
+
+    boolean existsByIdAndIsDeletedFalse(Long postId);
 }

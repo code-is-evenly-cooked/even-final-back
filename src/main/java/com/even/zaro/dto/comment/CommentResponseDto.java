@@ -32,6 +32,13 @@ public class CommentResponseDto {
     @Schema(description = "댓글 작성 시간", example = "2025-05-21T14:33:00")
     private LocalDateTime createdAt;
 
+    @Schema(description = "댓글 수정 시간", example = "2025-05-22T08:15:12")
+    private LocalDateTime updatedAt;
+
+    @Schema(description = "수정 여부", example = "true")
+    @JsonProperty("isEdited")
+    private boolean isEdited;
+
     @Schema(description = "댓글 작성자 여부", example = "true")
     @JsonProperty("isMine")
     private boolean isMine;
@@ -39,5 +46,10 @@ public class CommentResponseDto {
     @JsonIgnore
     public boolean getMine() {
         return isMine;
+    }
+
+    @JsonIgnore
+    public boolean getEdited() {
+        return isEdited;
     }
 }

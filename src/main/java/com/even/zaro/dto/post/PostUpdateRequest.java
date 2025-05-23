@@ -20,12 +20,12 @@ public class PostUpdateRequest {
     @Schema(description = "게시글 내용", example = "자취 꿀템 공유해요~")
     private String content;
 
-    @Schema(description = "게시글 태그", example = "TIP")
+    @Schema(description = "게시글 태그", example = "TIPS")
     private String tag;
 
-    @Schema(description = "이미지 URL 목록", example = "https://s3.bucket.com/image1.png")
-    private List<String> imageUrlList;
+    @Schema(description = "포스트 이미지 key 리스트", example = "[\"/images/post/uuid1.png\", \"/images/post/uuid2.png\"]")
+    private List<String> postImageList;
 
-    @Schema(description = "썸네일 이미지 URL", example = "https://s3.bucket.com/image1.png")
-    private String thumbnailUrl;
+    @Schema(description = "썸네일 이미지 key", example = "/images/post/uuid1.png")
+    private String thumbnailImage;
 }

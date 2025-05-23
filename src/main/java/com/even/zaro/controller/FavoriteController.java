@@ -27,14 +27,14 @@ import java.util.List;
 public class FavoriteController {
     private final FavoriteService favoriteService;
 
-    @Operation(summary = "즐겨찾기 추가", description = "그룹에 즐겨찾기를 추가합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "그룹에 즐겨찾기 추가", description = "그룹에 즐겨찾기를 추가합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/groups/{groupId}/favorites")
     public ResponseEntity<ApiResponse<FavoriteAddResponse>> addFavorite(@PathVariable("groupId") long groupId,
                                                                         @RequestBody FavoriteAddRequest request,
                                                                         @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         FavoriteAddResponse favoriteAddResponse = favoriteService.addFavorite(groupId, request, userInfoDto.getUserId());
 
-        return ResponseEntity.ok(ApiResponse.success("즐겨찾기가 해당 그룹에 성공적으로 추가되었습니다.", favoriteAddResponse));
+        return ResponseEntity.ok(ApiResponse.success("그룹에 즐겨찾기가 추가되었습니다.", favoriteAddResponse));
     }
 
 

@@ -109,6 +109,13 @@ public class CommentService {
         boolean isEdited = !createdAt.truncatedTo(ChronoUnit.SECONDS)
                 .isEqual(updatedAt.truncatedTo(ChronoUnit.SECONDS));
 
+
+        User mentioned = comment.getMentionedUser();
+        MentionedUserDto mentionedUser = null;
+        if (mentioned != null) {
+            mentionedUser = new MentionedUserDto(mentioned.getId(), mentioned.getNickname());
+        }
+
         return new CommentResponseDto(
                 comment.getId(),
                 comment.getContent(),
@@ -118,7 +125,8 @@ public class CommentService {
                 createdAt,
                 updatedAt,
                 isEdited,
-                isMine
+                isMine,
+                mentionedUser
         );
     }
 }

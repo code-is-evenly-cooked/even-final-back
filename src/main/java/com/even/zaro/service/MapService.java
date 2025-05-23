@@ -5,17 +5,16 @@ import com.even.zaro.dto.map.PlaceResponse;
 import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.Place;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.place.PlaceException;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.MapQueryRepository;
 import com.even.zaro.repository.PlaceRepository;
-import com.even.zaro.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
 
 @Service
@@ -66,7 +65,7 @@ public class MapService {
 
         // 조회된 장소가 없을 때
         if (placeByCoordinate.isEmpty()) {
-            throw new PlaceException(ErrorCode.BY_COORDINATE_NOT_FOUND_PLACE_LIST);
+            throw new MapException(ErrorCode.BY_COORDINATE_NOT_FOUND_PLACE_LIST);
         }
 
         List<PlaceResponse.PlaceInfo> placeInfos =  placeByCoordinate.stream()

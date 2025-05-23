@@ -4,13 +4,17 @@ import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.group.GroupCreateRequest;
 import com.even.zaro.dto.map.MarkerInfoResponse;
 import com.even.zaro.dto.map.MarkerInfoResponse.UserSimpleResponse;
+import com.even.zaro.dto.map.PlaceResponse;
+import com.even.zaro.dto.map.PlaceResponse.PlaceInfo;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.place.PlaceException;
 import com.even.zaro.repository.*;
 import com.even.zaro.service.FavoriteService;
 import com.even.zaro.service.GroupService;
 import com.even.zaro.service.MapService;
+import org.junit.jupiter.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -55,16 +59,16 @@ public class MapApiTest {
 
         List<Long> users = userRepository.findAll().stream().map(User::getId).toList();
 
-            // 장소 1개 추가
+        // 장소 1개 추가
         Place place = createPlace(1, "test1", "test1", 30, 42);
 
-            // 유저 당 그룹 1개씩 추가
+        // 유저 당 그룹 1개씩 추가
         createFavoriteGroup(user1.getId(), "test1");
         createFavoriteGroup(user2.getId(), "test2");
 
         List<Long> groupIds = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
 
-            // 각 그룹에 장소를 즐겨찾기에 추가
+        // 각 그룹에 장소를 즐겨찾기에 추가
         addFavoriteGroup(place.getId(), groupIds.getFirst(), "맛 없어요", users.getFirst());
         addFavoriteGroup(place.getId(), groupIds.getLast(), "맛 있어요", users.getLast());
 
@@ -72,7 +76,7 @@ public class MapApiTest {
 
         List<Favorite> favoriteList = favoriteRepository.findAllById(List.of(favoriteIds.getFirst(), favoriteIds.getLast()));
 
-            // MarkerInfoResponse 내부 객체 UserSimpleResponse 객체 생성
+        // MarkerInfoResponse 내부 객체 UserSimpleResponse 객체 생성
         List<UserSimpleResponse> userSimpleResponses = favoriteList.stream().map(favorite -> UserSimpleResponse.builder()
                 .profileImage(favorite.getUser().getProfileImage())
                 .userId(favorite.getUser().getId())
@@ -84,7 +88,7 @@ public class MapApiTest {
         Place findPlace = placeRepository.findById(place.getId())
                 .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND));
 
-            // 예상 응답 객체 사전 생성
+        // 예상 응답 객체 사전 생성
         MarkerInfoResponse markerInfoResponse = MarkerInfoResponse.builder()
                 .placeId(findPlace.getId())
                 .placeName(findPlace.getName())
@@ -122,19 +126,43 @@ public class MapApiTest {
         createPlace(1007, "강남역", "서울 강남구 강남대로", 37.498000, 127.028000);       // ❌
 
         // When : 서울역 기준으로 1KM 반경 장소 조회
-        List<Place> placeByCoordinate = mapQueryRepository.findPlaceByCoordinate(37.554722, 126.970833, 1);
-        placeByCoordinate.forEach(place -> {
-            double distance = calculateHaversine(37.554722, 126.970833, place.getLat(), place.getLng());
-            System.out.printf("📍 %s → %.2fkm\n", place.getName(), distance);
-        });
+        PlaceResponse placeByCoordinate = mapService.getPlacesByCoordinate(37.554722, 126.970833, 1);
+
+        placeByCoordinate.getPlaceInfos().forEach(
+                place -> {
+                    double distance = calculateHaversine(37.554722, 126.970833, place.getLat(), place.getLng());
+                    System.out.printf("📍 %s → %.2fkm\n", place.getName(), distance);
+                });
 
         // Then : 1Km 반경 기준 데이터 검증
-        List<String> names = placeByCoordinate.stream().map(Place::getName).toList();
+        List<String> names = placeByCoordinate.getPlaceInfos().stream().map(PlaceInfo::getName).toList();
 
         assertThat(names).containsExactlyInAnyOrder("서울역", "서울시청", "남대문시장"); // 1Km 안의 장소가 조회됐는지 검증
         assertThat(names).doesNotContain("광화문", "신촌역", "숙대입구역", "강남역"); // 반경 밖의 장소가 데이터에 포함이 안 됐는지 검증
     }
 
+    @Test
+    void 좌표_기반_인근_장소_리스트_조회_예외_테스트_BY_COORDINATE_NOT_FOUND_PLACE_LIST() {
+        // Given : 장소 추가
+//        createPlace(1008, "의정부역", "의정부역", 37.738569, 127.045147); // 기준점 의정부
+        createPlace(1001, "서울역", "서울 중구 한강대로 405", 37.554722, 126.970833);     // ❌   서울
+        createPlace(1002, "남대문시장", "서울 중구 남대문시장길", 37.559500, 126.975000); // ❌   서울
+        createPlace(1003, "서울시청", "서울 중구 세종대로", 37.562000, 126.974000);       // ❌   서울
+        createPlace(1004, "광화문", "서울 종로구 세종대로", 37.575000, 126.980000);       // ❌   서울
+        createPlace(1005, "신촌역", "서울 서대문구 신촌로", 37.556000, 126.936000);       // ❌   서울
+        createPlace(1006, "숙대입구역", "서울 용산구 청파로", 37.542000, 126.975000);     // ❌   서울
+        createPlace(1007, "강남역", "서울 강남구 강남대로", 37.498000, 127.028000);       // ❌   서울
+
+        // When & Then : 의정부역 기준으로 1KM 반경 내 장소 조회 시 예외 테스트
+        MapException exception = Assertions.assertThrows(MapException.class, () -> {
+            mapService.getPlacesByCoordinate(37.738569, 127.045147, 1);
+        });
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.BY_COORDINATE_NOT_FOUND_PLACE_LIST);
+    }
+
+
+//    @Test
 
 
     // 임시 유저 생성 메서드

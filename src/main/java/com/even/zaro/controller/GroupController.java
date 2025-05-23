@@ -1,9 +1,9 @@
 package com.even.zaro.controller;
 
-import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.group.GroupCreateRequest;
 import com.even.zaro.dto.group.GroupEditRequest;
 import com.even.zaro.dto.group.GroupResponse;
+import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.GroupService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -27,10 +27,11 @@ public class GroupController {
     private final GroupService groupService;
 
 
-    @Operation(summary = "다른 사용자의 그룹 리스트 조회", description = "사용자는 해당 유저의 프로필에서 그룹 목록을 조회할 수 있다")
+    @Operation(summary = "다른 사용자의 그룹 리스트 조회", description = "사용자는 해당 유저의 프로필에서 그룹 목록을 조회할 수 있다", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/user/{userId}/group")
     public ResponseEntity<ApiResponse<List<GroupResponse>>> getFavoriteGroupsByUserId(
-            @PathVariable("userId") long userId) {
+            @PathVariable("userId") long userId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         List<GroupResponse> groupList = groupService.getFavoriteGroups(userId);
 
         return ResponseEntity.ok(ApiResponse.success("해당 유저의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));

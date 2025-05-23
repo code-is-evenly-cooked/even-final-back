@@ -81,6 +81,7 @@ public enum ErrorCode {
     COMMENT_NO_ASSOCIATED_POST(HttpStatus.INTERNAL_SERVER_ERROR, "댓글에 연결된 게시글이 존재하지 않습니다."),
     COMMENT_CONTENT_BLANK(HttpStatus.BAD_REQUEST, "댓글 내용을 입력하지 않았습니다."),
     NOT_COMMENT_OWNER(HttpStatus.BAD_REQUEST, "댓글 작성자가 아닙니다."),
+    MENTIONED_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "멘션한 사용자를 찾을 수 없습니다."),
 
     // 프로필 Profile
     FOLLOW_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우할 수 없습니다."),

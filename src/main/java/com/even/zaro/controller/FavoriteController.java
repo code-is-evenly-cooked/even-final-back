@@ -7,7 +7,6 @@ import com.even.zaro.dto.favorite.FavoriteResponse;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.FavoriteService;
-import com.even.zaro.service.ProfileService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;

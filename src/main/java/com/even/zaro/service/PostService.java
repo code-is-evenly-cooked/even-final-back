@@ -5,6 +5,7 @@ import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
+import com.even.zaro.event.PostDeletedEvent;
 import com.even.zaro.event.PostSavedEvent;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
@@ -174,6 +175,7 @@ public class PostService {
         }
 
         post.markAsDeleted();
+        eventPublisher.publishEvent(new PostDeletedEvent(postId));
     }
 
 

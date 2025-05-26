@@ -38,7 +38,7 @@ public class FavoriteService {
                 .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
 
         User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.EXAMPLE_USER_NOT_FOUND));
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
         Place place = placeRepository.findById(request.getPlaceId())
                 .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
@@ -81,6 +81,10 @@ public class FavoriteService {
                 .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
 
         List<Favorite> favoriteList = favoriteRepository.findAllByGroup(group);
+
+        if (favoriteList.isEmpty()) {
+            throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
+        }
 
         List<FavoriteResponse> favoriteResponseList = favoriteList.stream().map(favorite ->
                 FavoriteResponse.builder()

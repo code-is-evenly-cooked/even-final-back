@@ -21,7 +21,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByIsDeletedFalse(Pageable pageable);
 
-    @EntityGraph(attributePaths = {"postImages"})
+    @EntityGraph(attributePaths = {"postImageList"})
     Optional<Post> findByIdAndIsDeletedFalse(Long postId);
 
     List<Post> findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category category);

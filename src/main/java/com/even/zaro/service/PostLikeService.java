@@ -51,6 +51,12 @@ public class PostLikeService {
         post.changeLikeCount(Math.max(0,post.getLikeCount() - 1));
     }
 
+    @Transactional(readOnly = true)
+    public boolean hasLikedPost(Long userId, Long postId) {
+        validatePost(postId);
+        return postLikeRepository.existsByUserIdAndPostId(userId, postId);
+    }
+
     // 공통로직
     private User validateActiveUser(Long userId) {
         User user = userRepository.findById(userId)

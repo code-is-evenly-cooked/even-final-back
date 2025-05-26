@@ -104,3 +104,8 @@ cloud:
       static: ap-northeast-2
     s3:
       bucket: even-zaro-image-bucket
+
+# Elasticsearch env
+es:
+  host: ${ES_HOST}
+  port: ${ES_PORT}

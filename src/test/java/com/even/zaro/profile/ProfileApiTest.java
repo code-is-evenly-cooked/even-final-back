@@ -2,12 +2,10 @@ package com.even.zaro.profile;
 
 import com.even.zaro.dto.profile.UserPostDto;
 import com.even.zaro.dto.profile.UserProfileDto;
-import com.even.zaro.entity.Post;
-import com.even.zaro.entity.Provider;
-import com.even.zaro.entity.Status;
-import com.even.zaro.entity.User;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.repository.PostLikeRepository;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.service.ProfileService;
@@ -18,6 +16,8 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.assertThrows;
@@ -32,6 +32,9 @@ public class ProfileApiTest {
 
     @Autowired
     private PostRepository postRepository;
+
+    @Autowired
+    private PostLikeRepository postLikeRepository;
 
     @Autowired
     private ProfileService profileService;
@@ -65,7 +68,13 @@ public class ProfileApiTest {
 
     @Test
     void 유저가_좋아요_누른_게시물_목록_조회_성공() {
+        User user = createUser("test@even.com", "user1");
+        Post post = createPost(user, "제목1", "내용1");
 
+        postLikeRepository.save(PostLike.builder().user(user).post(post).build());
+
+        List<UserPostDto> liked = profileService.getUserLikedPosts(user.getId(), PageRequest.of(0, 10)).getContent();
+        assertThat(liked).hasSize(1);
     }
 
     @Test

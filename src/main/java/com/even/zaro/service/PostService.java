@@ -233,9 +233,9 @@ public class PostService {
     }
 
 
-    private void validateImageRequirement(Post.Category category, List<String> imageUrls) {
+    private void validateImageRequirement(Post.Category category, List<String> postImages) {
         if (category == Post.Category.RANDOM_BUY &&
-                (imageUrls == null || imageUrls.isEmpty())) {
+                (postImages == null || postImages.isEmpty())) {
             throw new PostException(ErrorCode.IMAGE_REQUIRED_FOR_RANDOM_BUY);
         }
     }

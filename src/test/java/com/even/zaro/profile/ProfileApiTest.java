@@ -144,7 +144,7 @@ public class ProfileApiTest {
 
         // then
         assertThat(followings).hasSize(2);
-        assertThat(followings.stream().map(f -> f.getUserId()))
+        assertThat(followings.stream().map(FollowerFollowingListDto::getUserId))
                 .containsExactlyInAnyOrder(userB.getId(), userC.getId());
     }
 
@@ -163,7 +163,7 @@ public class ProfileApiTest {
 
         // then
         assertThat(followers).hasSize(2);
-        assertThat(followers.stream().map(f -> f.getUserId()))
+        assertThat(followers.stream().map(FollowerFollowingListDto::getUserId))
                 .containsExactlyInAnyOrder(userB.getId(), userC.getId());
     }
 
@@ -202,17 +202,38 @@ public class ProfileApiTest {
 
     @Test
     void 이미_팔로우한_유저_중복_팔로우_실패() {
+        // given
+        User follower = createUser("a@even.com", "a");
+        User followee = createUser("b@even.com", "b");
+        profileService.followUser(follower.getId(), followee.getId());
 
+        // when & then
+        ProfileException exception = assertThrows(ProfileException.class, () ->
+                profileService.followUser(follower.getId(), followee.getId()));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_ALREADY_EXISTS);
     }
 
     @Test
     void 존재하지_않는_팔로우관계_언팔로우_실패() {
+        // given
+        User follower = createUser("a@even.com", "a");
+        User followee = createUser("b@even.com", "b");
 
+        // when & then
+        ProfileException exception = assertThrows(ProfileException.class, () ->
+                profileService.unfollowUser(follower.getId(), followee.getId()));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_NOT_EXIST);
     }
 
     @Test
     void 자기자신을_언팔로우_시도_실패() {
+        // given
+        User user = createUser("self@even.com", "self");
 
+        // when & then
+        ProfileException exception = assertThrows(ProfileException.class, () ->
+                profileService.unfollowUser(user.getId(), user.getId()));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_UNFOLLOW_SELF_NOT_ALLOWED);
     }
 
     /******** 헬퍼 메서드 ******/

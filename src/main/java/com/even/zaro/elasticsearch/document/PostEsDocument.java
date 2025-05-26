@@ -10,8 +10,6 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
-import java.time.LocalDateTime;
-
 @Document(indexName = "posts")
 @Getter
 @Builder
@@ -43,8 +41,8 @@ public class PostEsDocument {
     @Field(type = FieldType.Integer)
     private int commentCount;
 
-    @Field(type = FieldType.Date)
-    private LocalDateTime createdAt;
+    @Field(type = FieldType.Keyword)
+    private String createdAt;
 
     public static PostEsDocument from(Post post) {
         return PostEsDocument.builder()
@@ -56,7 +54,7 @@ public class PostEsDocument {
                 .tag(post.getTag().name())
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
-                .createdAt(post.getCreatedAt())
+                .createdAt(post.getCreatedAt().toString())
                 .build();
     }
 }

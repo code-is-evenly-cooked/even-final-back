@@ -4,6 +4,7 @@ import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.global.ApiResponse;
+import com.even.zaro.global.ErrorCode;
 import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.PostLikeService;
 import com.even.zaro.service.PostService;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -117,5 +119,16 @@ public class PostController {
         postLikeService.unlikePost(postId, userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 취소를 성공했습니다."));
     }
+
+    @Operation(summary = "게시글 좋아요 여부 조회", description = "해당 게시글에 대해 사용자가 좋아요를 눌렀는지 확인합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @GetMapping("/{postId}/like")
+    public ResponseEntity<ApiResponse<Boolean>> checkPostLiked(
+            @PathVariable Long postId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+    ) {
+        boolean liked = postLikeService.hasLikedPost(userInfoDto.getUserId(), postId);
+        return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 여부 조회가 성공하였습니다.", liked));
+    }
+
 
 }

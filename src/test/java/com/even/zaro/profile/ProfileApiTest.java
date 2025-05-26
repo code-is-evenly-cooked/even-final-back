@@ -1,5 +1,6 @@
 package com.even.zaro.profile;
 
+import com.even.zaro.dto.profile.FollowerFollowingListDto;
 import com.even.zaro.dto.profile.UserCommentDto;
 import com.even.zaro.dto.profile.UserPostDto;
 import com.even.zaro.dto.profile.UserProfileDto;
@@ -129,12 +130,40 @@ public class ProfileApiTest {
 
     @Test
     void 특정_유저의_팔로잉_목록_조회_성공() {
+        // given
+        User userA = createUser("a@naver.com", "userA");
+        User userB = createUser("b@naver.com", "userB");
+        User userC = createUser("c@naver.com", "userC");
 
+        profileService.followUser(userA.getId(), userB.getId());
+        profileService.followUser(userA.getId(), userC.getId());
+
+        // when
+        List<FollowerFollowingListDto> followings = profileService.getUserFollowings(userA.getId());
+
+        // then
+        assertThat(followings).hasSize(2);
+        assertThat(followings.stream().map(f -> f.getUserId()))
+                .containsExactlyInAnyOrder(userB.getId(), userC.getId());
     }
 
     @Test
     void 특정_유저의_팔로워_목록_조회_성공() {
+        // given
+        User userA = createUser("a@naver.com", "userA");
+        User userB = createUser("b@naver.com", "userB");
+        User userC = createUser("c@naver.com", "userC");
 
+        profileService.followUser(userB.getId(), userA.getId());
+        profileService.followUser(userC.getId(), userA.getId());
+
+        // when
+        List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userA.getId());
+
+        // then
+        assertThat(followers).hasSize(2);
+        assertThat(followers.stream().map(f -> f.getUserId()))
+                .containsExactlyInAnyOrder(userB.getId(), userC.getId());
     }
 
 

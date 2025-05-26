@@ -180,7 +180,7 @@ public class PostService {
                 .map(post -> HomePostPreviewResponse.SimplePostDto.builder()
                         .postId(post.getId())
                         .title(post.getTitle())
-                        .createAt(formatDate(post.getCreatedAt()))
+                        .createdAt(formatDate(post.getCreatedAt()))
                         .build())
                 .toList();
 
@@ -188,7 +188,7 @@ public class PostService {
                 .map(post -> HomePostPreviewResponse.SimplePostDto.builder()
                         .postId(post.getId())
                         .title(post.getTitle())
-                        .createAt(formatDate(post.getCreatedAt()))
+                        .createdAt(formatDate(post.getCreatedAt()))
                         .build())
                 .toList();
 
@@ -202,7 +202,7 @@ public class PostService {
                         .commentCount(post.getCommentCount())
                         .writerProfileImage(post.getUser().getProfileImage())
                         .writerNickname(post.getUser().getNickname())
-                        .createAt(formatDate(post.getCreatedAt()))
+                        .createdAt(formatDate(post.getCreatedAt()))
                         .build())
                 .toList();
 

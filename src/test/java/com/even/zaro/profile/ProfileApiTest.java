@@ -1,10 +1,12 @@
 package com.even.zaro.profile;
 
+import com.even.zaro.dto.profile.UserCommentDto;
 import com.even.zaro.dto.profile.UserPostDto;
 import com.even.zaro.dto.profile.UserProfileDto;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostLikeRepository;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.repository.PostRepository;
@@ -35,6 +37,9 @@ public class ProfileApiTest {
 
     @Autowired
     private PostLikeRepository postLikeRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
 
     @Autowired
     private ProfileService profileService;
@@ -68,18 +73,29 @@ public class ProfileApiTest {
 
     @Test
     void 유저가_좋아요_누른_게시물_목록_조회_성공() {
+        // given
         User user = createUser("test@even.com", "user1");
         Post post = createPost(user, "제목1", "내용1");
 
         postLikeRepository.save(PostLike.builder().user(user).post(post).build());
 
+        // when & then
         List<UserPostDto> liked = profileService.getUserLikedPosts(user.getId(), PageRequest.of(0, 10)).getContent();
         assertThat(liked).hasSize(1);
     }
 
     @Test
     void 유저가_작성한_댓글_목록_조회_성공() {
+        // given
+        User user = createUser("test@even.com", "user1");
+        Post post = createPost(user, "제목1", "내용1");
+        createComment(user, post, "댓글내용입니다");
 
+        // when
+        List<UserCommentDto> comments = profileService.getUserComments(user.getId(), PageRequest.of(0, 10)).getContent();
+
+        // then
+        assertThat(comments).hasSize(1);
     }
 
     @Test
@@ -129,6 +145,14 @@ public class ProfileApiTest {
                 .content(content)
                 .category(Post.Category.DAILY_LIFE)
                 .tag(Post.Tag.TIPS)
+                .build());
+    }
+
+    private void createComment(User user, Post post, String content) {
+        commentRepository.save(Comment.builder()
+                .user(user)
+                .post(post)
+                .content(content)
                 .build());
     }
 }

@@ -1,16 +1,21 @@
 package com.even.zaro.profile;
 
+import com.even.zaro.dto.profile.UserPostDto;
 import com.even.zaro.dto.profile.UserProfileDto;
+import com.even.zaro.entity.Post;
 import com.even.zaro.entity.Provider;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.repository.PostRepository;
 import com.even.zaro.service.ProfileService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -24,6 +29,9 @@ public class ProfileApiTest {
 
     @Autowired
     private UserRepository userRepository;
+
+    @Autowired
+    private PostRepository postRepository;
 
     @Autowired
     private ProfileService profileService;
@@ -43,7 +51,16 @@ public class ProfileApiTest {
 
     @Test
     void 유저가_쓴_게시물_목록_조회_성공() {
+        // given
+        User user = createUser("test@even.com", "user1");
+        createPost(user, "제목1", "내용1");
+        createPost(user, "제목2", "내용2");
 
+        // when
+        Page<UserPostDto> posts = profileService.getUserPosts(user.getId(), PageRequest.of(0, 10));
+
+        // then
+        assertThat(posts.getContent()).hasSize(2);
     }
 
     @Test
@@ -93,6 +110,16 @@ public class ProfileApiTest {
                 .nickname(nickname)
                 .provider(Provider.LOCAL)
                 .status(Status.ACTIVE)
+                .build());
+    }
+
+    private Post createPost(User user, String title, String content) {
+        return postRepository.save(Post.builder()
+                .user(user)
+                .title(title)
+                .content(content)
+                .category(Post.Category.DAILY_LIFE)
+                .tag(Post.Tag.TIPS)
                 .build());
     }
 }

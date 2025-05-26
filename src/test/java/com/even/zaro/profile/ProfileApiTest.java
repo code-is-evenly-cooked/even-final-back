@@ -166,6 +166,7 @@ public class ProfileApiTest {
                 .containsExactlyInAnyOrder(userB.getId(), userC.getId());
     }
 
+    /******** 실패 테스트 케이스 ******/
 
     @Test
     void 존재하지_않는_유저_프로필_조회_실패() {
@@ -175,6 +176,33 @@ public class ProfileApiTest {
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
     }
+
+    @Test
+    void 존재하지_않는_유저에게_팔로우_시도_실패() {
+
+    }
+
+    @Test
+    void 자기자신을_팔로우_시도_실패() {
+
+    }
+
+    @Test
+    void 이미_팔로우한_유저_중복_팔로우_실패() {
+
+    }
+
+    @Test
+    void 존재하지_않는_팔로우관계_언팔로우_실패() {
+
+    }
+
+    @Test
+    void 자기자신을_언팔로우_시도_실패() {
+
+    }
+
+    /******** 헬퍼 메서드 ******/
 
     private User createUser(String email, String nickname) {
         return userRepository.save(User.builder()

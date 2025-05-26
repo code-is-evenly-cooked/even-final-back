@@ -28,7 +28,7 @@ public class HomePostPreviewResponse {
     public static class SimplePostDto {
         private Long postId;
         private String title;
-        private String createAt;
+        private String createdAt;
     }
 
     @Getter
@@ -43,7 +43,7 @@ public class HomePostPreviewResponse {
         private int commentCount;
         private String writerProfileImage;
         private String writerNickname;
-        private String createAt;
+        private String createdAt;
 
     }
 

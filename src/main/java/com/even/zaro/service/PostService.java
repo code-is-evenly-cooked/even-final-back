@@ -109,6 +109,8 @@ public class PostService {
         post.changeTag(tag);
         post.changeImageList(request.getPostImageList());
         post.changeThumbnail(thumbnailUrl);
+
+        eventPublisher.publishEvent(new PostSavedEvent(post));
     }
 
     @Transactional(readOnly = true)

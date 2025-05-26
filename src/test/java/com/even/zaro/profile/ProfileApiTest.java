@@ -100,12 +100,31 @@ public class ProfileApiTest {
 
     @Test
     void 로그인된_유저가_다른_유저_팔로우하기_성공() {
+        // given
+        User follower = createUser("test1@even.com", "user1");
+        User followee = createUser("test2@even.com", "user2");
 
+        // when
+        profileService.followUser(follower.getId(), followee.getId());
+
+        // then
+        assertThat(profileService.getUserFollowings(follower.getId())).hasSize(1);
+        assertThat(profileService.getUserFollowers(followee.getId())).hasSize(1);
     }
 
     @Test
     void 로그인된_유저가_다른_유저_언팔로우하기_성공() {
+        // given
+        User follower = createUser("test1@even.com", "user1");
+        User followee = createUser("test2@even.com", "user2");
 
+        // when
+        profileService.followUser(follower.getId(), followee.getId());
+        profileService.unfollowUser(follower.getId(), followee.getId());
+
+        // then
+        assertThat(profileService.getUserFollowings(follower.getId())).isEmpty();
+        assertThat(profileService.getUserFollowers(followee.getId())).isEmpty();
     }
 
     @Test

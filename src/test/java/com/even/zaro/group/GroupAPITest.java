@@ -89,7 +89,7 @@ public class GroupAPITest {
         createFavoriteGroup(user.getId(), "groupName3");
 
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId()); // 그룹 리스트 조회
-        List<Long> favoriteGroupIds = favoriteGroups.stream().map(GroupResponse::getId).toList(); // 그룹 id 리스트
+        List<Long> favoriteGroupIds = favoriteGroups.stream().map(GroupResponse::getGroupId).toList(); // 그룹 id 리스트
         long delete_id = favoriteGroupIds.getLast(); // 마지막 그룹의 id : groupName3
 
         // When : 마지막 그룹 삭제 요청
@@ -109,18 +109,18 @@ public class GroupAPITest {
     void 사용자의_그룹수정_성공_테스트() {
         // Given
         User user = createUser("ehdgnstla@naver.com", "Test1234!", "자취왕");
-        groupService.createGroup(GroupCreateRequest.builder().name("원래 이름").build(), user.getId());
+        groupService.createGroup(GroupCreateRequest.builder().groupName("원래 이름").build(), user.getId());
 
-        long groupId = groupService.getFavoriteGroups(user.getId()).getFirst().getId();
+        long groupId = groupService.getFavoriteGroups(user.getId()).getFirst().getGroupId();
 
         // When
-        GroupEditRequest editRequest = GroupEditRequest.builder().name("수정된 이름").build();
+        GroupEditRequest editRequest = GroupEditRequest.builder().groupName("수정된 이름").build();
         groupService.editGroup(groupId, editRequest, user.getId());
 
         // Then
         GroupResponse updatedGroup = groupService.getFavoriteGroups(user.getId())
                 .stream()
-                .filter(gr -> gr.getId() == groupId)
+                .filter(gr -> gr.getGroupId() == groupId)
                 .findFirst()
                 .orElseThrow();
 
@@ -148,7 +148,7 @@ public class GroupAPITest {
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 삭제 요청
         groupService.deleteGroup(firstGroupId, user.getId());
@@ -191,7 +191,7 @@ public class GroupAPITest {
 
         // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user1.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
         // Given & Then
             // user2가 user1의 그룹 삭제 시도
@@ -215,12 +215,12 @@ public class GroupAPITest {
 
         // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user1.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
         // Given & Then
         // user2가 user1의 그룹 수정 시도
         GroupException exception = assertThrows(GroupException.class, () -> {
-            GroupEditRequest editRequest = GroupEditRequest.builder().name("user2가 user1의 그룹이름 수정 시도").build();
+            GroupEditRequest editRequest = GroupEditRequest.builder().groupName("user2가 user1의 그룹이름 수정 시도").build();
             groupService.editGroup(firstGroupId, editRequest, user2.getId());
         });
 
@@ -242,7 +242,7 @@ public class GroupAPITest {
 
     // 그룹 추가 메서드
     void createFavoriteGroup(long userId, String groupName) {
-        GroupCreateRequest request = GroupCreateRequest.builder().name(groupName).build();
+        GroupCreateRequest request = GroupCreateRequest.builder().groupName(groupName).build();
         groupService.createGroup(request, userId);
     }
 }

@@ -1,5 +1,6 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.Status;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -105,7 +107,7 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public Page<PostPreviewDto> getPostListPage(String category, Pageable pageable) {
+    public PageResponse<PostPreviewDto> getPostListPage(String category, Pageable pageable) {
         Page<Post> page;
 
         if (category == null || category.isBlank()) {
@@ -115,7 +117,7 @@ public class PostService {
             page = postRepository.findByCategoryAndIsDeletedFalse(postCategory, pageable);
         }
 
-        return page.map(PostPreviewDto::from);
+        return new PageResponse<>(page.map(PostPreviewDto::from));
     }
 
     @Transactional(readOnly = true)
@@ -134,6 +136,11 @@ public class PostService {
                 .createdAt(post.getCreatedAt())
                 .category(String.valueOf(post.getCategory()))
                 .tag(String.valueOf(post.getTag()))
+                .thumbnailImage(post.getThumbnailImage())
+                .postImageList(post.getPostImageList()
+                        .stream()
+                        .distinct()
+                        .collect(Collectors.toList()))
                 .thumbnailImage(post.getThumbnailImage())
                 .postImageList(post.getPostImageList())
                 .user(new PostDetailResponse.UserInfo(
@@ -226,9 +233,9 @@ public class PostService {
     }
 
 
-    private void validateImageRequirement(Post.Category category, List<String> imageUrls) {
+    private void validateImageRequirement(Post.Category category, List<String> postImages) {
         if (category == Post.Category.RANDOM_BUY &&
-                (imageUrls == null || imageUrls.isEmpty())) {
+                (postImages == null || postImages.isEmpty())) {
             throw new PostException(ErrorCode.IMAGE_REQUIRED_FOR_RANDOM_BUY);
         }
     }

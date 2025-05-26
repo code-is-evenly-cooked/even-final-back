@@ -55,22 +55,26 @@ public class MapApiTest {
     void 마커_정보_조회_성공_테스트() {
         // Given : 유저를 생성하고 각 유저가 그룹에 즐겨찾기를 추가하는 예시
         User user1 = createUser("test1@naver.com", "Test1234!", "test1");
-        User user2 = createUser("test2@naver.com", "Test1234!", "test2");
+//        User user2 = createUser("test2@naver.com", "Test1234!", "test2");
 
         List<Long> users = userRepository.findAll().stream().map(User::getId).toList();
 
-        // 장소 1개 추가
-        Place place = createPlace(1, "test1", "test1", 30, 42);
+        long user1_Id = users.getFirst();
+//        long user2_Id = users.getLast();
 
         // 유저 당 그룹 1개씩 추가
         createFavoriteGroup(user1.getId(), "test1");
-        createFavoriteGroup(user2.getId(), "test2");
+//        createFavoriteGroup(user2.getId(), "test2");
 
         List<Long> groupIds = favoriteGroupRepository.findAll().stream().map(FavoriteGroup::getId).toList();
+        long user1_groupId = groupIds.getFirst();
+//        long user2_groupId = groupIds.getLast();
 
         // 각 그룹에 장소를 즐겨찾기에 추가
-        addFavoriteGroup(place.getId(), groupIds.getFirst(), "맛 없어요", users.getFirst());
-        addFavoriteGroup(place.getId(), groupIds.getLast(), "맛 있어요", users.getLast());
+//        addFavoriteGroup(place.getId(), groupIds.getFirst(), "맛 없어요", users.getFirst());
+//        addFavoriteGroup(place.getId(), groupIds.getLast(), "맛 있어요", users.getLast());
+        addFavoriteGroup(1, "의정부 512", "의정부 맛집", "맛 없어요", 35.123, 123.321, user1_groupId, user1_Id);
+//        addFavoriteGroup(2, "의정부 513", "의정부 맛집", "맛 있어요", 35.122, 123.325, user2_groupId, user2_Id);
 
         List<Long> favoriteIds = favoriteRepository.findAll().stream().map(Favorite::getId).toList();
 
@@ -84,9 +88,12 @@ public class MapApiTest {
                 .memo(favorite.getMemo())
                 .build()).toList();
 
+        List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();
 
-        Place findPlace = placeRepository.findById(place.getId())
-                .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND));
+
+
+        Place findPlace = placeRepository.findById(placeIdList.getFirst())
+                .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
 
         // 예상 응답 객체 사전 생성
         MarkerInfoResponse markerInfoResponse = MarkerInfoResponse.builder()
@@ -99,7 +106,7 @@ public class MapApiTest {
                 .build();
 
         // When : 실제 서비스 호출
-        MarkerInfoResponse placeInfo = mapService.getPlaceInfo(favoriteIds.get(0));
+        MarkerInfoResponse placeInfo = mapService.getPlaceInfo(favoriteIds.getFirst());
 
         // Then : 호출 응답 결과와 사전 예상 응답객체와 필드별 비교
         assertThat(placeInfo.getPlaceId()).isEqualTo(markerInfoResponse.getPlaceId());
@@ -197,15 +204,25 @@ public class MapApiTest {
 
     // 그룹 추가 메서드
     void createFavoriteGroup(long userId, String groupName) {
-        GroupCreateRequest request = GroupCreateRequest.builder().name(groupName).build();
+        GroupCreateRequest request = GroupCreateRequest.builder().groupName(groupName).build();
         groupService.createGroup(request, userId);
     }
 
     // 그룹에 즐겨찾기 장소 추가
-    void addFavoriteGroup(long placeId, long groupId, String memo, long userId) {
+    void addFavoriteGroup(
+            long kakaoPlaceId,
+            String address,
+            String placeName,
+            String memo,
+            double lat, double lng,
+            long groupId, long userId) {
         // 해당 그룹에 즐겨찾기 장소 추가
         FavoriteAddRequest request = FavoriteAddRequest.builder()
-                .placeId(placeId)
+                .kakaoPlaceId(kakaoPlaceId)
+                .address(address)
+                .placeName(placeName)
+                .lat(lat)
+                .lng(lng)
                 .memo(memo)
                 .build();
 

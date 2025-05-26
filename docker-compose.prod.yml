@@ -36,6 +36,7 @@ services:
     environment:
       - discovery.type=single-node
       - xpack.security.enabled=false
+      - logger.level=warn
     ports:
       - "9200:9200"
     volumes:

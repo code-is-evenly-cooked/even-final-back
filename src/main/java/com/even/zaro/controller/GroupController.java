@@ -30,8 +30,7 @@ public class GroupController {
     @Operation(summary = "다른 사용자의 그룹 리스트 조회", description = "사용자는 해당 유저의 프로필에서 그룹 목록을 조회할 수 있다", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/user/{userId}/group")
     public ResponseEntity<ApiResponse<List<GroupResponse>>> getFavoriteGroupsByUserId(
-            @PathVariable("userId") long userId,
-            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+            @PathVariable("userId") long userId) {
         List<GroupResponse> groupList = groupService.getFavoriteGroups(userId);
 
         return ResponseEntity.ok(ApiResponse.success("해당 유저의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));

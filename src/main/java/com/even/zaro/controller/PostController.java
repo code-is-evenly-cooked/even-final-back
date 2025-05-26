@@ -133,13 +133,13 @@ public class PostController {
 
     @Operation(summary = "게시글 신고", description = "게시글을 신고합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/{postId}/report")
-    public ResponseEntity<ApiResponse<Void>> reportPost(
+    public ResponseEntity<ApiResponse<ReportResponseDto>> reportPost(
             @PathVariable Long postId,
             @RequestBody @Valid ReportRequestDTO request,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ){
-        postReportService.reportPost(postId, request, userInfoDto.getUserId());
-        return ResponseEntity.ok(ApiResponse.success("게시글 신고가 완료되었습니다."));
+        ReportResponseDto response = postReportService.reportPost(postId, request, userInfoDto.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("게시글 신고가 완료되었습니다.", response));
     }
 
 }

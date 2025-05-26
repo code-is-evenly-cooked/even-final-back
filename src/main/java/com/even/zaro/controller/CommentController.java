@@ -15,6 +15,7 @@ import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
@@ -27,7 +28,14 @@ public class CommentController {
 
     private final CommentService commentService;
 
-    @Operation(summary = "댓글 생성", description = "{postId} 게시글에 댓글을 작성합니다.",
+    @Operation(summary = "댓글 생성(또는 답글 멘션)",
+            description = """
+                {postId} 게시글에 댓글을 작성합니다.
+        
+                - 일반 댓글 또는 답글(멘션)을 작성할 수 있습니다.
+                - 답글의 경우, `taggedNickname` 필드에 멘션할 사용자의 닉네임을 포함해 주세요.
+                - 멘션을 지우거나 일반 댓글인 경우, `taggedNickname`을 null로 보내거나 생략해도 됩니다.
+                """,
             security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<CommentResponseDto>> createComment(
@@ -35,7 +43,9 @@ public class CommentController {
             @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userInfoDto);
-        return ResponseEntity.ok(ApiResponse.success("댓글을 작성했습니다.", responseDto));
+        return ResponseEntity
+                .status(HttpStatus.CREATED)
+                .body(ApiResponse.success("댓글을 작성했습니다.", responseDto));
     }
 
     @Operation(summary = "댓글 리스트 조회", description = "{postId} 게시글에 댓글 리스트를 조회합니다.",

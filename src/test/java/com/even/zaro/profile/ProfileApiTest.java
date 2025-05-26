@@ -1,5 +1,8 @@
 package com.even.zaro.profile;
 
+import com.even.zaro.dto.profile.UserProfileDto;
+import com.even.zaro.entity.Provider;
+import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
@@ -28,21 +31,14 @@ public class ProfileApiTest {
     @Test
     public void 유저_기본_프로필_조회_성공() {
         // given
-        User user = User.builder()
-                .email("test@naver.com")
-                .nickname("닉네임")
-                .profileImage("/images/profile/2-uuid.png")
-                .provider(com.even.zaro.entity.Provider.LOCAL)
-                .status(com.even.zaro.entity.Status.ACTIVE)
-                .build();
-        userRepository.save(user);
+        User user = createUser("test@naver.com", "닉네임");
 
         // when
-        var result = profileService.getUserProfile(user.getId());
+        UserProfileDto profile = profileService.getUserProfile(user.getId());
 
         // then
-        assertThat(result.getUserId()).isEqualTo(user.getId());
-        assertThat(result.getNickname()).isEqualTo(user.getNickname());
+        assertThat(profile.getUserId()).isEqualTo(user.getId());
+        assertThat(profile.getNickname()).isEqualTo(user.getNickname());
     }
 
     @Test
@@ -52,5 +48,15 @@ public class ProfileApiTest {
                 profileService.getUserProfile(9999L));
 
         assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+    }
+
+    private User createUser(String email, String nickname) {
+        return userRepository.save(User.builder()
+                .email(email)
+                .password("encodedPassword")
+                .nickname(nickname)
+                .provider(Provider.LOCAL)
+                .status(Status.ACTIVE)
+                .build());
     }
 }

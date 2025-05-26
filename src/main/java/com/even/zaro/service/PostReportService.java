@@ -1,10 +1,8 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.post.ReportRequestDTO;
-import com.even.zaro.entity.Post;
-import com.even.zaro.entity.PostReport;
-import com.even.zaro.entity.ReportReasonType;
-import com.even.zaro.entity.User;
+import com.even.zaro.dto.post.ReportResponseDto;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.global.exception.user.UserException;
@@ -26,7 +24,7 @@ public class PostReportService {
     private final UserRepository userRepository;
 
     @Transactional
-    public void reportPost(Long postId, ReportRequestDTO request, Long userId) {
+    public ReportResponseDto reportPost(Long postId, ReportRequestDTO request, Long userId) {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
 
@@ -41,6 +39,10 @@ public class PostReportService {
 
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
+        }
 
         if (postReportRepository.existsByPostAndUser(post, user)) {
             throw new PostException(ErrorCode.ALREADY_REPORTED_POST);
@@ -60,5 +62,10 @@ public class PostReportService {
         if (reportCount >= 5 && !post.isReported()){
             post.markAsReported();
         }
+        return new ReportResponseDto(
+                request.reasonType(),
+                request.reasonType().getDescription(),
+                request.reasonText()
+        );
     }
 }

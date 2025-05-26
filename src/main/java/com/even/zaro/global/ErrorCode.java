@@ -94,6 +94,7 @@ public enum ErrorCode {
 
     // 그룹 Group
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹을 찾지 못했습니다."),
+    GROUP_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹 리스트가 존재하지 않습니다"),
     GROUP_ALREADY_DELETE(HttpStatus.NOT_FOUND, "이미 삭제한 그룹입니다."),
     GROUP_ALREADY_EXIST(HttpStatus.NOT_FOUND, "이미 존재하는 그룹 이름입니다."),
     UNAUTHORIZED_GROUP_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 삭제 시도입니다."),

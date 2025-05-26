@@ -13,7 +13,10 @@ import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.user.UserException;
-import com.even.zaro.repository.*;
+import com.even.zaro.repository.FavoriteGroupRepository;
+import com.even.zaro.repository.FavoriteRepository;
+import com.even.zaro.repository.PlaceRepository;
+import com.even.zaro.repository.UserRepository;
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -40,10 +43,10 @@ public class FavoriteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        Place place = placeRepository.findById(request.getPlaceId())
-                .orElseThrow(() -> new MapException(ErrorCode.PLACE_NOT_FOUND));
+        // 해당 장소가 이미 저장되어있는지 없다면 장소 추가
+        Place place = checkDuplicateByKakoPlaceId(request);
 
-        // 해당 유저가 이미 그 장소를 추가했는지 확인
+        // 해당 유저가 이미 그 장소를 추가했는지 확인하고 저장
         List<Favorite> placeList = favoriteRepository.findByPlaceAndUser(place, user);
 
         // 해당 유저가 placeId가 일치하는 장소가 이미 추가되어있다면
@@ -138,4 +141,25 @@ public class FavoriteService {
         // 삭제 상태 변경
         favorite.setDeleteTrue();
     }
+
+    // Place 테이블에 해당 kakaoPlaceId를 가진 데이터 존재 여부 검증
+    Place checkDuplicateByKakoPlaceId(FavoriteAddRequest request) {
+        Place getPlace = placeRepository.findByKakaoPlaceId(request.getKakaoPlaceId());
+
+        // 없다면 새로 생성
+        if (getPlace == null) {
+            Place newPlace = Place.builder()
+                    .kakaoPlaceId(request.getKakaoPlaceId())
+                    .name(request.getPlaceName())
+                    .lat(request.getLat())
+                    .lng(request.getLng())
+                    .address(request.getAddress())
+                    .build();
+            placeRepository.save(newPlace);
+
+            return newPlace;
+        }
+        return getPlace;
+    }
+
 }

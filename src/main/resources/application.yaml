@@ -44,6 +44,10 @@ spring:
     port: ${REDIS_PORT}
     password: ${REDIS_PASSWORD}
 
+  # ElasticSearch
+  elasticsearch:
+    uris: ${ES_URI}
+
   # SwaggerUI 설정
   springdoc:
     api-docs:

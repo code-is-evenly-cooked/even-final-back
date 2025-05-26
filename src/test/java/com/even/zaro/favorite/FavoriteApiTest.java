@@ -58,7 +58,7 @@ public class FavoriteApiTest {
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 예시 장소 1개 추가
         createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
@@ -87,7 +87,7 @@ public class FavoriteApiTest {
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 예시 장소 3개 추가
         createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
@@ -121,7 +121,7 @@ public class FavoriteApiTest {
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 예시 장소 1개 추가
         createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
@@ -150,7 +150,7 @@ public class FavoriteApiTest {
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 예시 장소 1개 추가
         createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
@@ -179,7 +179,7 @@ public class FavoriteApiTest {
 
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
-        long firstGroupId = favoriteGroups.getFirst().getId();
+        long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 예시 장소 1개 추가
         createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
@@ -307,7 +307,7 @@ public class FavoriteApiTest {
 
     // 그룹 추가 메서드
     void createFavoriteGroup(long userId, String groupName) {
-        GroupCreateRequest request = GroupCreateRequest.builder().name(groupName).build();
+        GroupCreateRequest request = GroupCreateRequest.builder().groupName(groupName).build();
         groupService.createGroup(request, userId);
     }
 

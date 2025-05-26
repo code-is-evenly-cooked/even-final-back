@@ -9,7 +9,7 @@ import java.time.LocalDateTime;
         "postId",
         "title",
         "contentPreview",
-        "thumbnailUrl",
+        "thumbnailImage",
         "category",
         "tag",
         "likeCount",
@@ -29,13 +29,13 @@ public class PostSearchDto {
     @Schema(description = "게시글 내용", example = "이사할때 박스를 미리 사세요!")
     private final String contentPreview;
 
-    @Schema(description = "썸네일 이미지 URL", example = "https://cdn.even.com/images/thumb1.jpg")
-    private final String thumbnailUrl;
+    @Schema(description = "썸네일 이미지 key", example = "/images/post/uuid1.png")
+    private String thumbnailImage;
 
     @Schema(description = "카테고리명", example = "자취일상")
     private final String category;
 
-    @Schema(description = "태그", example = "TIP")
+    @Schema(description = "태그", example = "TIPS")
     private final String tag;
 
     @Schema(description = "좋아요 수", example = "3")
@@ -47,12 +47,12 @@ public class PostSearchDto {
     @Schema(description = "게시글 작성 시간", example = "2025-05-23T09:30:00")
     private final LocalDateTime createdAt;
 
-    public PostSearchDto(Long postId, String title, String content, String thumbnailUrl,
+    public PostSearchDto(Long postId, String title, String content, String thumbnailImage,
                          String category, String tag, int likeCount, int commentCount, LocalDateTime createdAt) {
         this.postId = postId;
         this.title = title;
         this.contentPreview = truncate(content, 50);
-        this.thumbnailUrl = thumbnailUrl;
+        this.thumbnailImage = thumbnailImage;
         this.category = category;
         this.tag = tag;
         this.likeCount = likeCount;

@@ -28,7 +28,7 @@ public class PostService {
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
 
         Post.Category category = parseCategory(request.getCategory());
-        validateImageRequirement(category, request.getImageUrlList());
+        validateImageRequirement(category, request.getPostImageList());
 
         Post.Tag tag = convertTag(request.getTag());
         validateTagForCategory(category, tag);
@@ -40,15 +40,15 @@ public class PostService {
             throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
-        String thumbnailUrl = resolveThumbnail(request.getThumbnailUrl(), request.getImageUrlList());
+        String thumbnailImage = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
         Post post = Post.builder()
                 .title(request.getTitle())
                 .content(request.getContent())
                 .category(category)
                 .tag(tag)
-                .thumbnailUrl(thumbnailUrl)
-                .imageUrlList(request.getImageUrlList())
+                .thumbnailImage(thumbnailImage)
+                .postImageList(request.getPostImageList())
                 .user(user)
                 .build();
 
@@ -62,8 +62,8 @@ public class PostService {
                 .createdAt(post.getCreatedAt())
                 .category(post.getCategory().name())
                 .tag(post.getTag().name())
-                .thumbnailUrl(post.getThumbnailUrl())
-                .imageUrlList(post.getImageUrlList())
+                .thumbnailImage(post.getThumbnailImage())
+                .postImageList(post.getPostImageList())
                 .user(new PostDetailResponse.UserInfo(
                         user.getId(),
                         user.getNickname(),
@@ -88,20 +88,20 @@ public class PostService {
             throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
-        validateImageRequirement(post.getCategory(), request.getImageUrlList());
+        validateImageRequirement(post.getCategory(), request.getPostImageList());
 
         Post.Tag tag = convertTag(request.getTag());
 
         validateTagForCategory(post.getCategory(), tag);
 
-        String thumbnailUrl = resolveThumbnail(request.getThumbnailUrl(), request.getImageUrlList());
+        String thumbnailUrl = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
 
         post.changeTitle(request.getTitle());
         post.changeContent(request.getContent());
         post.changeTag(tag);
-        post.changeImageUrlList(request.getImageUrlList());
-        post.changeThumbnailUrl(thumbnailUrl);
+        post.changeImageList(request.getPostImageList());
+        post.changeThumbnail(thumbnailUrl);
     }
 
     @Transactional(readOnly = true)
@@ -134,8 +134,8 @@ public class PostService {
                 .createdAt(post.getCreatedAt())
                 .category(String.valueOf(post.getCategory()))
                 .tag(String.valueOf(post.getTag()))
-                .thumbnailUrl(post.getThumbnailUrl())
-                .imageUrlList(post.getImageUrlList())
+                .thumbnailImage(post.getThumbnailImage())
+                .postImageList(post.getPostImageList())
                 .user(new PostDetailResponse.UserInfo(
                         user.getId(),
                         user.getNickname(),
@@ -190,7 +190,7 @@ public class PostService {
                         .postId(post.getId())
                         .title(post.getTitle())
                         .content(generatePreview(post.getContent()))
-                        .thumbnailUrl(post.getThumbnailUrl())
+                        .thumbnailImage(post.getThumbnailImage())
                         .likeCount(post.getLikeCount())
                         .commentCount(post.getCommentCount())
                         .writerProfileImage(post.getUser().getProfileImage())
@@ -241,16 +241,16 @@ public class PostService {
     }
 
 
-    private String resolveThumbnail(String thumbnailUrl, List<String> imageUrls) {
-        if (thumbnailUrl != null) {
-            if (imageUrls == null || !imageUrls.contains(thumbnailUrl)) {
+    private String resolveThumbnail(String thumbnailImage, List<String> postImages) {
+        if (thumbnailImage != null) {
+            if (postImages == null || !postImages.contains(thumbnailImage)) {
                 throw new PostException(ErrorCode.THUMBNAIL_NOT_IN_IMAGE_LIST);
             }
-            return thumbnailUrl;
+            return thumbnailImage;
         }
 
-        if (imageUrls != null && !imageUrls.isEmpty()) {
-            return imageUrls.get(0);
+        if (postImages != null && !postImages.isEmpty()) {
+            return postImages.get(0);
         }
 
         return null;

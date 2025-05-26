@@ -61,13 +61,11 @@ public class FavoriteApiTest {
         long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 예시 장소 1개 추가
-//        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
 
 
 
         // When
             // 예시 장소 그룹에 즐겨찾기 추가
-//        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
         addFavoriteGroup(3124, "의정부 512", "의정부 맛집", "친구랑 가고 싶은 감성 카페", 35.123, 123.321, firstGroupId, user.getId());
 
         // Then
@@ -91,18 +89,7 @@ public class FavoriteApiTest {
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
         long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
-//            // 예시 장소 3개 추가
-//        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
-//        createPlace(2, "카페 드롭탑", "서울특별시 종로구 종로 1길 1", 313.21, 533.21);
-//        createPlace(3, "삼겹살 맛집", "서울특별시 중구 퇴계로 200", 36123.21, 12.21);
-
-
-
         // When
-            // 예시 장소 3개 그룹에 즐겨찾기 추가
-//        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
-//        addFavoriteGroup(placeIdList.get(1), firstGroupId, "드롭다운 예예", user.getId());
-//        addFavoriteGroup(placeIdList.getLast(), firstGroupId, "삼겹살은 여기로", user.getId());
         addFavoriteGroup(1, "의정부 1", "의정부 맛집1", "메모1", 35.123, 123.325, firstGroupId, user.getId());
         addFavoriteGroup(2, "의정부 2", "의정부 맛집2", "메모2", 35.123, 123.326, firstGroupId, user.getId());
         addFavoriteGroup(3, "의정부 3", "의정부 맛집3", "메모3", 35.123, 123.327, firstGroupId, user.getId());
@@ -111,9 +98,6 @@ public class FavoriteApiTest {
         // Then
             // 그룹의 즐겨찾기 리스트 조회
         List<FavoriteResponse> groupItems = favoriteService.getGroupItems(firstGroupId);
-
-//        List<Long> placeIdList = placeRepository.findAll().stream()
-//                .map(Place::getId).toList();
 
         assertThat(groupItems).hasSize(3); // 현재 DB에 저장된 장소의 개수 검증
         assertThat(groupItems.size()).isEqualTo(3); // 개수 검증
@@ -130,8 +114,6 @@ public class FavoriteApiTest {
             // 그룹 리스트를 조회하고 첫번째 그룹의 id를 저장
         List<GroupResponse> favoriteGroups = groupService.getFavoriteGroups(user.getId());
         long firstGroupId = favoriteGroups.getFirst().getGroupId();
-
-
 
             // 예시 장소 그룹에 즐겨찾기 추가
         addFavoriteGroup(2, "의정부 2", "의정부 맛집2", "메모2", 35.123, 123.326, firstGroupId, user.getId());
@@ -166,7 +148,6 @@ public class FavoriteApiTest {
                 .map(Place::getId).toList();
 
             // 예시 장소 그룹에 즐겨찾기 추가
-//        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
         addFavoriteGroup(2, "의정부 2", "의정부 맛집2", "메모2", 35.123, 123.326, firstGroupId, user.getId());
 
 
@@ -191,7 +172,6 @@ public class FavoriteApiTest {
         long firstGroupId = favoriteGroups.getFirst().getGroupId();
 
             // 예시 장소 그룹에 즐겨찾기 추가
-//        addFavoriteGroup(placeIdList.getFirst(), firstGroupId, "친구랑 가고 싶은 감성카페", user.getId());
         addFavoriteGroup(2, "의정부 2", "의정부 맛집2", "메모2", 35.123, 123.326, firstGroupId, user.getId());
 
         // When & Then : 같은 placeId 추가 시도
@@ -235,10 +215,6 @@ public class FavoriteApiTest {
         User user1 = createUser("ehdgnstla@naver.com", "Test1234!", "동훈");
         User user2 = createUser("tlaehdgns@naver.com", "Test1234!", "자취왕");
 
-            // 예시 장소 1개 추가
-//        createPlace(1, "이자카야 하나", "서울특별시 중구 을지로 100", 36.21, 53.21);
-
-
             // 그룹 추가
         createFavoriteGroup(user1.getId(), "서울 맛집");
 
@@ -276,7 +252,6 @@ public class FavoriteApiTest {
 
 
         // 그룹에 즐겨찾기 추가
-//        addFavoriteGroup(placeIdList.getFirst(), GroupIdList.getFirst(), "이자카야 맛집", user1.getId());
         addFavoriteGroup(2, "의정부 2", "의정부 맛집2", "메모2", 35.123, 123.326, firstGroupId, user1.getId());
 
         List<Long> placeIdList = placeRepository.findAll().stream().map(Place::getId).toList();

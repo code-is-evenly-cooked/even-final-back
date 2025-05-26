@@ -6,6 +6,7 @@ import com.even.zaro.dto.profile.UserPostDto;
 import com.even.zaro.dto.profile.UserProfileDto;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostLikeRepository;
@@ -179,12 +180,24 @@ public class ProfileApiTest {
 
     @Test
     void 존재하지_않는_유저에게_팔로우_시도_실패() {
+        // given
+        User validUser = createUser("valid@even.com", "valid");
 
+        // when & then
+        UserException exception = assertThrows(UserException.class, () ->
+                profileService.followUser(validUser.getId(), 99999L));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
     }
 
     @Test
     void 자기자신을_팔로우_시도_실패() {
+        // given
+        User user = createUser("self@even.com", "self");
 
+        // when & then
+        ProfileException exception = assertThrows(ProfileException.class, () ->
+                profileService.followUser(user.getId(), user.getId()));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_SELF_NOT_ALLOWED);
     }
 
     @Test

@@ -29,7 +29,7 @@ public class ProfileApiTest {
     private ProfileService profileService;
 
     @Test
-    public void 유저_기본_프로필_조회_성공() {
+    void 유저_기본_프로필_조회_성공() {
         // given
         User user = createUser("test@naver.com", "닉네임");
 
@@ -40,6 +40,22 @@ public class ProfileApiTest {
         assertThat(profile.getUserId()).isEqualTo(user.getId());
         assertThat(profile.getNickname()).isEqualTo(user.getNickname());
     }
+
+    @Test
+    void 유저가_쓴_게시물_리스트_조회_성공() {
+
+    }
+
+    @Test
+    void 유저가_좋아요_누른_게시물_리스트_조회_성공() {
+
+    }
+
+    @Test
+    void 유저가_작성한_댓글_리스트_조회_성공() {
+
+    }
+
 
     @Test
     void 존재하지_않는_유저_프로필_조회_실패() {

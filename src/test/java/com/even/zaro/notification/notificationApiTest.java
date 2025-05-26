@@ -35,7 +35,7 @@ public class notificationApiTest {
     @Test
     void 알림_목록_조회_성공() {
         // given
-        User user = createUser("test@even.com");
+        User user = createUser("test1@even.com");
         Notification noti1 = createNotification(user, false);
         Notification noti2 = createNotification(user, true);
 
@@ -47,6 +47,32 @@ public class notificationApiTest {
         // 최신순 정렬이어야함 !!
         assertThat(list).extracting("isRead").containsExactly(true, false);
     }
+
+    @Test
+    void 알림_1개_읽음_처리_성공() {
+        //
+        User user = createUser("test2@even.com");
+        Notification noti = createNotification(user, false);
+
+        notificationService.markAsRead(noti.getId(), user.getId());
+
+        Notification found = notificationRepository.findById(noti.getId()).orElseThrow();
+        assertThat(found.isRead()).isTrue();
+    }
+
+    @Test
+    void 알림_전체_읽음_처리_성공() {
+        User user = createUser("test3@even.com");
+        createNotification(user, false);
+        createNotification(user, false);
+
+        notificationService.markAllAsRead(user.getId());
+
+        List<Notification> list = notificationRepository.findAllByUserIdAndIsReadFalse(user.getId());
+        assertThat(list).isEmpty(); // 모두 읽음 처리됨
+    }
+
+
 
     private User createUser(String email) {
         return userRepository.save(User.builder()

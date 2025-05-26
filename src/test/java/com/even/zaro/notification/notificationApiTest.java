@@ -1,5 +1,7 @@
 package com.even.zaro.notification;
 
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.notification.NotificationException;
 import com.even.zaro.repository.NotificationRepository;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.dto.notification.NotificationDto;
@@ -17,6 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional
@@ -50,28 +53,44 @@ public class notificationApiTest {
 
     @Test
     void 알림_1개_읽음_처리_성공() {
-        //
+        // given
         User user = createUser("test2@even.com");
         Notification noti = createNotification(user, false);
 
+        // when
         notificationService.markAsRead(noti.getId(), user.getId());
 
+        // then
         Notification found = notificationRepository.findById(noti.getId()).orElseThrow();
         assertThat(found.isRead()).isTrue();
     }
 
     @Test
     void 알림_전체_읽음_처리_성공() {
+        // given
         User user = createUser("test3@even.com");
         createNotification(user, false);
         createNotification(user, false);
 
+        // when
         notificationService.markAllAsRead(user.getId());
 
+        // then
         List<Notification> list = notificationRepository.findAllByUserIdAndIsReadFalse(user.getId());
         assertThat(list).isEmpty(); // 모두 읽음 처리됨
     }
 
+    @Test
+    void 존재하지_않는_알림_읽음_처리_실패() {
+        // given
+        User user = createUser("user3@even.com");
+
+        // when & then
+        NotificationException exception = assertThrows(NotificationException.class, () ->
+                notificationService.markAsRead(9999L, user.getId()));
+
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.NOTIFICATION_NOT_FOUND);
+    }
 
 
     private User createUser(String email) {

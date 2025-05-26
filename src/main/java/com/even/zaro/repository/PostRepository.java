@@ -25,7 +25,7 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     @EntityGraph(attributePaths = {"postImageList"})
     Optional<Post> findByIdAndIsDeletedFalse(Long postId);
 
-    List<Post> findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category category);
+    List<Post> findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category category);
 
     boolean existsByIdAndIsDeletedFalse(Long postId);
 }

@@ -176,9 +176,9 @@ public class PostService {
 
     @Transactional
     public HomePostPreviewResponse getHomePostPreview() {
-        List<Post> togetherPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.TOGETHER);
-        List<Post> dailyLifePosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.DAILY_LIFE);
-        List<Post> randomBuyPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.RANDOM_BUY);
+        List<Post> togetherPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category.TOGETHER);
+        List<Post> dailyLifePosts = postRepository.findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category.DAILY_LIFE);
+        List<Post> randomBuyPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category.RANDOM_BUY);
 
         List<HomePostPreviewResponse.SimplePostDto> together = togetherPosts.stream()
                 .map(post -> HomePostPreviewResponse.SimplePostDto.builder()

@@ -2,10 +2,7 @@ package com.even.zaro.service;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
 
-import co.elastic.clients.elasticsearch._types.query_dsl.BoolQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.MatchQuery;
-import co.elastic.clients.elasticsearch._types.query_dsl.Query;
-import co.elastic.clients.elasticsearch._types.query_dsl.TermQuery;
+import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.PostSearchDto;
@@ -28,8 +25,8 @@ public class PostEsSearchService {
     private final ElasticsearchClient elasticsearchClient;
 
     public PageResponse<PostSearchDto> searchWithPage(String category, String keyword, Pageable pageable) throws IOException {
-        Query keywordQuery = MatchQuery.of(m -> m
-                .field("title")
+        Query keywordQuery = MultiMatchQuery.of(m -> m
+                .fields("title", "content")
                 .query(keyword)
         )._toQuery();
 

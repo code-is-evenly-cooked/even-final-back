@@ -38,6 +38,9 @@ spring:
     redis:
       repositories:
         enabled: false
+    elasticsearch:
+      repositories:
+        enabled: false
 
   redis:
     host: ${REDIS_HOST}

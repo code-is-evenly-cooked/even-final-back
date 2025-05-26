@@ -32,8 +32,8 @@ public class PostReportService {
             throw new PostException(ErrorCode.CANNOT_REPORT_OWN_POST);
         }
 
-        if (request.reasonType() == ReportReasonType.ETC &&
-                (request.reasonText() == null || request.reasonText().trim().isEmpty())) {
+        if (request.getReasonType() == ReportReasonType.ETC &&
+                (request.getReasonText() == null || request.getReasonText().trim().isEmpty())) {
             throw new PostException(ErrorCode.REASON_TEXT_REQUIRED_FOR_ETC);
         }
 
@@ -51,8 +51,8 @@ public class PostReportService {
         postReportRepository.save(PostReport.builder()
                 .post(post)
                 .user(user)
-                .reasonType(request.reasonType())
-                .reasonText(request.reasonText())
+                .reasonType(request.getReasonType())
+                .reasonText(request.getReasonText())
                 .createdAt(LocalDateTime.now())
                 .build());
 
@@ -63,9 +63,9 @@ public class PostReportService {
             post.markAsReported();
         }
         return new ReportResponseDto(
-                request.reasonType(),
-                request.reasonType().getDescription(),
-                request.reasonText()
+                request.getReasonType(),
+                request.getReasonType().getDescription(),
+                request.getReasonText()
         );
     }
 }

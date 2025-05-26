@@ -45,10 +45,11 @@ public class PostSearchController {
 
         return ResponseEntity.ok(ApiResponse.success("검색 결과입니다.", results));
     }
+
     @Operation(summary = "ES 게시글 검색", description = "Elasticsearch 기반의 게시글 검색 결과를 페이징 형태로 제공합니다.")
     @GetMapping("/es")
     public ResponseEntity<ApiResponse<PageResponse<PostSearchDto>>> searchEsPosts(
-            @RequestParam("required = false") String category,
+            @RequestParam(required = false) String category,
             @RequestParam String keyword,
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC)
             Pageable pageable
@@ -56,5 +57,4 @@ public class PostSearchController {
         PageResponse<PostSearchDto> result = postEsSearchService.searchWithPage(category, keyword, pageable);
         return ResponseEntity.ok(ApiResponse.success("ES 검색 결과입니다." , result));
     }
-
 }

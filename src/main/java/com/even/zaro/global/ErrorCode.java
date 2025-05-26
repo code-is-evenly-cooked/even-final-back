@@ -84,6 +84,7 @@ public enum ErrorCode {
     COMMENT_NO_ASSOCIATED_POST(HttpStatus.INTERNAL_SERVER_ERROR, "댓글에 연결된 게시글이 존재하지 않습니다."),
     COMMENT_CONTENT_BLANK(HttpStatus.BAD_REQUEST, "댓글 내용을 입력하지 않았습니다."),
     NOT_COMMENT_OWNER(HttpStatus.BAD_REQUEST, "댓글 작성자가 아닙니다."),
+    MENTIONED_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "멘션한 사용자를 찾을 수 없습니다."),
 
     // 프로필 Profile
     FOLLOW_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우할 수 없습니다."),
@@ -93,6 +94,7 @@ public enum ErrorCode {
 
     // 그룹 Group
     GROUP_NOT_FOUND(HttpStatus.NOT_FOUND, "해당 그룹을 찾지 못했습니다."),
+    GROUP_LIST_NOT_FOUND(HttpStatus.NOT_FOUND, "그룹 리스트가 존재하지 않습니다"),
     GROUP_ALREADY_DELETE(HttpStatus.NOT_FOUND, "이미 삭제한 그룹입니다."),
     GROUP_ALREADY_EXIST(HttpStatus.NOT_FOUND, "이미 존재하는 그룹 이름입니다."),
     UNAUTHORIZED_GROUP_DELETE(HttpStatus.UNAUTHORIZED, "다른 사용자의 그룹 삭제 시도입니다."),

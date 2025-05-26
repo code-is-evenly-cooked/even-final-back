@@ -23,7 +23,7 @@ public class CommentResponseDto {
     @Schema(description = "작성자 닉네임", example = "이브니")
     private String nickname;
 
-    @Schema(description = "작성자 프로필 이미지", example = "https://.../profile.png")
+    @Schema(description = "작성자 프로필 이미지", example = "/images/profile/2-uuid.png")
     private String profileImage;
 
     @Schema(description = "자취 시작일", example = "2024-03-01")
@@ -42,6 +42,15 @@ public class CommentResponseDto {
     @Schema(description = "댓글 작성자 여부", example = "true")
     @JsonProperty("isMine")
     private boolean isMine;
+
+    @Schema(description = "멘션된 유저 정보", nullable = true,
+            example = """
+                {
+                  "id": 2,
+                  "nickname": "자취왕"
+                }
+                """)
+    private MentionedUserDto mentionedUser;
 
     @JsonIgnore
     public boolean getMine() {

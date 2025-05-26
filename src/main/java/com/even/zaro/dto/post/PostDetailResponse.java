@@ -23,8 +23,8 @@ public class PostDetailResponse {
     @Schema(description = "게시글 내용", example = "언젠가는 쓰겠죠..?")
     private String content;
 
-    @Schema(description = "썸네일 이미지 URL", example = "https://example.com/image1.jpg")
-    private String thumbnailUrl;
+    @Schema(description = "썸네일 이미지 key", example = "/images/post/uuid1.png")
+    private String thumbnailImage;
 
     @Schema(description = "게시글 카테고리", example = "RANDOM_BUY")
     private String category;
@@ -38,8 +38,8 @@ public class PostDetailResponse {
     @Schema(description = "댓글 수", example = "4")
     private int commentCount;
 
-    @Schema(description = "이미지 URL 목록", example = "[\"https://example.com/image1.jpg\", \"https://example.com/image2.jpg\"]")
-    private List<String> imageUrlList;
+    @Schema(description = "포스트 이미지 key 리스트", example = "[\"/images/post/uuid1.png\", \"/images/post/uuid2.png\"]")
+    private List<String> postImageList;
 
     @Schema(description = "게시글 생성 일시", example = "2025-05-21T10:15:30")
     private LocalDateTime createdAt;
@@ -53,6 +53,6 @@ public class PostDetailResponse {
     public static class UserInfo {
         private Long userId;
         private String nickname;
-        private String profileImageUrl;
+        private String profileImage;
     }
 }

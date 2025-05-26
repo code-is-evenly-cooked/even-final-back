@@ -42,13 +42,13 @@ public class Post {
     private Tag tag;
 
     @ElementCollection
-    @CollectionTable(name = "post_image", joinColumns = @JoinColumn(name = "post_id"))
-    @Column(name = "image_url")
+    @CollectionTable(name = "post_images", joinColumns = @JoinColumn(name = "post_id"))
+    @Column(name = "post_images")
     @Builder.Default
-    private List<String> imageUrlList = new ArrayList<>();
+    private List<String> postImageList = new ArrayList<>();
 
-    @Column(name = "thumbnail_url")
-    private String thumbnailUrl;
+    @Column(name = "thumbnail_image")
+    private String thumbnailImage;
 
     @Column(name = "is_reported")
     @Builder.Default
@@ -89,12 +89,12 @@ public class Post {
         this.tag = tag;
     }
 
-    public void changeImageUrlList(List<String> imageUrlList) {
-        this.imageUrlList = imageUrlList;
+    public void changeImageList(List<String> postImageList) {
+        this.postImageList = postImageList;
     }
 
-    public void changeThumbnailUrl(String thumbnailUrl) {
-        this.thumbnailUrl = thumbnailUrl;
+    public void changeThumbnail(String thumbnailImage) {
+        this.thumbnailImage = thumbnailImage;
     }
 
     public void changeLikeCount(int likeCount) {

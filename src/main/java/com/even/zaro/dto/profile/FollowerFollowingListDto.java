@@ -18,6 +18,6 @@ public class FollowerFollowingListDto {
     @Schema(description = "사용자 이름", example = "권지용")
     private String userName;
 
-    @Schema(description = "사용자 프로필 이미지 URL", example = "/images/user88.jpg")
+    @Schema(description = "사용자 프로필 이미지 URL", example = "/images/profile/2-uuid.png")
     private String profileImage;
 }

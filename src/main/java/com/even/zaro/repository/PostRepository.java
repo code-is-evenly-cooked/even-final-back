@@ -6,6 +6,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.util.List;
@@ -17,9 +18,9 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     int countByUserAndIsDeletedFalse(User user);
 
-    Page<Post> findByCategoryAndIsDeletedFalse(Post.Category category, Pageable pageable);
+    Page<Post> findByCategoryAndIsDeletedFalseAndIsReportedFalse(Post.Category category, Pageable pageable);
 
-    Page<Post> findByIsDeletedFalse(Pageable pageable);
+    Page<Post> findByIsDeletedFalseAndIsReportedFalse(Pageable pageable);
 
     @EntityGraph(attributePaths = {"postImageList"})
     Optional<Post> findByIdAndIsDeletedFalse(Long postId);

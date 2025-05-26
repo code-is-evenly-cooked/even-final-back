@@ -111,10 +111,10 @@ public class PostService {
         Page<Post> page;
 
         if (category == null || category.isBlank()) {
-            page = postRepository.findByIsDeletedFalse(pageable);
+            page = postRepository.findByIsDeletedFalseAndIsReportedFalse(pageable);
         } else {
             Post.Category postCategory = parseCategory(category);
-            page = postRepository.findByCategoryAndIsDeletedFalse(postCategory, pageable);
+            page = postRepository.findByCategoryAndIsDeletedFalseAndIsReportedFalse(postCategory, pageable);
         }
 
         return new PageResponse<>(page.map(PostPreviewDto::from));
@@ -124,6 +124,10 @@ public class PostService {
     public PostDetailResponse getPostDetail(Long postId) {
         Post post = postRepository.findByIdAndIsDeletedFalse(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+
+        if (post.isReported()){
+            throw new PostException(ErrorCode.POST_NOT_FOUND);
+        }
 
         User user = post.getUser();
 

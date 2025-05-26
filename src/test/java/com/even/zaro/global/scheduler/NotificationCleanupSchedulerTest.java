@@ -34,15 +34,17 @@ public class NotificationCleanupSchedulerTest {
     void 알림_30일_지나면_스케줄러_삭제_성공() {
         // given
         User user = createUser("test@even.com");
+        // 테스트 기준 시간 250526 새벽 3시로 설정
+        LocalDateTime testNow = LocalDateTime.of(2025, 5, 26, 3, 0);
 
         // 기준 시각 : 30일 전 새벽 3시
-        LocalDateTime standard = LocalDateTime.now().minusDays(30).withHour(3).withMinute(0).withSecond(0).withNano(0);
+        LocalDateTime standard = testNow.minusDays(30);
 
         Notification oldNoti = createNotification(user, false, standard.minusMinutes(1));
         Notification notOldEnoughNoti = createNotification(user, false, standard.plusMinutes(1));
 
         // when
-        notificationCleanupScheduler.deleteOldNotifications();
+        notificationCleanupScheduler.deleteOldNotifications(testNow);
 
         // then
         assertThat(notificationRepository.findById(oldNoti.getId())).isEmpty();

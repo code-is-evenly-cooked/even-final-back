@@ -28,4 +28,6 @@ public interface PostRepository extends JpaRepository<Post, Long> {
     List<Post> findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category category);
 
     boolean existsByIdAndIsDeletedFalse(Long postId);
+
+    Page<Post> findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(Post.Category category, Post.Tag tag, Pageable pageable);
 }

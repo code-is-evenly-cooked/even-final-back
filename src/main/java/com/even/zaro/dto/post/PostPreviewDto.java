@@ -1,6 +1,7 @@
 package com.even.zaro.dto.post;
 
 import com.even.zaro.entity.Post;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,6 +14,7 @@ import java.util.List;
 @AllArgsConstructor
 @Builder
 @Schema(description = "게시글 목록 응답 DTO")
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class PostPreviewDto {
 
     @Schema(description = "게시글 ID", example = "1")
@@ -39,11 +41,15 @@ public class PostPreviewDto {
     @Schema(description = "댓글 수", example = "3")
     private int commentCount;
 
+    private String writerProfileImage;
+    private String writerNickname;
+
+
     @Schema(description = "게시글 생성 일시", example = "2025-05-21T12:34:56")
     private LocalDateTime createdAt;
 
     public static PostPreviewDto from(Post post) {
-        return PostPreviewDto.builder()
+        PostPreviewDto.PostPreviewDtoBuilder builder = PostPreviewDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
                 .content(truncate(post.getContent(), 50))
@@ -52,8 +58,15 @@ public class PostPreviewDto {
                 .tag(post.getTag() != null ? post.getTag().name() : null)
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
-                .createdAt(post.getCreatedAt())
-                .build();
+                .createdAt(post.getCreatedAt());
+
+        if (post.getCategory() == Post.Category.RANDOM_BUY){
+            builder.writerProfileImage(post.getUser().getProfileImage());
+            builder.writerNickname(post.getUser().getNickname());
+        }
+
+        return builder.build();
+
     }
 
     private static String truncate(String content, int maxLength) {

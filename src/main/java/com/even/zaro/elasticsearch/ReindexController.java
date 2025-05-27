@@ -32,10 +32,13 @@ public class ReindexController {
         List<Post> posts = postRepository.findAll();
 
         for (Post post : posts) {
+            PostEsDocument doc = PostEsDocument.from(post);
+            if (doc == null) continue;
+
             esClient.index(i -> i
                     .index("posts")
                     .id(post.getId().toString())
-                    .document(PostEsDocument.from(post))
+                    .document(doc)
             );
         }
 

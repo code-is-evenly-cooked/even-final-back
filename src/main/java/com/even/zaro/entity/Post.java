@@ -50,9 +50,10 @@ public class Post {
     @Column(name = "thumbnail_image")
     private String thumbnailImage;
 
-    @Column(name = "is_reported")
+    @Column(name = "is_reported", nullable = false)
     @Builder.Default
     private boolean isReported = false;
+
     @Column(name = "is_deleted")
     @Builder.Default
     private boolean isDeleted = false;

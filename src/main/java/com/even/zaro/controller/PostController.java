@@ -4,9 +4,9 @@ import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.global.ApiResponse;
-import com.even.zaro.global.ErrorCode;
 import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.PostLikeService;
+import com.even.zaro.service.PostReportService;
 import com.even.zaro.service.PostService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -14,7 +14,6 @@ import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
@@ -35,6 +34,7 @@ public class PostController {
 
     private final PostService postService;
     private final PostLikeService postLikeService;
+    private final PostReportService postReportService;
 
     @Operation(summary = "게시글 작성", description = "새로운 게시글을 작성합니다.",security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping
@@ -131,5 +131,16 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("해당 게시글 좋아요 여부 조회가 성공하였습니다.", liked));
     }
 
+
+    @Operation(summary = "게시글 신고", description = "게시글을 신고합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @PostMapping("/{postId}/report")
+    public ResponseEntity<ApiResponse<ReportResponseDto>> reportPost(
+            @PathVariable Long postId,
+            @RequestBody @Valid ReportRequestDTO request,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+    ){
+        ReportResponseDto response = postReportService.reportPost(postId, request, userInfoDto.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("게시글 신고가 완료되었습니다.", response));
+    }
 
 }

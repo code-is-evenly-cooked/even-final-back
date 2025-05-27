@@ -114,15 +114,15 @@ public class PostService {
         boolean tagEmpty = (tag == null || tag.isBlank());
 
         if (categoryEmpty && tagEmpty) {
-            page = postRepository.findByIsDeletedFalse(pageable);
+            page = postRepository.findByIsDeletedFalseAndIsReportedFalse(pageable);
         } else if (!categoryEmpty && tagEmpty) {
             Post.Category postCategory = parseCategory(category);
-            page = postRepository.findByCategoryAndIsDeletedFalse(postCategory, pageable);
+            page = postRepository.findByCategoryAndIsDeletedFalseAndIsReportedFalse(postCategory, pageable);
         } else if (!categoryEmpty) {
             Post.Category postCategory = parseCategory(category);
             Post.Tag postTag = convertTag(tag);
             validateTagForCategory(postCategory, postTag);
-            page = postRepository.findByCategoryAndTagAndIsDeletedFalse(postCategory, postTag, pageable);
+            page = postRepository.findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(postCategory, postTag, pageable);
         } else {
             throw new PostException(ErrorCode.INVALID_CATEGORY);
         }
@@ -134,6 +134,10 @@ public class PostService {
     public PostDetailResponse getPostDetail(Long postId) {
         Post post = postRepository.findByIdAndIsDeletedFalse(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+
+        if (post.isReported()){
+            throw new PostException(ErrorCode.POST_NOT_FOUND);
+        }
 
         User user = post.getUser();
 
@@ -182,9 +186,9 @@ public class PostService {
 
     @Transactional
     public HomePostPreviewResponse getHomePostPreview() {
-        List<Post> togetherPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.TOGETHER);
-        List<Post> dailyLifePosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.DAILY_LIFE);
-        List<Post> randomBuyPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseOrderByCreatedAtDesc(Post.Category.RANDOM_BUY);
+        List<Post> togetherPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category.TOGETHER);
+        List<Post> dailyLifePosts = postRepository.findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category.DAILY_LIFE);
+        List<Post> randomBuyPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category.RANDOM_BUY);
 
         List<HomePostPreviewResponse.SimplePostDto> together = togetherPosts.stream()
                 .map(post -> HomePostPreviewResponse.SimplePostDto.builder()

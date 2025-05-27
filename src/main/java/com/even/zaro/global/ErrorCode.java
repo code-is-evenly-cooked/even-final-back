@@ -78,6 +78,10 @@ public enum ErrorCode {
     KEYWORD_REQUIRED(HttpStatus.BAD_REQUEST, "검색어는 필수입니다."),
     CATEGORY_REQUIRED(HttpStatus.BAD_REQUEST, "카테고리는 필수입니다."),
     SEARCH_POST_NOT_FOUND(HttpStatus.NOT_FOUND, "검색 결과가 없습니다."),
+    ALREADY_REPORTED_POST(HttpStatus.CONFLICT, "이미 신고한 게시글입니다."),
+    CANNOT_REPORT_OWN_POST(HttpStatus.BAD_REQUEST,"본인의 게시글은 신고할 수 없습니다."),
+    HIDDEN_BY_REPORT(HttpStatus.FORBIDDEN, "신고 누적으로 숨김 처리된 게시글입니다."),
+    REASON_TEXT_REQUIRED_FOR_ETC(HttpStatus.BAD_REQUEST, "기타 사유를 선택한 경우 상세 내용을 입력해야 합니다."),
 
     // 댓글 Comments
     COMMENT_NOT_FOUND(HttpStatus.NOT_FOUND, "댓글을 찾을 수 없습니다."),

@@ -21,7 +21,7 @@ public class PostSearchService {
             throw new PostException(ErrorCode.CATEGORY_REQUIRED);
         }
         if (keyword == null || keyword.isBlank()) {
-            throw new PostException(ErrorCode.KEYWORD_REQUIRED);
+            throw new PostException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
         }
 
         Page<PostSearchDto> result = postSearchRepository.searchPosts(category, keyword, pageable);

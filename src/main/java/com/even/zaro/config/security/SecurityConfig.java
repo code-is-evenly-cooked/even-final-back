@@ -45,7 +45,9 @@ public class SecurityConfig {
                                 .requestMatchers("/api/posts/home").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/posts").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/search").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/search/es").permitAll() // search 로 합쳐질 예정
                                 .requestMatchers("/api/profile/{userId}").permitAll()
+                                .requestMatchers("/api/es/reindex").permitAll()
 //                        .requestMatchers("/**").permitAll() // 전체 인증 없이 개발용
                         .anyRequest().authenticated()
                 )

@@ -38,11 +38,18 @@ spring:
     redis:
       repositories:
         enabled: false
+    elasticsearch:
+      repositories:
+        enabled: false
 
   redis:
     host: ${REDIS_HOST}
     port: ${REDIS_PORT}
     password: ${REDIS_PASSWORD}
+
+  # ElasticSearch
+  elasticsearch:
+    uris: ${ES_URI}
 
   # SwaggerUI 설정
   springdoc:
@@ -100,3 +107,8 @@ cloud:
       static: ap-northeast-2
     s3:
       bucket: even-zaro-image-bucket
+
+# Elasticsearch env
+es:
+  host: ${ES_HOST}
+  port: ${ES_PORT}

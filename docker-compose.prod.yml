@@ -14,10 +14,12 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       REDIS_PORT: ${REDIS_PORT}
       REDIS_PASSWORD: ${REDIS_PASSWORD}
+      ES_URI: ${ES_URI}
     ports:
       - "8080:8080"
     depends_on:
       - redis
+      - elasticsearch
 
   redis:
     image: redis:latest
@@ -28,5 +30,24 @@ services:
     volumes:
       - redis_data:/data
 
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:8.13.4
+    container_name: even_final_es
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+      - logger.level=warn
+    ports:
+      - "9200:9200"
+    volumes:
+      - es_data:/usr/share/elasticsearch/data
+    command: >
+      bash -c "
+      if [ ! -d plugins/analysis-nori ]; then
+        elasticsearch-plugin install analysis-nori --batch;
+      fi &&
+      bin/elasticsearch"
+
 volumes:
   redis_data:
+  es_data:

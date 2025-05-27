@@ -5,11 +5,14 @@ import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
+import com.even.zaro.event.PostDeletedEvent;
+import com.even.zaro.event.PostSavedEvent;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -25,6 +28,7 @@ public class PostService {
 
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final ApplicationEventPublisher eventPublisher;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
@@ -54,7 +58,9 @@ public class PostService {
                 .user(user)
                 .build();
 
-        postRepository.save(post);
+        Post saved = postRepository.save(post);
+        eventPublisher.publishEvent(new PostSavedEvent(saved));
+
         return PostDetailResponse.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
@@ -104,6 +110,8 @@ public class PostService {
         post.changeTag(tag);
         post.changeImageList(request.getPostImageList());
         post.changeThumbnail(thumbnailUrl);
+
+        eventPublisher.publishEvent(new PostSavedEvent(post));
     }
 
     @Transactional(readOnly = true)
@@ -181,6 +189,7 @@ public class PostService {
         }
 
         post.markAsDeleted();
+        eventPublisher.publishEvent(new PostDeletedEvent(postId));
     }
 
 

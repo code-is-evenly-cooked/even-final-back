@@ -66,6 +66,7 @@ public class NotificationController {
 
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
     public SseEmitter subscribe(@AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        log.info("[SSE] /subscribe 진입: userId = {}", userInfoDto.getUserId());
         return notificationSseService.connect(userInfoDto.getUserId());
     }
 }

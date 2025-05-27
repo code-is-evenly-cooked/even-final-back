@@ -1,9 +1,7 @@
 package com.even.zaro.entity;
 
 import jakarta.persistence.*;
-import lombok.Getter;
-import lombok.NoArgsConstructor;
-import lombok.Setter;
+import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;
 
 import java.time.LocalDateTime;
@@ -12,7 +10,9 @@ import java.time.LocalDateTime;
 @Table(name = "notification")
 @Getter
 @Setter
+@Builder(toBuilder = true) // testCode용으로 추가 (실제는 Listener에서 자동생성)
 @NoArgsConstructor
+@AllArgsConstructor
 public class Notification {
 
     @Id

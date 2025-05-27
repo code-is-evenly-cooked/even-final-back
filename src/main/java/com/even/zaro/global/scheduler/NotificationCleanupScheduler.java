@@ -22,4 +22,11 @@ public class NotificationCleanupScheduler {
         notificationRepository.deleteByCreatedAtBefore(deletingDate);
         log.info("[Scheduler] 30일 지난 알림 삭제 완료 ! (deletingDate = {})", deletingDate);
     }
+
+    // 테스트용 오버로딩 메서드
+    public void deleteOldNotifications(LocalDateTime fixedNow) {
+        LocalDateTime deletingDate = fixedNow.minusDays(30);
+        notificationRepository.deleteByCreatedAtBefore(deletingDate);
+        log.info("[Test] 30일 지난 알림 삭제 완료 ! (deletingDate = {})", deletingDate);
+    }
 }

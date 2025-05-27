@@ -25,10 +25,18 @@ public class PostEsSearchService {
     private final ElasticsearchClient elasticsearchClient;
 
     public PageResponse<PostSearchDto> searchWithPage(String category, String keyword, Pageable pageable) throws IOException {
-        Query keywordQuery = MultiMatchQuery.of(m -> m
-                .fields("title", "content")
-                .query(keyword)
-        )._toQuery();
+        String[] terms = keyword.trim().split("\\s+");
+
+        Query keywordQuery = BoolQuery.of(b -> {
+            for (String term : terms) {
+                b.must(m -> m.multiMatch(mm -> mm
+                        .fields("title", "content")
+                        .query(term)
+                        .fuzziness("AUTO")
+                ));
+            }
+            return b;
+        })._toQuery();
 
         BoolQuery.Builder bool = new BoolQuery.Builder()
                 .must(keywordQuery);

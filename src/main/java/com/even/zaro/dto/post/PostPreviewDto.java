@@ -55,7 +55,7 @@ public class PostPreviewDto {
         PostPreviewDto.PostPreviewDtoBuilder builder = PostPreviewDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
-                .content(truncate(post.getContent(), 50))
+                .content(post.getContent())
                 .thumbnailImage(post.getThumbnailImage())
                 .category(post.getCategory().name())
                 .tag(post.getTag() != null ? post.getTag().name() : null)
@@ -72,8 +72,4 @@ public class PostPreviewDto {
 
     }
 
-    private static String truncate(String content, int maxLength) {
-        if (content == null) return "";
-        return content.length() <= maxLength ? content : content.substring(0, maxLength) + "...";
-    }
 }

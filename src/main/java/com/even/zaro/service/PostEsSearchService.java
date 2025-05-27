@@ -7,6 +7,8 @@ import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.PostSearchDto;
 import com.even.zaro.elasticsearch.document.PostEsDocument;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.post.PostException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.Pageable;
@@ -25,6 +27,10 @@ public class PostEsSearchService {
     private final ElasticsearchClient elasticsearchClient;
 
     public PageResponse<PostSearchDto> searchWithPage(String category, String keyword, Pageable pageable) throws IOException {
+        if (keyword == null || keyword.isBlank()) {
+            throw new PostException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
+        }
+
         String[] terms = keyword.trim().split("\\s+");
 
         Query keywordQuery = BoolQuery.of(b -> {
@@ -55,6 +61,10 @@ public class PostEsSearchService {
                 .size(pageable.getPageSize())
                 .query(q -> q.bool(bool.build())),
                 PostEsDocument.class);
+
+        if (response.hits().hits().isEmpty()) {
+            throw new PostException(ErrorCode.SEARCH_POST_NOT_FOUND);
+        }
 
         List<PostSearchDto> content = response.hits().hits().stream()
                 .map(hit -> {

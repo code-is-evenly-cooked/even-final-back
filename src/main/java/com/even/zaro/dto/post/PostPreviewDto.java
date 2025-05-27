@@ -41,7 +41,10 @@ public class PostPreviewDto {
     @Schema(description = "댓글 수", example = "3")
     private int commentCount;
 
+    @Schema(description = "작성자 프로필 이미지 URL", example = "https://your-cdn.com/default.png", nullable = true)
     private String writerProfileImage;
+
+    @Schema(description = "작성자 닉네임", example = "이브니쨩", nullable = true)
     private String writerNickname;
 
 

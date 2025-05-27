@@ -45,10 +45,17 @@ public class PostEsDocument {
     private String createdAt;
 
     public static PostEsDocument from(Post post) {
+
+        String cleanContent = post.getContent()
+                .replaceAll("!\\[.*?]\\(.*?\\)", "")
+                .replaceAll("<[^>]*>", "")
+                .replaceAll("\\s+", " ")
+                .trim();
+
         return PostEsDocument.builder()
                 .id(post.getId())
                 .title(post.getTitle())
-                .content(post.getContent())
+                .content(cleanContent)
                 .thumbnailImage(post.getThumbnailImage())
                 .category(post.getCategory().name())
                 .tag(post.getTag().name())

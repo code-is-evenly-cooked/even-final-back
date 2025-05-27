@@ -41,6 +41,12 @@ services:
       - "9200:9200"
     volumes:
       - es_data:/usr/share/elasticsearch/data
+    command: >
+      bash -c "
+      if [ ! -d plugins/analysis-nori ]; then
+        elasticsearch-plugin install analysis-nori --batch;
+      fi &&
+      bin/elasticsearch"
 
 volumes:
   redis_data:

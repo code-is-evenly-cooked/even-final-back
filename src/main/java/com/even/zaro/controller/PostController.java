@@ -63,11 +63,12 @@ public class PostController {
     @GetMapping
     public ResponseEntity<ApiResponse<PageResponse<PostPreviewDto>>> getPostList(
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String tag,
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC)
             Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ){
-        PageResponse<PostPreviewDto> posts = postService.getPostListPage(category, pageable);
+        PageResponse<PostPreviewDto> posts = postService.getPostListPage(category, tag, pageable);
 
         return ResponseEntity.ok(ApiResponse.success("게시글 리스트 조회가 성공했습니다.",posts));
     }

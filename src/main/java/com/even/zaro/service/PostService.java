@@ -107,14 +107,24 @@ public class PostService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<PostPreviewDto> getPostListPage(String category, Pageable pageable) {
+    public PageResponse<PostPreviewDto> getPostListPage(String category, String tag, Pageable pageable) {
         Page<Post> page;
 
-        if (category == null || category.isBlank()) {
+        boolean categoryEmpty = (category == null || category.isBlank());
+        boolean tagEmpty = (tag == null || tag.isBlank());
+
+        if (categoryEmpty && tagEmpty) {
             page = postRepository.findByIsDeletedFalse(pageable);
-        } else {
+        } else if (!categoryEmpty && tagEmpty) {
             Post.Category postCategory = parseCategory(category);
             page = postRepository.findByCategoryAndIsDeletedFalse(postCategory, pageable);
+        } else if (!categoryEmpty) {
+            Post.Category postCategory = parseCategory(category);
+            Post.Tag postTag = convertTag(tag);
+            validateTagForCategory(postCategory, postTag);
+            page = postRepository.findByCategoryAndTagAndIsDeletedFalse(postCategory, postTag, pageable);
+        } else {
+            throw new PostException(ErrorCode.INVALID_CATEGORY);
         }
 
         return new PageResponse<>(page.map(PostPreviewDto::from));

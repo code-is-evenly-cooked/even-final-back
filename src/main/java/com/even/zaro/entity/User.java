@@ -87,11 +87,19 @@ public class User {
         this.lastLoginAt = time;
     }
 
-    public void changeStatusToActive() {
+    public void updateStatusToActive() {
         this.status = Status.ACTIVE;
     }
 
-    public void changePassword(String encodedPassword) {
+    public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
+    }
+
+    public boolean isValidated() {
+        return this.provider == Provider.KAKAO || this.status != Status.PENDING;
+    }
+
+    public void changeStatus(Status status) {
+        this.status = status;
     }
 }

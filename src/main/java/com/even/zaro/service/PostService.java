@@ -177,6 +177,10 @@ public class PostService {
         Post post = postRepository.findById(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
 
+        if (post.isDeleted() || post.isReported()) {
+            throw new PostException(ErrorCode.POST_NOT_FOUND);
+        }
+
         if (!post.getUser().getId().equals(userId)) {
             throw new PostException(ErrorCode.INVALID_POST_OWNER);
         }

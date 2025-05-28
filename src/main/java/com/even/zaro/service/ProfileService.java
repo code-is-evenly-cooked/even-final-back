@@ -1,5 +1,6 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.profile.*;
 import com.even.zaro.repository.*;
 import com.even.zaro.entity.*;
@@ -50,11 +51,11 @@ public class ProfileService {
     }
 
     // 유저가 쓴 게시물 list 조회
-    public Page<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
+    public PageResponse<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        return postRepository.findByUserAndIsDeletedFalse(user, pageable)
+        Page<UserPostDto> page = postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()
                         .postId(post.getId())
                         .title(post.getTitle())
@@ -66,14 +67,16 @@ public class ProfileService {
                         .commentCount(post.getCommentCount())
                         .createdAt(post.getCreatedAt())
                         .build());
+
+        return new PageResponse<>(page);
     }
 
     // 유저가 좋아요 누른 게시물 list 조회
-    public Page<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
+    public PageResponse<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        return postLikeRepository.findByUser(user, pageable)
+        Page<UserPostDto> page = postLikeRepository.findByUser(user, pageable)
                 .map(postLike -> UserPostDto.builder()
                         .postId(postLike.getPost().getId())
                         .title(postLike.getPost().getTitle())
@@ -85,14 +88,16 @@ public class ProfileService {
                         .commentCount(postLike.getPost().getCommentCount())
                         .createdAt(postLike.getPost().getCreatedAt())
                         .build());
+
+        return new PageResponse<>(page);
     }
 
     // 유저가 작성한 댓글 list 조회
-    public Page<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
+    public PageResponse<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        return commentRepository.findByUserAndIsDeletedFalse(user, pageable)
+        Page<UserCommentDto> page = commentRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(comment -> {
                     Post post = comment.getPost();
                     if (post == null) {
@@ -110,6 +115,8 @@ public class ProfileService {
                             .commentCreatedAt(comment.getCreatedAt())
                             .build();
                 });
+
+        return new PageResponse<>(page);
     }
 
     ////////////// 팔로우 관련

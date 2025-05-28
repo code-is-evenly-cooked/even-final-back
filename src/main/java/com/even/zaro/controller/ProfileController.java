@@ -6,9 +6,11 @@ import com.even.zaro.service.ProfileService;
 
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.jwt.JwtUtil;
-import lombok.RequiredArgsConstructor;
-import org.springframework.data.domain.Page;
-import org.springframework.data.domain.PageRequest;
+import com.even.zaro.dto.PageResponse;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -16,6 +18,7 @@ import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -54,16 +57,11 @@ public class ProfileController {
     @GetMapping("/{userId}/posts")
     public ResponseEntity<?> getUserPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
-            @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> posts = profileService.getUserPosts(userId, pageRequest);
-        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", Map.of(
-                "content", posts.getContent(),
-                "totalPages", posts.getTotalPages()
-        )));
+        PageResponse<UserPostDto> posts = profileService.getUserPosts(userId, pageable);
+        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", posts));
     }
 
     // 유저가 좋아요 누른 게시물 list 조회
@@ -75,16 +73,11 @@ public class ProfileController {
     @GetMapping("/{userId}/likes")
     public ResponseEntity<?> getUserLikedPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
-            @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userId, pageRequest);
-        return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", Map.of(
-                "content", likedPosts.getContent(),
-                "totalPages", likedPosts.getTotalPages()
-        )));
+        PageResponse<UserPostDto> likedPosts = profileService.getUserLikedPosts(userId, pageable);
+        return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", likedPosts));
     }
 
     // 유저가 쓴 댓글 list 조회
@@ -96,17 +89,11 @@ public class ProfileController {
     @GetMapping("/{userId}/comments")
     public ResponseEntity<?> getUserComments(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
-            @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserCommentDto> comments = profileService.getUserComments(userId, pageRequest);
-
-        return ResponseEntity.ok(ApiResponse.success("사용자가 작성한 댓글 조회 성공 !", Map.of(
-                        "content", comments.getContent(),
-                        "totalPages", comments.getTotalPages()
-                )));
+        PageResponse<UserCommentDto> comments = profileService.getUserComments(userId, pageable);
+        return ResponseEntity.ok(ApiResponse.success("사용자가 작성한 댓글 조회 성공 !", comments));
     }
 
     // 다른 유저 팔로우 하기

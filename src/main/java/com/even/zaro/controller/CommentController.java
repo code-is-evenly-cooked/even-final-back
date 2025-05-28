@@ -4,7 +4,10 @@ import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.comment.CommentRequestDto;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
+import com.even.zaro.dto.post.ReportRequestDTO;
+import com.even.zaro.dto.post.ReportResponseDto;
 import com.even.zaro.global.ApiResponse;
+import com.even.zaro.service.CommentReportService;
 import com.even.zaro.service.CommentService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -27,6 +30,7 @@ import org.springframework.web.bind.annotation.*;
 public class CommentController {
 
     private final CommentService commentService;
+    private final CommentReportService commentReportService;
 
     @Operation(summary = "댓글 생성(또는 답글 멘션)",
             description = """
@@ -80,6 +84,17 @@ public class CommentController {
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         commentService.softDeleteComment(commentId, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글을 삭제했습니다."));
+    }
+
+    @Operation(summary = "댓글 신고", description = "{commentId} 댓글을 신고합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @PostMapping("comments/{commentId}/report")
+    public ResponseEntity<ApiResponse<ReportResponseDto>> reportComment(
+            @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
+            @RequestBody ReportRequestDTO requestDto,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+            ){
+        ReportResponseDto responseDto = commentReportService.reportComment(commentId, requestDto, userInfoDto.getUserId());
+        return ResponseEntity.ok(ApiResponse.success("댓글을 신고했습니다.", responseDto));
     }
 
 

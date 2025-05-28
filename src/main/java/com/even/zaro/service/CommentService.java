@@ -59,6 +59,7 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
+        post.changeCommentCount(post.getCommentCount() + 1);
 
         return toDto(comment, currentUserId);
     }
@@ -106,6 +107,9 @@ public class CommentService {
         }
 
         comment.softDelete();
+
+        Post post = comment.getPost();
+        post.changeCommentCount(Math.max(0, post.getCommentCount() - 1));
     }
 
     // 공통 응답

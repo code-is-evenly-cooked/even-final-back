@@ -1,5 +1,7 @@
 package com.even.zaro.dto.user;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Builder;
 import lombok.Getter;
@@ -45,4 +47,13 @@ public class UserInfoResponseDto {
 
     @Schema(description = "회원가입 경로", example = "LOCAL")
     private String provider;
+
+    @Schema(description = "이메일 인증 여부", example = "true")
+    @JsonProperty("isValidated")
+    private boolean isValidated;
+
+    @JsonIgnore
+    public boolean getValidated() {
+        return isValidated;
+    }
 }

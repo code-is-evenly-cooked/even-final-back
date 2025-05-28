@@ -30,6 +30,7 @@ public class UserService {
                 .updatedAt(user.getUpdatedAt())
                 .lastLoginAt(user.getLastLoginAt())
                 .provider(user.getProvider().name())
+                .isValidated(user.isValidated())
                 .build();
     }
 }

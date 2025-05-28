@@ -94,4 +94,8 @@ public class User {
     public void changePassword(String encodedPassword) {
         this.password = encodedPassword;
     }
+
+    public boolean isValidated() {
+        return this.provider == Provider.KAKAO || this.status != Status.PENDING;
+    }
 }

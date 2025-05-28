@@ -114,6 +114,10 @@ public class Post {
         this.isDeleted = true;
     }
 
+    public void changeCommentCount(int commentCount) {
+        this.commentCount = commentCount;
+    }
+
     public enum Category {
         TOGETHER(List.of(Tag.GROUP_BUY, Tag.SHARING, Tag.EXCHANGE)),   //같이쓰자
         DAILY_LIFE(List.of(Tag.TIPS, Tag.QUESTIONS)), //자취일상

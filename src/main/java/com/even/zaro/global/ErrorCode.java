@@ -95,6 +95,9 @@ public enum ErrorCode {
     COMMENT_CONTENT_BLANK(HttpStatus.BAD_REQUEST, "댓글 내용을 입력하지 않았습니다."),
     NOT_COMMENT_OWNER(HttpStatus.BAD_REQUEST, "댓글 작성자가 아닙니다."),
     MENTIONED_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "멘션한 사용자를 찾을 수 없습니다."),
+    CANNOT_REPORT_OWN_COMMENT(HttpStatus.BAD_REQUEST,"본인의 댓글은 신고할 수 없습니다."),
+    ALREADY_REPORTED_COMMENT(HttpStatus.CONFLICT,"이미 신고한 댓글입니다."),
+    HIDDEN_BY_REPORT_COMMENT(HttpStatus.FORBIDDEN, "신고 누적으로 숨김 처리된 댓글입니다."),
 
     // 프로필 Profile
     FOLLOW_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우할 수 없습니다."),

@@ -59,6 +59,7 @@ public class CommentService {
                 .build();
 
         commentRepository.save(comment);
+        post.changeCommentCount(post.getCommentCount() + 1);
 
         return toDto(comment, currentUserId);
     }
@@ -106,6 +107,9 @@ public class CommentService {
         }
 
         comment.softDelete();
+
+        Post post = comment.getPost();
+        post.changeCommentCount(Math.max(0, post.getCommentCount() - 1));
     }
 
     // 공통 응답
@@ -126,9 +130,13 @@ public class CommentService {
             mentionedUser = new MentionedUserDto(mentioned.getId(), mentioned.getNickname());
         }
 
+        String content = comment.isReported()
+                ? "신고로 삭제된 댓글입니다."
+                : comment.getContent();
+
         return new CommentResponseDto(
                 comment.getId(),
-                comment.getContent(),
+                content,
                 writer.getNickname(),
                 writer.getProfileImage(),
                 writer.getLiveAloneDate(),

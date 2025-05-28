@@ -4,12 +4,10 @@ import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.dto.user.UpdatePasswordRequestDto;
 import com.even.zaro.dto.user.UserInfoResponseDto;
 import com.even.zaro.global.ApiResponse;
-import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
-import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -28,7 +26,8 @@ public class UserController {
         UserInfoResponseDto responseDto = userService.getMyInfo(userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("내 정보 조회에 성공했습니다.", responseDto));
     }
-    
+
+    @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(
             @RequestBody UpdatePasswordRequestDto requestDto,

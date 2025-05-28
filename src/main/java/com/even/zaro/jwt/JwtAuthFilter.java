@@ -10,6 +10,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
+import jakarta.servlet.http.Cookie;
 
 import java.io.IOException;
 
@@ -22,6 +23,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
         // 헤더에서 토큰 추출
         String token = jwtUtil.resolveToken(request);
+
+        // Authorization 헤더 없을 경우 쿠키에서 추출 (SSE)
+        if (token == null) {
+            token = extractTokenFromCookies(request);
+        }
 
         // 토큰 유효성 검사
         if (token != null && jwtUtil.validateAccessToken(token)) {
@@ -43,5 +49,17 @@ public class JwtAuthFilter extends OncePerRequestFilter {
     protected boolean shouldNotFilter(HttpServletRequest request) {
         String path = request.getRequestURI();
         return path.equals("/api/auth/refresh");
+    }
+
+    // 쿠키에서 access_token 꺼내기
+    private String extractTokenFromCookies(HttpServletRequest request) {
+        if (request.getCookies() != null) {
+            for (Cookie cookie : request.getCookies()) {
+                if ("access_token".equals(cookie.getName())) {
+                    return cookie.getValue();
+                }
+            }
+        }
+        return null;
     }
 }

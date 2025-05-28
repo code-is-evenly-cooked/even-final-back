@@ -53,7 +53,7 @@ public class EmailVerificationService {
 
         emailToken.verify();
         emailTokenRepository.save(emailToken);
-        user.changeStatusToActive();
+        user.updateStatusToActive();
         userRepository.save(user);
     }
 

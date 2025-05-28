@@ -67,7 +67,7 @@ public class PasswordResetService {
         User user = userRepository.findByEmail(resetToken.getEmail())
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        user.changePassword(passwordEncoder.encode(newPassword));
+        user.updatePassword(passwordEncoder.encode(newPassword));
         userRepository.save(user);
 
         resetToken.markUsed();

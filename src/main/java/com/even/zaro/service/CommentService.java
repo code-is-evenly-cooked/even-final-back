@@ -126,9 +126,13 @@ public class CommentService {
             mentionedUser = new MentionedUserDto(mentioned.getId(), mentioned.getNickname());
         }
 
+        String content = comment.isReported()
+                ? "신고로 삭제된 댓글입니다."
+                : comment.getContent();
+
         return new CommentResponseDto(
                 comment.getId(),
-                comment.getContent(),
+                content,
                 writer.getNickname(),
                 writer.getProfileImage(),
                 writer.getLiveAloneDate(),

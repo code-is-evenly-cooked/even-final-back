@@ -9,6 +9,11 @@ import com.even.zaro.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
+import com.even.zaro.dto.PageResponse;
+import org.springdoc.core.annotations.ParameterObject;
+import org.springframework.data.domain.Pageable;
+import org.springframework.data.domain.Sort;
+import org.springframework.data.web.PageableDefault;
 
 
 import io.swagger.v3.oas.annotations.Operation;
@@ -54,16 +59,11 @@ public class ProfileController {
     @GetMapping("/{userId}/posts")
     public ResponseEntity<?> getUserPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
-            @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> posts = profileService.getUserPosts(userId, pageRequest);
-        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", Map.of(
-                "content", posts.getContent(),
-                "totalPages", posts.getTotalPages()
-        )));
+        PageResponse<UserPostDto> posts = profileService.getUserPosts(userId, pageable);
+        return ResponseEntity.ok(ApiResponse.success("사용자 게시글 조회 성공 !", posts));
     }
 
     // 유저가 좋아요 누른 게시물 list 조회

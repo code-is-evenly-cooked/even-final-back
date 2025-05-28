@@ -91,17 +91,11 @@ public class ProfileController {
     @GetMapping("/{userId}/comments")
     public ResponseEntity<?> getUserComments(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
-            @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserCommentDto> comments = profileService.getUserComments(userId, pageRequest);
-
-        return ResponseEntity.ok(ApiResponse.success("사용자가 작성한 댓글 조회 성공 !", Map.of(
-                        "content", comments.getContent(),
-                        "totalPages", comments.getTotalPages()
-                )));
+        PageResponse<UserCommentDto> comments = profileService.getUserComments(userId, pageable);
+        return ResponseEntity.ok(ApiResponse.success("사용자가 작성한 댓글 조회 성공 !", comments));
     }
 
     // 다른 유저 팔로우 하기

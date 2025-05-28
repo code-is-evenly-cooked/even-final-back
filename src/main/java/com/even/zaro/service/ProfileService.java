@@ -93,11 +93,11 @@ public class ProfileService {
     }
 
     // 유저가 작성한 댓글 list 조회
-    public Page<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
+    public PageResponse<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        return commentRepository.findByUserAndIsDeletedFalse(user, pageable)
+        Page<UserCommentDto> page = commentRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(comment -> {
                     Post post = comment.getPost();
                     if (post == null) {
@@ -115,6 +115,8 @@ public class ProfileService {
                             .commentCreatedAt(comment.getCreatedAt())
                             .build();
                 });
+
+        return new PageResponse<>(page);
     }
 
     ////////////// 팔로우 관련

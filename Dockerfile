@@ -1,7 +1,11 @@
 FROM gradle:8.4-jdk21 AS build
 WORKDIR /app
+
+COPY build.gradle settings.gradle ./
+RUN gradle dependencies --no-daemon
+
 COPY . .
-RUN gradle build --no-daemon -x test
+RUN gradle build --no-daemon -x test --build-cache
 
 FROM openjdk:21-jdk-slim
 WORKDIR /app

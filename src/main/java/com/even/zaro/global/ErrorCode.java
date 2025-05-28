@@ -55,6 +55,12 @@ public enum ErrorCode {
     INVALID_REFRESH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 리프레시 토큰입니다."),
     REFRESH_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "리프레쉬 토큰을 찾을 수 없습니다."),
 
+        // 계정
+    MAIL_NOT_VERIFIED(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다. 메일함을 확인해주세요."),
+    CURRENT_PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "현재 비밀번호는 필수 입력 값입니다."),
+    CURRENT_PASSWORD_WRONG(HttpStatus.FORBIDDEN, "현재 비밀번호가 올바르지 않습니다."),
+    CURRENT_PASSWORD_EQUALS_NEW_PASSWORD(HttpStatus.BAD_REQUEST,"이전과 다른 비밀번호를 입력해주세요."),
+
     // 알림 Notification
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "조회된 알림이 없습니다."),
 

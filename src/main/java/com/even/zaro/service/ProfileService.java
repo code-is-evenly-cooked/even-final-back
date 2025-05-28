@@ -72,11 +72,11 @@ public class ProfileService {
     }
 
     // 유저가 좋아요 누른 게시물 list 조회
-    public Page<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
+    public PageResponse<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        return postLikeRepository.findByUser(user, pageable)
+        Page<UserPostDto> page = postLikeRepository.findByUser(user, pageable)
                 .map(postLike -> UserPostDto.builder()
                         .postId(postLike.getPost().getId())
                         .title(postLike.getPost().getTitle())
@@ -88,6 +88,8 @@ public class ProfileService {
                         .commentCount(postLike.getPost().getCommentCount())
                         .createdAt(postLike.getPost().getCreatedAt())
                         .build());
+
+        return new PageResponse<>(page);
     }
 
     // 유저가 작성한 댓글 list 조회

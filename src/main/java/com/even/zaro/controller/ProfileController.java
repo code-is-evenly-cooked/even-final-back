@@ -75,16 +75,11 @@ public class ProfileController {
     @GetMapping("/{userId}/likes")
     public ResponseEntity<?> getUserLikedPosts(
             @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
-            @Parameter(description = "페이지 번호 (기본값: 0)") @RequestParam(defaultValue = "0") int page,
-            @Parameter(description = "페이지 크기 (기본값: 10)") @RequestParam(defaultValue = "10") int size,
+            @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.DESC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
 
-        PageRequest pageRequest = PageRequest.of(page, size);
-        Page<UserPostDto> likedPosts = profileService.getUserLikedPosts(userId, pageRequest);
-        return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", Map.of(
-                "content", likedPosts.getContent(),
-                "totalPages", likedPosts.getTotalPages()
-        )));
+        PageResponse<UserPostDto> likedPosts = profileService.getUserLikedPosts(userId, pageable);
+        return ResponseEntity.ok(ApiResponse.success("사용자가 좋아요 한 게시글 조회 성공 !", likedPosts));
     }
 
     // 유저가 쓴 댓글 list 조회

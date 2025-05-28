@@ -98,4 +98,8 @@ public class User {
     public boolean isValidated() {
         return this.provider == Provider.KAKAO || this.status != Status.PENDING;
     }
+
+    public void changeStatus(Status status) {
+        this.status = status;
+    }
 }

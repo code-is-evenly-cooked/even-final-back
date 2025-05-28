@@ -56,11 +56,23 @@ public class Comment {
     @JoinColumn(name = "mentioned_user_id")
     private User mentionedUser;
 
+    @Column(name = "report_count", nullable = false)
+    @Builder.Default
+    private int reportCount = 0;
+
     public void updateContent(String content) {
         this.content = content;
     }
 
     public void softDelete() {
         this.isDeleted = true;
+    }
+
+    public void changeReportCount(int reportCount) {
+        this.reportCount = reportCount;
+    }
+
+    public void markAsReported() {
+        this.isReported = true;
     }
 }

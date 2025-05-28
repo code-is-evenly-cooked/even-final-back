@@ -87,11 +87,11 @@ public class User {
         this.lastLoginAt = time;
     }
 
-    public void changeStatusToActive() {
+    public void updateStatusToActive() {
         this.status = Status.ACTIVE;
     }
 
-    public void changePassword(String encodedPassword) {
+    public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
     }
 

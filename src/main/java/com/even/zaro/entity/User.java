@@ -47,11 +47,13 @@ public class User {
     @Column(name = "live_alone_date")
     private LocalDate liveAloneDate;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "gender")
-    private String gender;
+    private Gender gender;
 
+    @Enumerated(EnumType.STRING)
     @Column(name = "mbti",  length = 4)
-    private String mbti;
+    private Mbti mbti;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "status", nullable = false)

@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 @Service
@@ -75,11 +76,16 @@ public class UserService {
         }
 
         LocalDateTime now = LocalDateTime.now();
-        boolean canUpdate = user.getLastNicknameUpdatedAt() == null
-                || user.getLastNicknameUpdatedAt().plusDays(14).isBefore(now);
+        LocalDateTime lastNicknameUpdatedAt = user.getLastNicknameUpdatedAt();
+
+        boolean canUpdate = lastNicknameUpdatedAt == null
+                || lastNicknameUpdatedAt.plusDays(14).isBefore(now);
 
         if (!canUpdate) {
-            throw new UserException(ErrorCode.NICKNAME_UPDATE_COOLDOWN);
+            LocalDateTime nextAvailableDate = lastNicknameUpdatedAt.plusDays(14);
+            String formatted = nextAvailableDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+            throw new UserException(ErrorCode.NICKNAME_UPDATE_COOLDOWN,
+                    String.format("%s 이후에 다시 변경할 수 있습니다.", formatted));
         }
 
         user.updateNickname(newNickname);

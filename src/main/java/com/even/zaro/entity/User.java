@@ -94,6 +94,14 @@ public class User {
         this.status = Status.ACTIVE;
     }
 
+    public void updateNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    public void updateLastNicknameUpdatedAt(LocalDateTime time) {
+        this.lastNicknameUpdatedAt = time;
+    }
+
     public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
     }

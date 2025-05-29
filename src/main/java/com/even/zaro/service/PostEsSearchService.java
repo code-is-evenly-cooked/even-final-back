@@ -55,6 +55,14 @@ public class PostEsSearchService {
             bool.filter(categoryFilter);
         }
 
+        if (tag !=null && !tag.isBlank()) {
+            Query tagFilter = TermQuery.of(t -> t
+                    .field("tag")
+                    .value(tag)
+            )._toQuery();
+            bool.filter(tagFilter);
+        }
+
         SearchResponse<PostEsDocument> response = elasticsearchClient.search(s -> s
                 .index("posts")
                 .from((int) pageable.getOffset())

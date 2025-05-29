@@ -47,7 +47,7 @@ public class UserController {
     }
 
     @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
-    @PatchMapping("/password")
+    @PatchMapping("/me/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(
             @RequestBody UpdatePasswordRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {

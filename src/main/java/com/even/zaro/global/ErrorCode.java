@@ -32,7 +32,7 @@ public enum ErrorCode {
     INVALID_PASSWORD_FORMAT(HttpStatus.BAD_REQUEST, "비밀번호는 대문자, 소문자, 숫자, 특수문자를 포함한 6자 이상이어야 합니다."),
 
     NICKNAME_REQUIRED(HttpStatus.BAD_REQUEST, "닉네임은 필수 입력 값입니다."),
-    INVALID_NICKNAME(HttpStatus.BAD_REQUEST, "닉네임은 2-12자, 영문, 한글, 숫자, -, _만 가능합니다."),
+    INVALID_NICKNAME_FORMAT(HttpStatus.BAD_REQUEST, "닉네임은 2-12자, 영문, 한글, 숫자, -, _만 가능합니다."),
     NICKNAME_ALREADY_EXISTED(HttpStatus.CONFLICT, "이미 사용 중인 닉네임입니다."),
 
     USER_NOT_FOUND(HttpStatus.NOT_FOUND, "사용자를 찾을 수 없습니다."),

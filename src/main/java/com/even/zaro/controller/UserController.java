@@ -1,6 +1,8 @@
 package com.even.zaro.controller;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
+import com.even.zaro.dto.user.UpdateNicknameRequestDto;
+import com.even.zaro.dto.user.UpdateNicknameResponseDto;
 import com.even.zaro.dto.user.UpdatePasswordRequestDto;
 import com.even.zaro.dto.user.UserInfoResponseDto;
 import com.even.zaro.global.ApiResponse;
@@ -12,6 +14,8 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+
+import java.time.format.DateTimeFormatter;
 
 @Tag(name = "Users", description = "사용자 관련 API")
 @RestController
@@ -25,6 +29,21 @@ public class UserController {
     public ResponseEntity<ApiResponse<UserInfoResponseDto>> getMyInfo(@AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         UserInfoResponseDto responseDto = userService.getMyInfo(userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("내 정보 조회에 성공했습니다.", responseDto));
+    }
+
+    @Operation(summary = "닉네임 변경", description = "로그인한 사용자의 닉네임을 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @PatchMapping("/me/nickname")
+    public ResponseEntity<ApiResponse<UpdateNicknameResponseDto>> updateNickname(
+            @RequestBody UpdateNicknameRequestDto requestDto,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+            ) {
+        UpdateNicknameResponseDto responseDto = userService.updateNickname(userInfoDto.getUserId(), requestDto);
+
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy년 MM월 dd일");
+        String formattedDate = responseDto.getNextAvailableChangeDate().format(formatter);
+
+        String message = String.format("닉네임이 변경되었습니다. 다음 변경 가능일은 %s 입니다.", formattedDate);
+        return ResponseEntity.ok(ApiResponse.success(message, responseDto));
     }
 
     @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})

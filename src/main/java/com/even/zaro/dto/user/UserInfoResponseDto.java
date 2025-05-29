@@ -24,7 +24,7 @@ public class UserInfoResponseDto {
     @Schema(description = "프로필 이미지 URL", example = "/images/profile/2-uuid.png")
     private String profileImage;
 
-    @Schema(description = "생일", example = "1997-05-15")
+    @Schema(description = "생일", example = "1997-05-15", nullable = true)
     private LocalDate birthday;
 
     @Schema(description = "자취 시작일", example = "2024-01-01", nullable = true)

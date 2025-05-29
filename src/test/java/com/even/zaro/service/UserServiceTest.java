@@ -3,6 +3,9 @@ package com.even.zaro.service;
 import com.even.zaro.dto.user.UpdateNicknameRequestDto;
 import com.even.zaro.dto.user.UpdateNicknameResponseDto;
 import com.even.zaro.dto.user.UpdatePasswordRequestDto;
+import com.even.zaro.dto.user.UpdateProfileRequestDto;
+import com.even.zaro.entity.Gender;
+import com.even.zaro.entity.Mbti;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
@@ -17,6 +20,7 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
@@ -129,6 +133,85 @@ class UserServiceTest {
             UserException ex = assertThrows(UserException.class, () -> userService.updateNickname(1L, requestDto));
 
             assertEquals(ErrorCode.NICKNAME_UPDATE_COOLDOWN, ex.getErrorCode());
+        }
+    }
+
+    @Nested
+    class updateProfileTest {
+        private User user;
+
+        static User createTestUser() {
+            return User.builder()
+                    .id(1L)
+                    .status(Status.ACTIVE)
+                    .build();
+        }
+
+        @BeforeEach
+        void setUp() {
+            user = createTestUser();
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        }
+
+        @Test
+        void successfully_updates_all_profile_fields() {
+            UpdateProfileRequestDto requestDto = new UpdateProfileRequestDto(
+                    LocalDate.parse("2000-10-10"),
+                    LocalDate.parse("2024-02-04"),
+                    Gender.MALE,
+                    Mbti.ENFP);
+
+            userService.updateProfile(1L, requestDto);
+
+            assertEquals(LocalDate.parse("2000-10-10"), user.getBirthday());
+            assertEquals(LocalDate.parse("2024-02-04"), user.getLiveAloneDate());
+            assertEquals(Gender.MALE, user.getGender());
+            assertEquals(Mbti.ENFP, user.getMbti());
+        }
+
+        @Test
+        void successfully_updates_profile_with_partial_fields() {
+            UpdateProfileRequestDto requestDto = new UpdateProfileRequestDto(
+                    null,
+                    LocalDate.parse("2024-02-04"),
+                    null,
+                    Mbti.ENFP);
+
+            userService.updateProfile(1L, requestDto);
+
+            assertNull(user.getBirthday());
+            assertEquals(LocalDate.parse("2024-02-04"), user.getLiveAloneDate());
+            assertNull(user.getGender());
+            assertEquals(Mbti.ENFP, user.getMbti());
+        }
+
+        @Test
+        void shouldThrowException_whenUserDoesNotExist() {
+            UpdateProfileRequestDto requestDto = new UpdateProfileRequestDto(
+                    null,
+                    LocalDate.parse("2024-02-04"),
+                    null,
+                    Mbti.ENFP);
+            when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+            UserException ex = assertThrows(UserException.class, () -> userService.updateProfile(1L, requestDto));
+
+            assertEquals(ErrorCode.USER_NOT_FOUND, ex.getErrorCode());
+        }
+
+        @Test
+        void shouldThrowException_whenUserIsNotVerified() {
+            user.changeStatus(Status.PENDING);
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+            UpdateProfileRequestDto requestDto = new UpdateProfileRequestDto(
+                    null,
+                    LocalDate.parse("2024-02-04"),
+                    null,
+                    Mbti.ENFP);
+
+            UserException ex = assertThrows(UserException.class, () -> userService.updateProfile(1L, requestDto));
+
+            assertEquals(ErrorCode.MAIL_NOT_VERIFIED, ex.getErrorCode());
         }
     }
 

@@ -37,17 +37,17 @@ class UserServiceTest {
 
         private User user;
 
-        static User createTestUser(Status status, String password) {
+        static User createTestUser() {
             return User.builder()
                     .id(1L)
-                    .status(status)
-                    .password(password)
+                    .status(Status.ACTIVE)
+                    .password("OldEncoded1!")
                     .build();
         }
 
         @BeforeEach
         void setUp() {
-            user = createTestUser(Status.ACTIVE, "OldEncoded1!");
+            user = createTestUser();
             when(userRepository.findById(1L)).thenReturn(Optional.of(user));
         }
 

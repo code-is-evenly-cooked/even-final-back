@@ -1,5 +1,6 @@
 package com.even.zaro.dto.profile;
 
+import com.even.zaro.entity.Mbti;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -26,7 +27,7 @@ public class UserProfileDto {
     private LocalDate liveAloneDate;
 
     @Schema(description = "사용자 MBTI", example = "ENTP")
-    private String mbti;
+    private Mbti mbti;
 
     @Schema(description = "작성한 게시글 수", example = "10")
     private int postCount;

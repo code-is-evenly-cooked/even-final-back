@@ -72,9 +72,7 @@ class UserServiceTest {
             when(userRepository.findById(1L)).thenReturn(Optional.of(user));
             UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "New1234!");
 
-            UserException ex = assertThrows(UserException.class, () -> {
-                userService.updatePassword(1L, requestDto);
-            });
+            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
 
             assertEquals(ErrorCode.MAIL_NOT_VERIFIED, ex.getErrorCode());
         }
@@ -83,9 +81,7 @@ class UserServiceTest {
         void shouldThrowException_whenCurrentPasswordIsBlank() {
             UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("", "New1234!");
 
-            UserException ex = assertThrows(UserException.class, () -> {
-                userService.updatePassword(1L, requestDto);
-            });
+            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
 
             assertEquals(ErrorCode.CURRENT_PASSWORD_REQUIRED, ex.getErrorCode());
         }
@@ -95,9 +91,7 @@ class UserServiceTest {
             UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("ThisIsWrong1!", "New1234!");
             when(passwordEncoder.matches("ThisIsWrong1!", "OldEncoded1!")).thenReturn(false);
 
-            UserException ex = assertThrows(UserException.class, () -> {
-                userService.updatePassword(1L, requestDto);
-            });
+            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
 
             assertEquals(ErrorCode.CURRENT_PASSWORD_WRONG, ex.getErrorCode());
         }
@@ -107,9 +101,7 @@ class UserServiceTest {
             UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "");
             when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
 
-            UserException ex = assertThrows(UserException.class, () -> {
-                userService.updatePassword(1L, requestDto);
-            });
+            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
 
             assertEquals(ErrorCode.PASSWORD_REQUIRED, ex.getErrorCode());
         }
@@ -119,9 +111,7 @@ class UserServiceTest {
             UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "wrongFormat");
             when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
 
-            UserException ex = assertThrows(UserException.class, () -> {
-                userService.updatePassword(1L, requestDto);
-            });
+            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
 
             assertEquals(ErrorCode.INVALID_PASSWORD_FORMAT, ex.getErrorCode());
         }
@@ -131,9 +121,7 @@ class UserServiceTest {
             UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "Old1234!");
             when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
 
-            UserException ex = assertThrows(UserException.class, () -> {
-                userService.updatePassword(1L, requestDto);
-            });
+            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
 
             assertEquals(ErrorCode.CURRENT_PASSWORD_EQUALS_NEW_PASSWORD, ex.getErrorCode());
         }

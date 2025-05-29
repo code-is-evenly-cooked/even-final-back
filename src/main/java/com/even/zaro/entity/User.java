@@ -104,6 +104,22 @@ public class User {
         this.lastNicknameUpdatedAt = time;
     }
 
+    public void updateBirthday(LocalDate birthday) {
+        this.birthday = birthday;
+    }
+
+    public void updateLiveAloneDate(LocalDate liveAloneDate) {
+        this.liveAloneDate = liveAloneDate;
+    }
+
+    public void updateGender(Gender gender) {
+        this.gender = gender;
+    }
+
+    public void updateMbti(Mbti mbti) {
+        this.mbti = mbti;
+    }
+
     public void updatePassword(String encodedPassword) {
         this.password = encodedPassword;
     }

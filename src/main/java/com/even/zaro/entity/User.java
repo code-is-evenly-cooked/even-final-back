@@ -83,6 +83,9 @@ public class User {
     @Column(name = "provider_id")
     private String providerId;
 
+    @Column(name = "last_nickname_updated_at")
+    private LocalDateTime lastNicknameUpdatedAt;
+
     public void updateLastLoginAt(LocalDateTime time) {
         this.lastLoginAt = time;
     }

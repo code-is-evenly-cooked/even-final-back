@@ -23,5 +23,11 @@ public class CustomException extends RuntimeException {
         this.message = errorCode.getDefaultMessage();
     }
 
+    public CustomException(ErrorCode errorCode, String customMessage) {
+        super(customMessage);
+        this.code = errorCode.getCode();
+        this.status = errorCode.getHttpStatus();
+        this.message = customMessage;
+    }
 
 }

@@ -13,4 +13,9 @@ public class UserException extends CustomException {
         super(errorCode);
         this.errorCode = errorCode;
     }
+
+    public UserException(ErrorCode errorCode, String customMessage) {
+        super(errorCode, errorCode.getDefaultMessage() + " " + customMessage);
+        this.errorCode = errorCode;
+    }
 }

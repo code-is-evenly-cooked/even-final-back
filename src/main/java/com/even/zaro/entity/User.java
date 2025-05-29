@@ -83,12 +83,23 @@ public class User {
     @Column(name = "provider_id")
     private String providerId;
 
+    @Column(name = "last_nickname_updated_at")
+    private LocalDateTime lastNicknameUpdatedAt;
+
     public void updateLastLoginAt(LocalDateTime time) {
         this.lastLoginAt = time;
     }
 
     public void updateStatusToActive() {
         this.status = Status.ACTIVE;
+    }
+
+    public void updateNickname(String newNickname) {
+        this.nickname = newNickname;
+    }
+
+    public void updateLastNicknameUpdatedAt(LocalDateTime time) {
+        this.lastNicknameUpdatedAt = time;
     }
 
     public void updatePassword(String encodedPassword) {

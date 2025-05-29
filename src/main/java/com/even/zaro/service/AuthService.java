@@ -59,7 +59,7 @@ public class AuthService {
             throw new UserException(ErrorCode.NICKNAME_REQUIRED);
         }
         if (!Pattern.matches(NICKNAME_REGEX, nickname)) {
-            throw new UserException(ErrorCode.INVALID_NICKNAME);
+            throw new UserException(ErrorCode.INVALID_NICKNAME_FORMAT);
         }
 
         // 중복 확인

@@ -1,5 +1,7 @@
 package com.even.zaro.service;
 
+import com.even.zaro.dto.user.UpdateNicknameRequestDto;
+import com.even.zaro.dto.user.UpdateNicknameResponseDto;
 import com.even.zaro.dto.user.UpdatePasswordRequestDto;
 import com.even.zaro.dto.user.UserInfoResponseDto;
 import com.even.zaro.entity.Status;
@@ -12,6 +14,8 @@ import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
 @Service
@@ -42,6 +46,55 @@ public class UserService {
                 .provider(user.getProvider().name())
                 .isValidated(user.isValidated())
                 .build();
+    }
+
+    @Transactional
+    public UpdateNicknameResponseDto updateNickname(Long userId, UpdateNicknameRequestDto requestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() == Status.PENDING) {
+            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
+        }
+
+        String newNickname = requestDto.getNewNickname();
+
+        if (newNickname == null || newNickname.isBlank()) {
+            throw new UserException(ErrorCode.NEW_NICKNAME_REQUIRED);
+        }
+
+        if (!Pattern.matches(NICKNAME_REGEX, newNickname)) {
+            throw new UserException(ErrorCode.INVALID_NICKNAME_FORMAT);
+        }
+
+        if (userRepository.existsByNickname(newNickname)) {
+            throw new UserException(ErrorCode.NICKNAME_ALREADY_EXISTED);
+        }
+
+        if (user.getNickname().equals(newNickname)) {
+            throw new UserException(ErrorCode.NEW_NICKNAME_EQUALS_ORIGINAL_NICKNAME);
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        LocalDateTime lastNicknameUpdatedAt = user.getLastNicknameUpdatedAt();
+
+        boolean canUpdate = lastNicknameUpdatedAt == null
+                || lastNicknameUpdatedAt.plusDays(14).isBefore(now);
+
+        if (!canUpdate) {
+            LocalDateTime nextAvailableDate = lastNicknameUpdatedAt.plusDays(14);
+            String formatted = nextAvailableDate.format(DateTimeFormatter.ofPattern("yyyy년 MM월 dd일"));
+            throw new UserException(ErrorCode.NICKNAME_UPDATE_COOLDOWN,
+                    String.format("%s 이후에 다시 변경할 수 있습니다.", formatted));
+        }
+
+        user.updateNickname(newNickname);
+        user.updateLastNicknameUpdatedAt(now);
+
+        return new UpdateNicknameResponseDto(
+                newNickname,
+                user.getLastNicknameUpdatedAt().plusDays(14)
+        );
     }
 
     @Transactional

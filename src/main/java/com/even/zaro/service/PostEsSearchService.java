@@ -26,7 +26,7 @@ import java.util.Objects;
 public class PostEsSearchService {
     private final ElasticsearchClient elasticsearchClient;
 
-    public PageResponse<PostSearchDto> searchWithPage(String category, String keyword, Pageable pageable) throws IOException {
+    public PageResponse<PostSearchDto> searchWithPage(String category, String tag, String keyword, Pageable pageable) throws IOException {
         if (keyword == null || keyword.isBlank()) {
             throw new PostException(ErrorCode.SEARCH_KEYWORD_REQUIRED);
         }
@@ -53,6 +53,14 @@ public class PostEsSearchService {
                     .value(category)
             )._toQuery();
             bool.filter(categoryFilter);
+        }
+
+        if (tag !=null && !tag.isBlank()) {
+            Query tagFilter = TermQuery.of(t -> t
+                    .field("tag")
+                    .value(tag)
+            )._toQuery();
+            bool.filter(tagFilter);
         }
 
         SearchResponse<PostEsDocument> response = elasticsearchClient.search(s -> s

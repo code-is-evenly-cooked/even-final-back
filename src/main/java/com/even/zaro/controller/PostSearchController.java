@@ -50,11 +50,12 @@ public class PostSearchController {
     @GetMapping("/es")
     public ResponseEntity<ApiResponse<PageResponse<PostSearchDto>>> searchEsPosts(
             @RequestParam(required = false) String category,
+            @RequestParam(required = false) String tag,
             @RequestParam String keyword,
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = org.springframework.data.domain.Sort.Direction.DESC)
             Pageable pageable
     ) throws IOException {
-        PageResponse<PostSearchDto> result = postEsSearchService.searchWithPage(category, keyword, pageable);
+        PageResponse<PostSearchDto> result = postEsSearchService.searchWithPage(category, tag, keyword, pageable);
         return ResponseEntity.ok(ApiResponse.success("ES 검색 결과입니다." , result));
     }
 }

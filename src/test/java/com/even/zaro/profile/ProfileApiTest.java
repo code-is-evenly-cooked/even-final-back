@@ -1,5 +1,6 @@
 package com.even.zaro.profile;
 
+import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.profile.FollowerFollowingListDto;
 import com.even.zaro.dto.profile.UserCommentDto;
 import com.even.zaro.dto.profile.UserPostDto;
@@ -67,7 +68,7 @@ public class ProfileApiTest {
         createPost(user, "제목2", "내용2");
 
         // when
-        Page<UserPostDto> posts = profileService.getUserPosts(user.getId(), PageRequest.of(0, 10));
+        PageResponse<UserPostDto> posts = profileService.getUserPosts(user.getId(), PageRequest.of(0, 10));
 
         // then
         assertThat(posts.getContent()).hasSize(2);

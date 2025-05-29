@@ -60,6 +60,9 @@ public enum ErrorCode {
     CURRENT_PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "현재 비밀번호는 필수 입력 값입니다."),
     CURRENT_PASSWORD_WRONG(HttpStatus.FORBIDDEN, "현재 비밀번호가 올바르지 않습니다."),
     CURRENT_PASSWORD_EQUALS_NEW_PASSWORD(HttpStatus.BAD_REQUEST,"이전과 다른 비밀번호를 입력해주세요."),
+    NEW_NICKNAME_REQUIRED(HttpStatus.BAD_REQUEST, "새 닉네임을 입력해주세요."),
+    NEW_NICKNAME_EQUALS_ORIGINAL_NICKNAME(HttpStatus.BAD_REQUEST, "이전 닉네임과 다른 닉네임을 입력해주세요."),
+    NICKNAME_UPDATE_COOLDOWN(HttpStatus.CONFLICT, "닉네임은 최근 변경일로부터 14일 후에 변경할 수 있습니다."),
 
     // 알림 Notification
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "조회된 알림이 없습니다."),

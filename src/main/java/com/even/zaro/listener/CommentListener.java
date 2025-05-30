@@ -29,6 +29,7 @@ public class CommentListener {
         if (!postOwner.getId().equals(commentAuthor.getId())) {
             Notification notification = new Notification();
             notification.setUser(postOwner);
+            notification.setActorUserId(commentAuthor.getId());
             notification.setType(Notification.Type.COMMENT);
             notification.setTargetId(comment.getId()); // 해당 댓글 commentId
             notification.setRead(false);

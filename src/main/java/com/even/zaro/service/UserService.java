@@ -46,6 +46,20 @@ public class UserService {
     }
 
     @Transactional
+    public UpdateProfileImageResponseDto updateProfileImage(Long userId, UpdateProfileImageRequestDto requestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() == Status.PENDING) {
+            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
+        }
+
+        user.updateProfileImage(requestDto.getProfileImage());
+
+        return new UpdateProfileImageResponseDto(user.getProfileImage());
+    }
+
+    @Transactional
     public UpdateNicknameResponseDto updateNickname(Long userId, UpdateNicknameRequestDto requestDto) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));

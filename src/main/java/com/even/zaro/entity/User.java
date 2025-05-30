@@ -104,6 +104,10 @@ public class User {
         this.lastNicknameUpdatedAt = time;
     }
 
+    public void updateProfileImage(String profileImage) {
+        this.profileImage = profileImage;
+    }
+
     public void updateBirthday(LocalDate birthday) {
         this.birthday = birthday;
     }

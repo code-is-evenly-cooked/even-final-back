@@ -1,9 +1,6 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.user.UpdateNicknameRequestDto;
-import com.even.zaro.dto.user.UpdateNicknameResponseDto;
-import com.even.zaro.dto.user.UpdatePasswordRequestDto;
-import com.even.zaro.dto.user.UpdateProfileRequestDto;
+import com.even.zaro.dto.user.*;
 import com.even.zaro.entity.Gender;
 import com.even.zaro.entity.Mbti;
 import com.even.zaro.entity.Status;
@@ -38,6 +35,54 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Nested
+    class updateProfileImageTest {
+        private User user;
+
+        static User createTestUser() {
+            return User.builder()
+                    .id(1L)
+                    .status(Status.ACTIVE)
+                    .build();
+        }
+
+        @BeforeEach
+        void setUp() {
+            user = createTestUser();
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+        }
+
+        @Test
+        void successfully_updated_profileImage() {
+            UpdateProfileImageRequestDto requestDto = new UpdateProfileImageRequestDto("/images/profile/2-uuid.png");
+
+            UpdateProfileImageResponseDto responseDto = userService.updateProfileImage(1L, requestDto);
+
+            assertEquals("/images/profile/2-uuid.png", responseDto.getProfileImage());
+        }
+
+        @Test
+        void shouldThrowException_whenUserDoesNotExist() {
+            UpdateProfileImageRequestDto requestDto = new UpdateProfileImageRequestDto("/images/profile/2-uuid.png");
+            when(userRepository.findById(1L)).thenReturn(Optional.empty());
+
+            UserException ex = assertThrows(UserException.class, () -> userService.updateProfileImage(1L, requestDto));
+
+            assertEquals(ErrorCode.USER_NOT_FOUND, ex.getErrorCode());
+        }
+
+        @Test
+        void shouldThrowException_whenUserIsNotVerified() {
+            user.changeStatus(Status.PENDING);
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+            UpdateProfileImageRequestDto requestDto = new UpdateProfileImageRequestDto("/images/profile/2-uuid.png");
+
+            UserException ex = assertThrows(UserException.class, () -> userService.updateProfileImage(1L, requestDto));
+
+            assertEquals(ErrorCode.MAIL_NOT_VERIFIED, ex.getErrorCode());
+        }
+    }
 
     @Nested
     class updateNicknameTest {

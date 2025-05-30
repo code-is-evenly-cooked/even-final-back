@@ -28,6 +28,16 @@ public class UserController {
         return ResponseEntity.ok(ApiResponse.success("내 정보 조회에 성공했습니다.", responseDto));
     }
 
+    @Operation(summary = "프로필 이미지 변경", description = "로그인한 사용자의 프로필 이미지를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @PatchMapping("/me/profileImage")
+    public ResponseEntity<ApiResponse<UpdateProfileImageResponseDto>> updateProfileImage(
+            @RequestBody UpdateProfileImageRequestDto requestDto,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+    ) {
+        UpdateProfileImageResponseDto responseDto = userService.updateProfileImage(userInfoDto.getUserId(), requestDto);
+        return ResponseEntity.ok(ApiResponse.success("프로필 이미지가 변경되었습니다.", responseDto));
+    }
+
     @Operation(summary = "닉네임 변경", description = "로그인한 사용자의 닉네임을 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/me/nickname")
     public ResponseEntity<ApiResponse<UpdateNicknameResponseDto>> updateNickname(

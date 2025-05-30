@@ -73,7 +73,7 @@ public class CommentService {
             throw new PostException(ErrorCode.POST_NOT_FOUND);
         }
 
-        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalseOrderByCreatedAtAsc(postId, pageable)
+        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalse(postId, pageable)
                 .map(comment -> toDto(comment, currentUserId));
         return new PageResponse<>(page);
     }

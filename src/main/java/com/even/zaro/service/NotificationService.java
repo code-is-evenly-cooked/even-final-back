@@ -9,7 +9,6 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.notification.NotificationException;
 import com.even.zaro.global.exception.post.PostException;
-import com.even.zaro.global.exception.profile.ProfileException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.NotificationRepository;
 import com.even.zaro.repository.PostRepository;

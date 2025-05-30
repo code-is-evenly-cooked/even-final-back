@@ -144,6 +144,7 @@ public class PostController {
         return ResponseEntity.ok(ApiResponse.success("게시글 신고가 완료되었습니다.", response));
     }
 
+    @Operation(summary = "실시간 인기 게시글 조회", description = "좋아요 수 & 댓글 수 를 기반으로 계산하여 실시간 인기 게시글 10개를 조회합니다.")
     @GetMapping("/rank")
     public ApiResponse<?> getRankedPosts() {
         List<PostRankResponseDto> result = postService.getRankedPosts();

@@ -63,6 +63,7 @@ public enum ErrorCode {
 
     // 알림 Notification
     NOTIFICATION_NOT_FOUND(HttpStatus.NOT_FOUND, "조회된 알림이 없습니다."),
+    ACTOR_USER_NOT_FOUND(HttpStatus.NOT_FOUND, "알림 생성 주체 유저를 찾을 수 없습니다."),
 
     // 게시글 Post
     IMAGE_REQUIRED_FOR_RANDOM_BUY(HttpStatus.BAD_REQUEST, "이미지는 필수입니다."),

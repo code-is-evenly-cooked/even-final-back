@@ -30,6 +30,8 @@ public class NotificationDto {
     @Schema(description = "알림 생성 시각", example = "2025-05-09T12:00:00")
     private LocalDateTime createdAt;
 
+    // 알림 발생 주체 유저 정보
+
     @Schema(description = "알림 발생 주체 유저 ID", example = "88")
     private Long userId;
 
@@ -38,6 +40,8 @@ public class NotificationDto {
 
     @Schema(description = "알림 발생 주체 프로필 이미지", example = "/images/profile/uuid.png")
     private String profileImage;
+
+    // 타입별 필요 정보
 
     @Schema(description = "게시글 카테고리", example = "TOGETHER")
     private String category;

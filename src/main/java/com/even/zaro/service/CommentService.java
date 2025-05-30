@@ -60,6 +60,8 @@ public class CommentService {
 
         commentRepository.save(comment);
         post.changeCommentCount(post.getCommentCount() + 1);
+        post.updateScore();
+        postRepository.save(post);
 
         return toDto(comment, currentUserId);
     }
@@ -110,6 +112,8 @@ public class CommentService {
 
         Post post = comment.getPost();
         post.changeCommentCount(Math.max(0, post.getCommentCount() - 1));
+        post.updateScore();
+        postRepository.save(post);
     }
 
     // 공통 응답

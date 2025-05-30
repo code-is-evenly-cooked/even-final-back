@@ -1,10 +1,7 @@
 package com.even.zaro.controller;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
-import com.even.zaro.dto.user.UpdateNicknameRequestDto;
-import com.even.zaro.dto.user.UpdateNicknameResponseDto;
-import com.even.zaro.dto.user.UpdatePasswordRequestDto;
-import com.even.zaro.dto.user.UserInfoResponseDto;
+import com.even.zaro.dto.user.*;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -44,6 +41,16 @@ public class UserController {
 
         String message = String.format("닉네임이 변경되었습니다. 다음 변경 가능일은 %s 입니다.", formattedDate);
         return ResponseEntity.ok(ApiResponse.success(message, responseDto));
+    }
+
+    @Operation(summary = "프로필 변경", description = "로그인한 사용자의 프로필(생일, 자취 시작일, 성별, mbti를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @PatchMapping("/me/profile")
+    public ResponseEntity<ApiResponse<UpdateProfileResponseDto>> updateProfile(
+            @RequestBody UpdateProfileRequestDto requestDto,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+    ) {
+        UpdateProfileResponseDto responseDto = userService.updateProfile(userInfoDto.getUserId(), requestDto);
+        return ResponseEntity.ok(ApiResponse.success("프로필이 변경되었습니다.", responseDto));
     }
 
     @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})

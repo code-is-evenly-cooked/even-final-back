@@ -108,7 +108,7 @@ public class AuthService {
         String email = kakaoUser.getKakaoAccount().getEmail();
         String nickname = kakaoUser.getKakaoAccount().getProfile().getNickname();
         String profileImage = kakaoUser.getKakaoAccount().getProfile().getProfileImageUrl();
-        String gender = kakaoUser.getKakaoAccount().getGender();
+        Gender gender = Gender.fromKakao(kakaoUser.getKakaoAccount().getGender());
 
         // 이메일, 프로필 사진이 없는 경우 더미로 추가
         String safeEmail = (email != null) ? email : "kakao_" + kakaoId + "@kakao-user.com";

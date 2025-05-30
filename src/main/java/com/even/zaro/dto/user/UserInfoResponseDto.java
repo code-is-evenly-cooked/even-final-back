@@ -1,5 +1,7 @@
 package com.even.zaro.dto.user;
 
+import com.even.zaro.entity.Gender;
+import com.even.zaro.entity.Mbti;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -24,17 +26,17 @@ public class UserInfoResponseDto {
     @Schema(description = "프로필 이미지 URL", example = "/images/profile/2-uuid.png")
     private String profileImage;
 
-    @Schema(description = "생일", example = "1997-05-15")
+    @Schema(description = "생일", example = "1997-05-15", nullable = true)
     private LocalDate birthday;
 
     @Schema(description = "자취 시작일", example = "2024-01-01", nullable = true)
     private LocalDate liveAloneDate;
 
     @Schema(description = "성별", example = "MALE", nullable = true)
-    private String gender;
+    private Gender gender;
 
     @Schema(description = "MBTI", example = "INFP", nullable = true)
-    private String mbti;
+    private Mbti mbti;
 
     @Schema(description = "계정 생성일", example = "2024-01-01T12:00:00")
     private LocalDateTime createdAt;

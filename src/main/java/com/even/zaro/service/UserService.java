@@ -1,9 +1,6 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.user.UpdateNicknameRequestDto;
-import com.even.zaro.dto.user.UpdateNicknameResponseDto;
-import com.even.zaro.dto.user.UpdatePasswordRequestDto;
-import com.even.zaro.dto.user.UserInfoResponseDto;
+import com.even.zaro.dto.user.*;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
@@ -94,6 +91,28 @@ public class UserService {
         return new UpdateNicknameResponseDto(
                 newNickname,
                 user.getLastNicknameUpdatedAt().plusDays(14)
+        );
+    }
+
+    @Transactional
+    public UpdateProfileResponseDto updateProfile(Long userId, UpdateProfileRequestDto requestDto) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        if (user.getStatus() == Status.PENDING) {
+            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
+        }
+
+        user.updateBirthday(requestDto.getBirthday());
+        user.updateLiveAloneDate(requestDto.getLiveAloneDate());
+        user.updateGender(requestDto.getGender());
+        user.updateMbti(requestDto.getMbti());
+
+        return new UpdateProfileResponseDto(
+                user.getBirthday(),
+                user.getLiveAloneDate(),
+                user.getGender(),
+                user.getMbti()
         );
     }
 

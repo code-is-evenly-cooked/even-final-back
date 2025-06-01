@@ -41,7 +41,7 @@ pipeline {
                             curl -H "Content-Type: application/json" -X POST \
                               -d '{"content": "🐳 [Auto] Docker 배포 시작..."}' $WEBHOOK_URL
 
-                            docker-compose -f docker-compose.prod.yml down --rmi all
+                            docker-compose -f docker-compose.prod.yml down
 
                             if docker-compose -f docker-compose.prod.yml up -d --build; then
                                 curl -H "Content-Type: application/json" -X POST \

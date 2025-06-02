@@ -24,6 +24,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
 import java.util.Map;
 
 @Tag(name = "게시판", description = "게시판 API")
@@ -141,6 +142,13 @@ public class PostController {
     ){
         ReportResponseDto response = postReportService.reportPost(postId, request, userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("게시글 신고가 완료되었습니다.", response));
+    }
+
+    @Operation(summary = "실시간 인기 게시글 조회", description = "좋아요 수 & 댓글 수 를 기반으로 계산하여 실시간 인기 게시글 10개를 조회합니다.")
+    @GetMapping("/rank")
+    public ApiResponse<?> getRankedPosts() {
+        List<PostRankResponseDto> result = postService.getRankedPosts();
+        return ApiResponse.success("실시간 인기 게시글이 확인 되었습니다.", Map.of("posts", result));
     }
 
 }

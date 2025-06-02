@@ -20,6 +20,7 @@ public class PostLikeService {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostService postService;
 
     @Transactional
     public void likePost(Long postId, Long userId) {
@@ -35,6 +36,7 @@ public class PostLikeService {
                 .post(post)
                 .build());
         post.changeLikeCount(post.getLikeCount() + 1);
+        postService.updatePostScore(post);
     }
 
 
@@ -49,6 +51,7 @@ public class PostLikeService {
         postLikeRepository.delete(postLike);
 
         post.changeLikeCount(Math.max(0,post.getLikeCount() - 1));
+        postService.updatePostScore(post);
     }
 
     @Transactional(readOnly = true)

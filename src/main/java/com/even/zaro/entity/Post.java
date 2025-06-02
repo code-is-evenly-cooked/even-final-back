@@ -78,6 +78,10 @@ public class Post {
     @Column(name = "updated_at")
     private LocalDateTime updatedAt;
 
+    @Column(name = "score", nullable = false)
+    @Builder.Default
+    private double score = 0.0;
+
     public void changeTitle(String title) {
         this.title = title;
     }
@@ -116,6 +120,10 @@ public class Post {
 
     public void changeCommentCount(int commentCount) {
         this.commentCount = commentCount;
+    }
+
+    public void updateScore(){
+        this.score = (this.likeCount * 3.0) + (this.commentCount * 5.0);
     }
 
     public enum Category {

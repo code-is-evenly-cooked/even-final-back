@@ -11,6 +11,8 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -58,6 +60,7 @@ public class PostService {
                 .user(user)
                 .build();
 
+        post.updateScore();
         Post saved = postRepository.save(post);
         eventPublisher.publishEvent(new PostSavedEvent(saved));
 
@@ -111,6 +114,7 @@ public class PostService {
         post.changeImageList(request.getPostImageList());
         post.changeThumbnail(thumbnailUrl);
 
+        post.updateScore();
         eventPublisher.publishEvent(new PostSavedEvent(post));
     }
 
@@ -240,6 +244,26 @@ public class PostService {
                 .build();
     }
 
+    @PersistenceContext
+    private EntityManager em;
+
+    @Transactional
+    public List<PostRankResponseDto> getRankedPosts() {
+        em.flush();
+        em.clear();
+        List<Post> posts = postRepository.findTop10ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
+
+        return posts.stream()
+                .map(PostRankResponseDto::from)
+                .toList();
+    }
+
+    @Transactional
+    public void updatePostScore(Post post) {
+        post.updateScore();
+        postRepository.saveAndFlush(post);
+
+    }
 
     // 공통 로직 분리
     private Post.Category parseCategory(String category) {

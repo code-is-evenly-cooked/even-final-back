@@ -56,9 +56,9 @@ public class NotificationService {
                             .targetId(notification.getTargetId())
                             .isRead(notification.isRead())
                             .createdAt(notification.getCreatedAt())
-                            .userId(actor.getId())
-                            .username(actor.getNickname())
-                            .profileImage(actor.getProfileImage());
+                            .actorId(actor.getId())
+                            .actorName(actor.getNickname())
+                            .actorProfileImage(actor.getProfileImage());
 
                     // LIKE, COMMENT 타입은 게시글, 댓글 정보 추가
                     if (type == Notification.Type.LIKE || type == Notification.Type.COMMENT) {

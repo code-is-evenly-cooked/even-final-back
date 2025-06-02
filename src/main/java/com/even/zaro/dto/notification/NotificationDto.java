@@ -33,13 +33,13 @@ public class NotificationDto {
     // 알림 발생 주체 유저 정보
 
     @Schema(description = "알림 발생 주체 유저 ID", example = "88")
-    private Long userId;
+    private Long actorId;
 
     @Schema(description = "알림 발생 주체 유저 닉네임", example = "맛잘알")
-    private String username;
+    private String actorName;
 
     @Schema(description = "알림 발생 주체 프로필 이미지", example = "/images/profile/uuid.png")
-    private String profileImage;
+    private String actorProfileImage;
 
     // 타입별 필요 정보
 

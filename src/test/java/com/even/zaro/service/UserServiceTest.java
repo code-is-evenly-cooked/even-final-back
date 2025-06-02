@@ -21,6 +21,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -323,35 +324,77 @@ class UserServiceTest {
 
             assertEquals(ErrorCode.CURRENT_PASSWORD_WRONG, ex.getErrorCode());
         }
+    }
+
+    @Nested
+    class ExceptionCases {
 
         @Test
-        void shouldThrowException_whenNewPasswordIsBlank() {
-            UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "");
-            when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
+        void shouldThrowException_whenUserDoesNotExistById() {
+            Long userId = 1L;
+            when(userRepository.findById(userId)).thenReturn(Optional.empty());
 
-            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+            UserException ex = assertThrows(UserException.class, () -> userService.findUserById(userId));
 
-            assertEquals(ErrorCode.PASSWORD_REQUIRED, ex.getErrorCode());
+            assertEquals(ErrorCode.USER_NOT_FOUND, ex.getErrorCode());
         }
 
         @Test
-        void shouldThrowException_whenNewPasswordFormatIsInvalid() {
-            UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "wrongFormat");
-            when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
+        void shouldThrowException_whenUserStatusIsPending() {
+            User user = User.builder().status(Status.PENDING).build();
 
-            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+            UserException ex = assertThrows(UserException.class, () -> userService.validateNotPending(user));
 
-            assertEquals(ErrorCode.INVALID_PASSWORD_FORMAT, ex.getErrorCode());
+            assertEquals(ErrorCode.MAIL_NOT_VERIFIED, ex.getErrorCode());
         }
 
-        @Test
-        void shouldThrowException_whenCurrentPasswordIsSameAsNewPassword() {
-            UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "Old1234!");
-            when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
 
-            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+        @Nested
+        class ValidateNewPassword {
 
-            assertEquals(ErrorCode.CURRENT_PASSWORD_EQUALS_NEW_PASSWORD, ex.getErrorCode());
+            static User createTestUser() {
+                return User.builder()
+                        .id(1L)
+                        .status(Status.ACTIVE)
+                        .password("OldEncoded1!")
+                        .build();
+            }
+
+            @BeforeEach
+            void setUp() {
+                User user = createTestUser();
+                when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+            }
+
+            @Test
+            void shouldThrowException_whenNewPasswordIsBlank() {
+                UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "");
+                when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
+
+                UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+
+                assertEquals(ErrorCode.PASSWORD_REQUIRED, ex.getErrorCode());
+            }
+
+            @Test
+            void shouldThrowException_whenNewPasswordFormatIsInvalid() {
+                UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "wrongFormat");
+                when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
+
+                UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+
+                assertEquals(ErrorCode.INVALID_PASSWORD_FORMAT, ex.getErrorCode());
+            }
+
+            @Test
+            void shouldThrowException_whenCurrentPasswordIsSameAsNewPassword() {
+                UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "Old1234!");
+                when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
+
+                UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+
+                assertEquals(ErrorCode.CURRENT_PASSWORD_EQUALS_NEW_PASSWORD, ex.getErrorCode());
+            }
         }
     }
 }

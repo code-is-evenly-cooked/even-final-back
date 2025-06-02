@@ -56,16 +56,17 @@ public class NotificationService {
                             .targetId(notification.getTargetId())
                             .isRead(notification.isRead())
                             .createdAt(notification.getCreatedAt())
-                            .userId(actor.getId())
-                            .username(actor.getNickname())
-                            .profileImage(actor.getProfileImage());
+                            .actorId(actor.getId())
+                            .actorName(actor.getNickname())
+                            .actorProfileImage(actor.getProfileImage());
 
                     // LIKE, COMMENT 타입은 게시글, 댓글 정보 추가
                     if (type == Notification.Type.LIKE || type == Notification.Type.COMMENT) {
                         Post post = postRepository.findById(notification.getTargetId())
                                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-                        builder.category(post.getCategory().name());
-                        builder.thumbnailImage(post.getThumbnailImage());
+                        builder.postId(post.getId())
+                                .category(post.getCategory().name())
+                                .thumbnailImage(post.getThumbnailImage());
 
                         if (type == Notification.Type.COMMENT) {
                             Comment comment = commentRepository.findById(notification.getTargetId())

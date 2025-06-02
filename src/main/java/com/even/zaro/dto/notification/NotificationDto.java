@@ -43,6 +43,9 @@ public class NotificationDto {
 
     // 타입별 필요 정보
 
+    @Schema(description = "게시글 ID", example = "2")
+    private Long postId;
+
     @Schema(description = "게시글 카테고리", example = "TOGETHER")
     private String category;
 

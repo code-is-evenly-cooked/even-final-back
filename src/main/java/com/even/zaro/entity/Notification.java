@@ -23,6 +23,9 @@ public class Notification {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
+    @Column(name = "actor_user_id")
+    private Long actorUserId;
+
     @Enumerated(EnumType.STRING)
     @Column(name = "type", nullable = false)
     private Type type;

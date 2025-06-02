@@ -29,6 +29,7 @@ public class PostLikeListener {
         if (!postOwner.getId().equals(likeUser.getId())) {
             Notification notification = new Notification();
             notification.setUser(postOwner);
+            notification.setActorUserId(likeUser.getId());
             notification.setType(Notification.Type.LIKE);
             notification.setTargetId(postlike.getPost().getId());
             notification.setRead(false);

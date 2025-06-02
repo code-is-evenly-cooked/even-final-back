@@ -30,6 +30,7 @@ public class FollowListener {
 
         Notification notification = new Notification();
         notification.setUser(followee);
+        notification.setActorUserId(follower.getId());
         notification.setType(Notification.Type.FOLLOW);
         notification.setTargetId(follower.getId()); // 팔로우 한 사용자 userId
         notification.setRead(false);

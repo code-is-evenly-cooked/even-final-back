@@ -24,6 +24,7 @@ public class UserService {
     public final UserRepository userRepository;
     public final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo(Long userId) {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));

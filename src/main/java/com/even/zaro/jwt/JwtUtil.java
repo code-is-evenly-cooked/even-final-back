@@ -129,7 +129,7 @@ public class JwtUtil {
     }
 
     // 만료시간 확인
-    public Date getExpiredTime(String token) {
+    public Date getAccessTokenExpiration(String token) {
         return Jwts.parserBuilder()
                 .setSigningKey(accessKey)
                 .build()

@@ -38,6 +38,7 @@ public class AuthService {
 
     // 메서드
     // 회원가입
+    @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();

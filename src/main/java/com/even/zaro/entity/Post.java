@@ -1,5 +1,7 @@
 package com.even.zaro.entity;
 
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.post.PostException;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -129,7 +131,7 @@ public class Post {
     public enum Category {
         TOGETHER(List.of(Tag.GROUP_BUY, Tag.SHARING, Tag.EXCHANGE)),   //같이쓰자
         DAILY_LIFE(List.of(Tag.TIPS, Tag.QUESTIONS)), //자취일상
-        RANDOM_BUY(List.of(Tag.TREASURE, Tag.REGRET));//아무거나 샀어요
+        RANDOM_BUY(List.of(Tag.TREASURE, Tag.REGRET));//텅장일기
 
         private final List<Tag> allowedTags;
 
@@ -150,7 +152,14 @@ public class Post {
         // 같이쓰기 - 같이사기, 나눔해요, 물물교환
         GROUP_BUY, SHARING, EXCHANGE,
 
-        // 아무거나 샀어요 - 소중한 꿀템, 후회막심
+        // 텅장일기 - 소중한 꿀템, 후회막심
         TREASURE, REGRET
     }
+
+    public void validateNotOwner(User user) {
+        if (this.user.equals(user)) {
+            throw new PostException(ErrorCode.CANNOT_REPORT_OWN_POST);
+        }
+    }
+
 }

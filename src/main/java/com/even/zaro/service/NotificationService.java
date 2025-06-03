@@ -61,18 +61,23 @@ public class NotificationService {
                             .actorProfileImage(actor.getProfileImage());
 
                     // LIKE, COMMENT 타입은 게시글, 댓글 정보 추가
-                    if (type == Notification.Type.LIKE || type == Notification.Type.COMMENT) {
+                    if (type == Notification.Type.LIKE) {
                         Post post = postRepository.findById(notification.getTargetId())
                                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
                         builder.postId(post.getId())
                                 .category(post.getCategory().name())
                                 .thumbnailImage(post.getThumbnailImage());
+                    }
 
-                        if (type == Notification.Type.COMMENT) {
-                            Comment comment = commentRepository.findById(notification.getTargetId())
-                                    .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-                            builder.comment(comment.getContent());
-                        }
+                    if (type == Notification.Type.COMMENT) {
+                        Comment comment = commentRepository.findById(notification.getTargetId())
+                                .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+                        Post post = comment.getPost();
+
+                        builder.comment(comment.getContent())
+                                .postId(post.getId())
+                                .category(post.getCategory().name())
+                                .thumbnailImage(post.getThumbnailImage());
                     }
 
                     return builder.build();

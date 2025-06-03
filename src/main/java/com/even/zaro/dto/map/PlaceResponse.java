@@ -19,6 +19,7 @@ public class PlaceResponse {
         long place_id;
         String name;
         String address;
+        String category;
         double lat;
         double lng;
     }

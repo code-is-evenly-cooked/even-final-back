@@ -51,6 +51,7 @@ public class MapService {
                 selectPlace.getAddress(),
                 selectPlace.getLat(),
                 selectPlace.getLng(),
+                selectPlace.getCategory(),
                 selectPlace.getFavoriteCount(),
                 userSimpleResponses
         );
@@ -75,6 +76,7 @@ public class MapService {
                         .address(place.getAddress())
                         .lat(place.getLat())
                         .lng(place.getLng())
+                        .category(place.getCategory())
                         .build()
                 ).toList();
 

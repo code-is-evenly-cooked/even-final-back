@@ -37,7 +37,7 @@ public class Place {
     private double lng;
 
     @Column(nullable = false)
-    private String category;
+    private String category = "ETC";
 
     @Column(name = "address", nullable = false)
     private String address;

@@ -138,4 +138,9 @@ public class User {
     public void changeStatus(Status status) {
         this.status = status;
     }
+
+    public void softDeleted() {
+         this.status = Status.DELETED;
+         this.deletedAt = LocalDateTime.now();
+    }
 }

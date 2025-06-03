@@ -3,10 +3,13 @@ package com.even.zaro.service;
 import com.even.zaro.dto.user.*;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
+import com.even.zaro.entity.WithdrawalHistory;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.repository.WithdrawalHistoryRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -21,8 +24,10 @@ public class UserService {
     private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[_!@#$%^&*])[A-Za-z\\d_!@#$%^&*]{6,}$";
     private static final String NICKNAME_REGEX = "^[a-zA-Z0-9가-힣_-]{2,12}$";
 
-    public final UserRepository userRepository;
-    public final PasswordEncoder passwordEncoder;
+    private final UserRepository userRepository;
+    private final PasswordEncoder passwordEncoder;
+    private final RedisTemplate<String, String> redisTemplate;
+    private final WithdrawalHistoryRepository withdrawalHistoryRepository;
 
     @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo(Long userId) {
@@ -137,6 +142,36 @@ public class UserService {
         validateNewPassword(currentPassword, newPassword);
 
         user.updatePassword(passwordEncoder.encode(newPassword));
+    }
+
+    // 회원 탈퇴
+    @Transactional
+    public void softDelete(Long userId, WithdrawalRequestDto requestDto) {
+        User user = findUserById(userId);
+
+        if (user.getStatus() == Status.DELETED) {
+            throw new UserException(ErrorCode.USER_ALREADY_DELETED);
+        }
+
+        user.softDeleted();
+        redisTemplate.delete("refresh:" + userId.toString());
+
+        String reason = requestDto.getReason();
+
+        if (reason != null && !reason.isBlank()) {
+            withdrawalHistoryRepository.save(
+                    WithdrawalHistory.builder()
+                            .reason(reason)
+                            .deletedAt(user.getDeletedAt())
+                            .createdAt(user.getCreatedAt())
+                            .lastLoginAt(user.getLastLoginAt())
+                            .liveAloneDate(user.getLiveAloneDate())
+                            .birthday(user.getBirthday())
+                            .gender(user.getGender())
+                            .mbti(user.getMbti())
+                            .build()
+            );
+        }
     }
 
     public User findUserById(Long userId) {

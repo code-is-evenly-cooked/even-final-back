@@ -70,6 +70,9 @@ public class User {
     @Column(name = "last_login_at")
     private LocalDateTime lastLoginAt;
 
+    @Column(name = "deleted_at")
+    private LocalDateTime deletedAt;
+
     @Column(name = "follower_count")
     @Builder.Default
     private int followerCount = 0;
@@ -134,5 +137,10 @@ public class User {
 
     public void changeStatus(Status status) {
         this.status = status;
+    }
+
+    public void softDeleted() {
+         this.status = Status.DELETED;
+         this.deletedAt = LocalDateTime.now();
     }
 }

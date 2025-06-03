@@ -21,7 +21,6 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.Optional;
 
-import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
@@ -323,6 +322,40 @@ class UserServiceTest {
             UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
 
             assertEquals(ErrorCode.CURRENT_PASSWORD_WRONG, ex.getErrorCode());
+        }
+    }
+
+    @Nested
+    class softDelete {
+
+        static User createTestUser() {
+            return User.builder()
+                    .id(1L)
+                    .status(Status.ACTIVE)
+                    .build();
+        }
+
+        @Test
+        void successfully_softDeleted() {
+            User user = createTestUser();
+
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+            userService.softDelete(user.getId());
+
+            assertEquals(Status.DELETED, user.getStatus());
+            assertNotNull(user.getDeletedAt());
+        }
+
+        @Test
+        void shouldThrowException_whenUserIsAlreadyWithdrawn() {
+            User user = createTestUser();
+            user.changeStatus(Status.DELETED);
+            when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+
+            UserException ex = assertThrows(UserException.class, () -> userService.softDelete(user.getId()));
+
+            assertEquals(ErrorCode.USER_ALREADY_DELETED, ex.getErrorCode());
         }
     }
 

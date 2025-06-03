@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
+import java.util.Optional;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -93,6 +94,8 @@ public class AuthService {
         User user = userRepository.findByEmail(requestDto.getEmail())
                 .orElseThrow(() -> new UserException(ErrorCode.EMAIL_NOT_FOUND));
 
+        validateNotDeleted(user);
+
         if (!passwordEncoder.matches(requestDto.getPassword(), user.getPassword())) {
             throw new UserException(ErrorCode.INCORRECT_PASSWORD);
         }
@@ -113,7 +116,11 @@ public class AuthService {
         // 이메일, 프로필 사진이 없는 경우 더미로 추가
         String safeEmail = (email != null) ? email : "kakao_" + kakaoId + "@kakao-user.com";
 
-        User user = userRepository.findByProviderAndProviderId(Provider.KAKAO, kakaoId.toString())
+        Optional<User> optionalUser = userRepository.findByProviderAndProviderId(Provider.KAKAO, kakaoId.toString());
+
+        optionalUser.ifPresent(this::validateNotDeleted);
+
+        User user = optionalUser
                 .orElseGet(() -> userRepository.save(User.builder()
                                 .provider(Provider.KAKAO)
                                 .providerId(kakaoId.toString())
@@ -179,5 +186,11 @@ public class AuthService {
                 user.getProfileImage(),
                 user.getProvider()
         );
+    }
+
+    private void validateNotDeleted(User user) {
+        if (user.getStatus() == Status.DELETED) {
+            throw new UserException(ErrorCode.USER_ALREADY_DELETED);
+        }
     }
 }

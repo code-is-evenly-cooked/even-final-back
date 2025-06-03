@@ -1,10 +1,12 @@
 package com.even.zaro.controller;
 
 import com.even.zaro.dto.auth.*;
+import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.entity.PasswordResetToken;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.service.AuthService;
 import com.even.zaro.service.EmailVerificationService;
 import com.even.zaro.service.PasswordResetService;
@@ -18,6 +20,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
@@ -32,6 +35,7 @@ public class AuthController {
     private final AuthService authService;
     private final EmailVerificationService emailVerificationService;
     private final PasswordResetService passwordResetService;
+    private final JwtUtil jwtUtil;
 
     @Value("${FRONTEND_URL}")
     private String frontendUrl;
@@ -67,6 +71,15 @@ public class AuthController {
         return ResponseEntity.ok(ApiResponse.success("액세스 토큰 재생성을 성공했습니다.", response));
     }
 
+    @Operation(summary = "로그아웃", description = "헤더의 access-token를 받아 로그아웃 처리를 합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
+    @PostMapping("/signout")
+    public ResponseEntity<ApiResponse<Void>> signOut(@RequestHeader("Authorization") String accessToken,
+                                                     @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        String token = jwtUtil.extractBearerPrefix(accessToken);
+        authService.signOut(userInfoDto.getUserId(), token);
+        return ResponseEntity.ok(ApiResponse.success("로그아웃 되었습니다."));
+    }
 
     @Operation(summary = "이메일 인증 확인", description = "프론트에서 호출하지 않음. 서버에서 처리. 토큰 확인용 입니다.")
     @GetMapping("/email/verify")

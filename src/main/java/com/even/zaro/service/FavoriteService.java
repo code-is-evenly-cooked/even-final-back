@@ -153,6 +153,7 @@ public class FavoriteService {
                     .name(request.getPlaceName())
                     .lat(request.getLat())
                     .lng(request.getLng())
+                    .category(request.getCategory())
                     .address(request.getAddress())
                     .build();
             placeRepository.save(newPlace);

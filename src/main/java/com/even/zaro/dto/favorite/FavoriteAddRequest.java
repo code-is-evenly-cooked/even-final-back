@@ -25,4 +25,7 @@ public class FavoriteAddRequest {
 
     @Schema(description = "경도", example = "127.1234455")
     private double lng;
+
+    @Schema(description = "장소 분류", example = "MT1")
+    private String category;
 }

@@ -5,6 +5,7 @@ import com.even.zaro.entity.Notification;
 import com.even.zaro.entity.User;
 import com.even.zaro.entity.PostLike;
 import com.even.zaro.repository.NotificationRepository;
+import com.even.zaro.service.NotificationSseService;
 import jakarta.persistence.PostPersist;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
@@ -13,6 +14,8 @@ import org.springframework.transaction.annotation.Transactional;
 @Component
 @RequiredArgsConstructor
 public class PostLikeListener {
+
+    private final NotificationSseService notificationSseService;
 
     @PostPersist
     @Transactional
@@ -34,7 +37,10 @@ public class PostLikeListener {
             notification.setTargetId(postlike.getPost().getId());
             notification.setRead(false);
 
-            notificationRepository.save(notification);
+            Notification saved = notificationRepository.save(notification);
+
+            // sse 실시간 전송
+            notificationSseService.send(postOwner.getId(), saved);
         }
     }
 }

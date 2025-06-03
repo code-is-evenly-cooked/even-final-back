@@ -36,6 +36,10 @@ public class Place {
     @Column(name = "lng", nullable = false)
     private double lng;
 
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false)
+    private Category category;
+
     @Column(name = "address", nullable = false)
     private String address;
 

@@ -139,6 +139,18 @@ public class UserService {
         user.updatePassword(passwordEncoder.encode(newPassword));
     }
 
+    // 회원 탈퇴
+    @Transactional
+    public void softDelete(Long userId) {
+        User user = findUserById(userId);
+
+        if (user.getStatus() == Status.DELETED) {
+            throw new UserException(ErrorCode.USER_ALREADY_DELETED);
+        }
+
+        user.softDeleted();
+    }
+
     public User findUserById(Long userId) {
         return userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));

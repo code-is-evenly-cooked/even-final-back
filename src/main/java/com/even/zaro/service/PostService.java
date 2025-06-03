@@ -3,16 +3,12 @@ package com.even.zaro.service;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
-import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.event.PostDeletedEvent;
 import com.even.zaro.event.PostSavedEvent;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -29,8 +25,8 @@ import java.util.stream.Collectors;
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserService userService;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
@@ -41,12 +37,8 @@ public class PostService {
         Post.Tag tag = convertTag(request.getTag());
         validateTagForCategory(category, tag);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
         String thumbnailImage = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
@@ -85,19 +77,12 @@ public class PostService {
 
     @Transactional
     public void updatePost(Long postId, PostUpdateRequest request, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+        Post post = findPostOrThrow(postId);
 
-        if (!post.getUser().getId().equals(userId)) {
-            throw new PostException(ErrorCode.INVALID_POST_OWNER);
-        }
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        validatePostNotOwner(post, user);
 
         validateImageRequirement(post.getCategory(), request.getPostImageList());
 
@@ -127,15 +112,18 @@ public class PostService {
 
         if (categoryEmpty && tagEmpty) {
             page = postRepository.findByIsDeletedFalseAndIsReportedFalse(pageable);
-        } else if (!categoryEmpty && tagEmpty) {
+        }
+        else if (!categoryEmpty && tagEmpty) {
             Post.Category postCategory = parseCategory(category);
             page = postRepository.findByCategoryAndIsDeletedFalseAndIsReportedFalse(postCategory, pageable);
-        } else if (!categoryEmpty) {
+        }
+        else if (!categoryEmpty) {
             Post.Category postCategory = parseCategory(category);
             Post.Tag postTag = convertTag(tag);
             validateTagForCategory(postCategory, postTag);
             page = postRepository.findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(postCategory, postTag, pageable);
-        } else {
+        }
+        else {
             throw new PostException(ErrorCode.INVALID_CATEGORY);
         }
 
@@ -178,23 +166,12 @@ public class PostService {
 
     @Transactional
     public void deletePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+        Post post = findPostOrThrow(postId);
 
-        if (post.isDeleted() || post.isReported()) {
-            throw new PostException(ErrorCode.POST_NOT_FOUND);
-        }
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
-        if (!post.getUser().getId().equals(userId)) {
-            throw new PostException(ErrorCode.INVALID_POST_OWNER);
-        }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        validatePostNotOwner(post, user);
 
         post.markAsDeleted();
         eventPublisher.publishEvent(new PostDeletedEvent(postId));
@@ -244,13 +221,8 @@ public class PostService {
                 .build();
     }
 
-    @PersistenceContext
-    private EntityManager em;
-
     @Transactional
     public List<PostRankResponseDto> getRankedPosts() {
-        em.flush();
-        em.clear();
         List<Post> posts = postRepository.findTop10ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
 
         return posts.stream()
@@ -261,11 +233,23 @@ public class PostService {
     @Transactional
     public void updatePostScore(Post post) {
         post.updateScore();
-        postRepository.saveAndFlush(post);
-
     }
 
     // 공통 로직 분리
+    /// 게시글을 찾을 수 없을때
+    public Post findPostOrThrow(Long postId) {
+        Post post =  postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+
+        if (post.isDeleted() || post.isReported()) {
+            throw new PostException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        return post;
+    }
+
+
+    /// 올바르지 않은 카테고리 일때
     private Post.Category parseCategory(String category) {
         try {
             return Post.Category.valueOf(category);
@@ -275,6 +259,7 @@ public class PostService {
     }
 
 
+    /// 올바르지 않은 태그 일때
     private Post.Tag convertTag(String tag) {
         try {
             return Post.Tag.valueOf(tag);
@@ -284,6 +269,7 @@ public class PostService {
     }
 
 
+    /// 텅장일기 카테고리 - 이미지 없을때
     private void validateImageRequirement(Post.Category category, List<String> postImages) {
         if (category == Post.Category.RANDOM_BUY &&
                 (postImages == null || postImages.isEmpty())) {
@@ -291,7 +277,7 @@ public class PostService {
         }
     }
 
-
+    /// 카테고리랑 일치하지 않은 태그를 선택했을때
     private void validateTagForCategory(Post.Category category, Post.Tag tag) {
         if (!category.isAllowed(tag)){
             throw new PostException(ErrorCode.INVALID_TAG_FOR_CATEGORY);
@@ -299,6 +285,7 @@ public class PostService {
     }
 
 
+    /// 이미지 리스트에 없는 썸네일 이미지를 넣었을때
     private String resolveThumbnail(String thumbnailImage, List<String> postImages) {
         if (thumbnailImage != null) {
             if (postImages == null || !postImages.contains(thumbnailImage)) {
@@ -312,6 +299,13 @@ public class PostService {
         }
 
         return null;
+    }
+
+    /// 수정, 삭제 권한이 없을때
+    private void validatePostNotOwner(Post post, User user) {
+        if (!post.getUser().equals(user)) {
+            throw new PostException(ErrorCode.INVALID_POST_OWNER);
+        }
     }
 
     private String formatDate(LocalDateTime dateTime) {

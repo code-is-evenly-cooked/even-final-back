@@ -1,6 +1,7 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.notification.NotificationDto;
+import com.even.zaro.dto.notification.NotificationSseDto;
 import com.even.zaro.entity.Notification;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -55,7 +56,7 @@ public class NotificationSseService {
 
         if (emitter != null) {
             try {
-                NotificationDto dto = NotificationDto.builder()
+                NotificationSseDto dto = NotificationSseDto.builder()
                         .id(notification.getId())
                         .type(notification.getType())
                         .targetId(notification.getTargetId())

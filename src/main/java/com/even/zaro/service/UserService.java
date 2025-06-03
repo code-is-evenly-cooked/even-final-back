@@ -24,9 +24,9 @@ public class UserService {
     public final UserRepository userRepository;
     public final PasswordEncoder passwordEncoder;
 
+    @Transactional(readOnly = true)
     public UserInfoResponseDto getMyInfo(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        User user = findUserById(userId);
 
         return UserInfoResponseDto.builder()
                 .userId(user.getId())
@@ -47,12 +47,8 @@ public class UserService {
 
     @Transactional
     public UpdateProfileImageResponseDto updateProfileImage(Long userId, UpdateProfileImageRequestDto requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() == Status.PENDING) {
-            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
-        }
+        User user = findUserById(userId);
+        validateNotPending(user);
 
         user.updateProfileImage(requestDto.getProfileImage());
 
@@ -61,12 +57,8 @@ public class UserService {
 
     @Transactional
     public UpdateNicknameResponseDto updateNickname(Long userId, UpdateNicknameRequestDto requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() == Status.PENDING) {
-            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
-        }
+        User user = findUserById(userId);
+        validateNotPending(user);
 
         String newNickname = requestDto.getNewNickname();
 
@@ -110,12 +102,8 @@ public class UserService {
 
     @Transactional
     public UpdateProfileResponseDto updateProfile(Long userId, UpdateProfileRequestDto requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() == Status.PENDING) {
-            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
-        }
+        User user = findUserById(userId);
+        validateNotPending(user);
 
         user.updateBirthday(requestDto.getBirthday());
         user.updateLiveAloneDate(requestDto.getLiveAloneDate());
@@ -132,12 +120,8 @@ public class UserService {
 
     @Transactional
     public void updatePassword(Long userId, UpdatePasswordRequestDto requestDto) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() == Status.PENDING) {
-            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
-        }
+        User user = findUserById(userId);
+        validateNotPending(user);
 
         String currentPassword = requestDto.getCurrentPassword();
         String newPassword = requestDto.getNewPassword();
@@ -153,6 +137,17 @@ public class UserService {
         validateNewPassword(currentPassword, newPassword);
 
         user.updatePassword(passwordEncoder.encode(newPassword));
+    }
+
+    public User findUserById(Long userId) {
+        return userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+    }
+
+    public void validateNotPending(User user) {
+        if (user.getStatus() == Status.PENDING) {
+            throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
+        }
     }
 
     private void validateNewPassword(String currentPassword, String newPassword) {

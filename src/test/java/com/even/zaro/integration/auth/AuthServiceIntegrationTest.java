@@ -1,4 +1,4 @@
-package com.even.zaro.integration;
+package com.even.zaro.integration.auth;
 
 import com.even.zaro.dto.auth.SignUpRequestDto;
 import com.even.zaro.entity.Provider;
@@ -11,6 +11,7 @@ import com.even.zaro.service.AuthService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 

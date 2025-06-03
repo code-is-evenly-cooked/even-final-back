@@ -151,6 +151,7 @@ public class UserService {
         }
 
         user.softDeleted();
+        redisTemplate.delete("refresh:" + userId);
     }
 
     public User findUserById(Long userId) {

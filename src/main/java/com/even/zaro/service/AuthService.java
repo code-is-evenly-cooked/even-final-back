@@ -180,4 +180,10 @@ public class AuthService {
                 user.getProvider()
         );
     }
+
+    private void validateNotDeleted(User user) {
+        if (user.getStatus() == Status.DELETED) {
+            throw new UserException(ErrorCode.USER_ALREADY_DELETED);
+        }
+    }
 }

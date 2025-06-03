@@ -75,9 +75,10 @@ public class UserController {
     @Operation(summary = "회원 탈퇴", description = "로그인한 사용자의 계정을 soft 삭제 합니다. (status.DELETED로 변경, 30일 후 DB에서 완전 삭제)", security = {@SecurityRequirement(name = "bearer-key")})
     @DeleteMapping("/me")
     public ResponseEntity<ApiResponse<Void>> softDelete(
+            @RequestBody WithdrawalRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
-        userService.softDelete(userInfoDto.getUserId());
+        userService.softDelete(userInfoDto.getUserId(), requestDto);
         return ResponseEntity.ok(ApiResponse.success("계정이 삭제되었습니다."));
     }
 

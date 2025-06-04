@@ -1,7 +1,7 @@
 package com.even.zaro.jwt;
 
-import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.ErrorResponse;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
@@ -22,7 +22,7 @@ public class JwtAuthenticationEntryPoint implements AuthenticationEntryPoint {
         response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         response.setContentType("application/json");
 
-        ApiResponse<Object> body = ApiResponse.fail(ErrorCode.AUTH_REQUIRED);
-        objectMapper.writeValue(response.getWriter(), body);
+        ErrorResponse errorResponse = ErrorResponse.fail(ErrorCode.AUTH_REQUIRED);
+        objectMapper.writeValue(response.getWriter(), errorResponse);
     }
 }

@@ -7,6 +7,7 @@ import com.even.zaro.entity.Place;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.place.PlaceException;
+import com.even.zaro.mapper.MapMapper;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.MapQueryRepository;
 import com.even.zaro.repository.PlaceRepository;
@@ -26,6 +27,7 @@ public class MapService {
     private final PlaceRepository placeRepository;
     private final FavoriteRepository favoriteRepository;
     private final MapQueryRepository mapQueryRepository;
+    private final MapMapper mapMapper;
 
     public MarkerInfoResponse getPlaceInfo(long placeId) {
 
@@ -36,26 +38,34 @@ public class MapService {
         List<Favorite> allByPlace = favoriteRepository.findAllByPlace(selectPlace);
 
         // 유저 요약 정보 순회하며 리스트에 저장
-        List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponses = allByPlace.stream()
-                .map(fav -> MarkerInfoResponse.UserSimpleResponse.builder()
-                        .userId(fav.getUser().getId())
-                        .profileImage(fav.getUser().getProfileImage())
-                        .nickname(fav.getUser().getNickname())
-                        .memo(fav.getMemo())
-                        .build())
-                .toList();
+//        List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponses = allByPlace.stream()
+//                .map(fav -> MarkerInfoResponse.UserSimpleResponse.builder()
+//                        .userId(fav.getUser().getId())
+//                        .profileImage(fav.getUser().getProfileImage())
+//                        .nickname(fav.getUser().getNickname())
+//                        .memo(fav.getMemo())
+//                        .build())
+//                .toList();
+        List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponseList = mapMapper.toUserSimpleResponseList(allByPlace);
+
+
+
+
 
         // 생성자를 이용해 응답하도록 수정
-        MarkerInfoResponse markerInfo = new MarkerInfoResponse(
-                selectPlace.getId(),
-                selectPlace.getName(),
-                selectPlace.getAddress(),
-                selectPlace.getLat(),
-                selectPlace.getLng(),
-                selectPlace.getCategory(),
-                selectPlace.getFavoriteCount(),
-                userSimpleResponses
-        );
+        MarkerInfoResponse markerInfo = mapMapper.toMarkerInfoResponse(selectPlace, userSimpleResponseList);
+
+
+//        MarkerInfoResponse markerInfo = new MarkerInfoResponse(
+//                selectPlace.getId(),
+//                selectPlace.getName(),
+//                selectPlace.getAddress(),
+//                selectPlace.getLat(),
+//                selectPlace.getLng(),
+//                selectPlace.getCategory(),
+//                selectPlace.getFavoriteCount(),
+//                userSimpleResponseList
+//        );
 
 
         return markerInfo;

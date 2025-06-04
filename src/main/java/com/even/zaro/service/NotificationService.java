@@ -3,14 +3,10 @@ package com.even.zaro.service;
 import com.even.zaro.dto.notification.NotificationDto;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
-import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.notification.NotificationException;
-import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.global.util.NotificationMapper;
 import com.even.zaro.repository.NotificationRepository;
-import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -26,8 +22,6 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final NotificationMapper notificationMapper;
     private final NotificationSseService notificationSseService;

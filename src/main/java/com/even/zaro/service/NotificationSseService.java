@@ -1,7 +1,6 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.notification.NotificationDto;
-import com.even.zaro.dto.notification.NotificationSseDto;
 import com.even.zaro.entity.Notification;
 import com.even.zaro.global.util.NotificationMapper;
 import lombok.RequiredArgsConstructor;

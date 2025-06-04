@@ -1,6 +1,5 @@
 package com.even.zaro.listener;
 
-import com.even.zaro.entity.PostLike;
 import com.even.zaro.event.CommentCreatedEvent;
 import com.even.zaro.event.FollowCreatedEvent;
 import com.even.zaro.event.PostLikeCreatedEvent;

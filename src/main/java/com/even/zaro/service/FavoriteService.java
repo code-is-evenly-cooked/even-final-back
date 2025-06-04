@@ -13,6 +13,7 @@ import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.mapper.FavoriteMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
@@ -34,6 +35,7 @@ public class FavoriteService {
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
+    private final FavoriteMapper favoriteMapper;
 
     // 그룹에 즐겨찾기를 추가
     public FavoriteAddResponse addFavorite(long groupId, FavoriteAddRequest request, long userId) {
@@ -68,15 +70,7 @@ public class FavoriteService {
 
         favoriteRepository.save(favorite);
 
-        FavoriteAddResponse favoriteAddResponse = FavoriteAddResponse.builder()
-                .placeId(favorite.getPlace().getId())
-                .memo(favorite.getMemo())
-                .lat(favorite.getPlace().getLat())
-                .lng(favorite.getPlace().getLng())
-                .address(favorite.getPlace().getAddress())
-                .build();
-
-        return favoriteAddResponse;
+        return favoriteMapper.toFavoriteAddResponse(favorite);
     }
 
     // 해당 그룹의 즐겨찾기 리스트를 조회

@@ -17,6 +17,12 @@ public class GlobalExceptionHandler {
     // 커스텀 처리
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustom(CustomException ex) {
+        log.error("[{}] Status: {}, CustomCode: {}, Message: {}",
+                ex.getClass().getSimpleName(),
+                ex.getStatus().value(),
+                ex.getCode(),
+                ex.getMessage());
+
         return ResponseEntity
                 .status(ex.getStatus())
                 .body(ErrorResponse.fail(ex.getCode(), ex.getMessage()));

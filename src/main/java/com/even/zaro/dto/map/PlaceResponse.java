@@ -16,7 +16,7 @@ public class PlaceResponse {
     @Builder
     @Getter
     static public class PlaceInfo {
-        long place_id;
+        long placeId;
         String name;
         String address;
         String category;

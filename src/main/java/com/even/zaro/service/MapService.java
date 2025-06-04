@@ -57,7 +57,7 @@ public class MapService {
 
         List<PlaceResponse.PlaceInfo> placeInfos =  placeByCoordinate.stream()
                 .map(place -> PlaceResponse.PlaceInfo.builder()
-                        .place_id(place.getId())
+                        .placeId(place.getId())
                         .name(place.getName())
                         .address(place.getAddress())
                         .lat(place.getLat())

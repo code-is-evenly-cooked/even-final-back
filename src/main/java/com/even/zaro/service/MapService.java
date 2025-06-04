@@ -11,6 +11,7 @@ import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.MapQueryRepository;
 import com.even.zaro.repository.PlaceRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,7 +20,7 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class MapService {
     private final PlaceRepository placeRepository;

@@ -14,17 +14,17 @@ import org.springframework.transaction.event.TransactionalEventListener;
 public class NotificationListener {
     private final NotificationService notificationService;
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleComment(CommentCreatedEvent event) {
         notificationService.createCommentNotification(event.getComment());
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handlePostLike(PostLikeCreatedEvent event) {
         notificationService.createPostLikeNotification(event.getPostLike());
     }
 
-    @TransactionalEventListener(phase = TransactionPhase.AFTER_COMMIT)
+    @TransactionalEventListener(phase = TransactionPhase.BEFORE_COMMIT)
     public void handleFollow(FollowCreatedEvent event) {
         notificationService.createFollowNotification(event.getFollow());
     }

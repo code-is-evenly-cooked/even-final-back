@@ -5,10 +5,7 @@ import com.even.zaro.dto.post.ReportResponseDto;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
-import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.PostReportRepository;
-import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,29 +17,18 @@ import java.time.LocalDateTime;
 public class PostReportService {
 
     private final PostReportRepository postReportRepository;
-    private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
+    private final PostService postService;
 
     @Transactional
     public ReportResponseDto reportPost(Long postId, ReportRequestDTO request, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+        Post post = postService.findPostOrThrow(postId);
 
-        if (post.getUser().getId().equals(userId)) {
-            throw new PostException(ErrorCode.CANNOT_REPORT_OWN_POST);
-        }
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
-        if (request.getReasonType() == ReportReasonType.ETC &&
-                (request.getReasonText() == null || request.getReasonText().trim().isEmpty())) {
-            throw new PostException(ErrorCode.REASON_TEXT_REQUIRED_FOR_ETC);
-        }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        post.validateNotOwner(user);
+        request.validateReasonTextOrThrow();
 
         if (postReportRepository.existsByPostAndUser(post, user)) {
             throw new PostException(ErrorCode.ALREADY_REPORTED_POST);

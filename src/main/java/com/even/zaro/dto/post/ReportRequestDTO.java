@@ -1,6 +1,8 @@
 package com.even.zaro.dto.post;
 
 import com.even.zaro.entity.ReportReasonType;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.post.PostException;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -18,4 +20,11 @@ public class ReportRequestDTO {
             "※ reasonType이 ETC일 때만 필수. 그 외에는 null 또는 빈 문자열 \"\" 가능.",
             example = "전혀 연관 없는 글과 욕설로 타인의 기분을 불편하게 합니다.")
     private String reasonText;
+
+    public void validateReasonTextOrThrow(){
+        if (this.getReasonType() == ReportReasonType.ETC &&
+                (this.getReasonText() == null || this.getReasonText().trim().isEmpty())) {
+            throw new PostException(ErrorCode.REASON_TEXT_REQUIRED_FOR_ETC);
+        }
+    }
 }

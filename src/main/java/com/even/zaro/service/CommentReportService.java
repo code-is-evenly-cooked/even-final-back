@@ -23,6 +23,7 @@ public class CommentReportService {
     private final CommentReportRepository commentReportRepository;
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final UserService userService;
 
     @Transactional
     public ReportResponseDto reportComment(Long commentId, ReportRequestDTO request, Long userId) {
@@ -33,17 +34,10 @@ public class CommentReportService {
             throw new CommentException(ErrorCode.CANNOT_REPORT_OWN_COMMENT);
         }
 
-        if (request.getReasonType() == ReportReasonType.ETC &&
-                (request.getReasonText() == null || request.getReasonText().isEmpty())) {
-            throw new CommentException(ErrorCode.REASON_TEXT_REQUIRED_FOR_ETC);
-        }
+        request.validateReasonTextOrThrow();
 
-        User user  = userRepository.findById(userId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new CommentException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+       User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
         if (commentReportRepository.existsByCommentAndUser(comment, user)) {
             throw new CommentException(ErrorCode.ALREADY_REPORTED_COMMENT);

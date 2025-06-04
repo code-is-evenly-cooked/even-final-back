@@ -3,34 +3,29 @@ package com.even.zaro.service;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
-import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.event.PostDeletedEvent;
 import com.even.zaro.event.PostSavedEvent;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
+import com.even.zaro.mapper.PostMapper;
 import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.UserRepository;
-import jakarta.persistence.EntityManager;
-import jakarta.persistence.PersistenceContext;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import java.time.LocalDateTime;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class PostService {
 
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private final UserService userService;
+    private final PostMapper postMapper;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
@@ -41,160 +36,97 @@ public class PostService {
         Post.Tag tag = convertTag(request.getTag());
         validateTagForCategory(category, tag);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
         String thumbnailImage = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
-        Post post = Post.builder()
-                .title(request.getTitle())
-                .content(request.getContent())
-                .category(category)
-                .tag(tag)
-                .thumbnailImage(thumbnailImage)
-                .postImageList(request.getPostImageList())
-                .user(user)
-                .build();
+        Post post = Post.create(
+                request.getTitle(),
+                request.getContent(),
+                category,
+                tag,
+                thumbnailImage,
+                request.getPostImageList(),
+                user
+        );
 
-        post.updateScore();
         Post saved = postRepository.save(post);
         eventPublisher.publishEvent(new PostSavedEvent(saved));
 
-        return PostDetailResponse.builder()
-                .postId(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .likeCount(post.getLikeCount())
-                .commentCount(post.getCommentCount())
-                .createdAt(post.getCreatedAt())
-                .category(post.getCategory().name())
-                .tag(post.getTag().name())
-                .thumbnailImage(post.getThumbnailImage())
-                .postImageList(post.getPostImageList())
-                .user(new PostDetailResponse.UserInfo(
-                        user.getId(),
-                        user.getNickname(),
-                        user.getProfileImage()
-                ))
-                .build();
+        return postMapper.toPostDetailDto(saved);
     }
 
     @Transactional
     public void updatePost(Long postId, PostUpdateRequest request, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+        Post post = findPostOrThrow(postId);
 
-        if (!post.getUser().getId().equals(userId)) {
-            throw new PostException(ErrorCode.INVALID_POST_OWNER);
-        }
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        validatePostNotOwner(post, user);
 
         validateImageRequirement(post.getCategory(), request.getPostImageList());
-
         Post.Tag tag = convertTag(request.getTag());
-
         validateTagForCategory(post.getCategory(), tag);
 
-        String thumbnailUrl = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
+        String thumbnailImage = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
-
-        post.changeTitle(request.getTitle());
-        post.changeContent(request.getContent());
-        post.changeTag(tag);
-        post.changeImageList(request.getPostImageList());
-        post.changeThumbnail(thumbnailUrl);
-
-        post.updateScore();
+        post.update(
+                request.getTitle(),
+                request.getContent(),
+                tag,
+                request.getPostImageList(),
+                thumbnailImage
+        );
         eventPublisher.publishEvent(new PostSavedEvent(post));
     }
 
     @Transactional(readOnly = true)
     public PageResponse<PostPreviewDto> getPostListPage(String category, String tag, Pageable pageable) {
-        Page<Post> page;
+        Page<Post> page = resolvePostList(category, tag, pageable);
+        return new PageResponse<>(page.map(postMapper::toPostPreviewDto));
+    }
 
-        boolean categoryEmpty = (category == null || category.isBlank());
-        boolean tagEmpty = (tag == null || tag.isBlank());
+    private Page<Post> resolvePostList(String category, String tag, Pageable pageable) {
+
+        boolean categoryEmpty = isBlank(category);
+        boolean tagEmpty = isBlank(tag);
 
         if (categoryEmpty && tagEmpty) {
-            page = postRepository.findByIsDeletedFalseAndIsReportedFalse(pageable);
-        } else if (!categoryEmpty && tagEmpty) {
+            return postRepository.findByIsDeletedFalseAndIsReportedFalse(pageable);
+        }
+        if (!categoryEmpty && tagEmpty) {
             Post.Category postCategory = parseCategory(category);
-            page = postRepository.findByCategoryAndIsDeletedFalseAndIsReportedFalse(postCategory, pageable);
-        } else if (!categoryEmpty) {
+            return postRepository.findByCategoryAndIsDeletedFalseAndIsReportedFalse(postCategory, pageable);
+        }
+        if (!categoryEmpty) {
             Post.Category postCategory = parseCategory(category);
             Post.Tag postTag = convertTag(tag);
             validateTagForCategory(postCategory, postTag);
-            page = postRepository.findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(postCategory, postTag, pageable);
-        } else {
+            return postRepository.findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(postCategory, postTag, pageable);
+        }
             throw new PostException(ErrorCode.INVALID_CATEGORY);
         }
-
-        return new PageResponse<>(page.map(PostPreviewDto::from));
+    private boolean isBlank(String s) {
+        return s == null || s.isBlank();
     }
+
 
     @Transactional(readOnly = true)
     public PostDetailResponse getPostDetail(Long postId) {
-        Post post = postRepository.findByIdAndIsDeletedFalse(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-
-        if (post.isReported()){
-            throw new PostException(ErrorCode.POST_NOT_FOUND);
-        }
-
-        User user = post.getUser();
-
-        return PostDetailResponse.builder()
-                .postId(post.getId())
-                .title(post.getTitle())
-                .content(post.getContent())
-                .likeCount(post.getLikeCount())
-                .commentCount(post.getCommentCount())
-                .createdAt(post.getCreatedAt())
-                .category(String.valueOf(post.getCategory()))
-                .tag(String.valueOf(post.getTag()))
-                .thumbnailImage(post.getThumbnailImage())
-                .postImageList(post.getPostImageList()
-                        .stream()
-                        .distinct()
-                        .collect(Collectors.toList()))
-                .thumbnailImage(post.getThumbnailImage())
-                .postImageList(post.getPostImageList())
-                .user(new PostDetailResponse.UserInfo(
-                        user.getId(),
-                        user.getNickname(),
-                        user.getProfileImage()))
-        .build();
+        Post post = findPostOrThrow(postId);
+        return postMapper.toPostDetailDto(post);
     }
 
     @Transactional
     public void deletePost(Long postId, Long userId) {
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+        Post post = findPostOrThrow(postId);
 
-        if (post.isDeleted() || post.isReported()) {
-            throw new PostException(ErrorCode.POST_NOT_FOUND);
-        }
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
 
-        if (!post.getUser().getId().equals(userId)) {
-            throw new PostException(ErrorCode.INVALID_POST_OWNER);
-        }
-
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED);
-        }
+        validatePostNotOwner(post, user);
 
         post.markAsDeleted();
         eventPublisher.publishEvent(new PostDeletedEvent(postId));
@@ -208,33 +140,15 @@ public class PostService {
         List<Post> randomBuyPosts = postRepository.findTop5ByCategoryAndIsDeletedFalseAndIsReportedFalseOrderByCreatedAtDesc(Post.Category.RANDOM_BUY);
 
         List<HomePostPreviewResponse.SimplePostDto> together = togetherPosts.stream()
-                .map(post -> HomePostPreviewResponse.SimplePostDto.builder()
-                        .postId(post.getId())
-                        .title(post.getTitle())
-                        .createdAt(formatDate(post.getCreatedAt()))
-                        .build())
+                .map(postMapper::toSimplePostDto)
                 .toList();
 
         List<HomePostPreviewResponse.SimplePostDto> dailyLife = dailyLifePosts.stream()
-                .map(post -> HomePostPreviewResponse.SimplePostDto.builder()
-                        .postId(post.getId())
-                        .title(post.getTitle())
-                        .createdAt(formatDate(post.getCreatedAt()))
-                        .build())
+                .map(postMapper::toSimplePostDto)
                 .toList();
 
         List<HomePostPreviewResponse.RandomBuyPostDto> randomBuy = randomBuyPosts.stream()
-                .map(post -> HomePostPreviewResponse.RandomBuyPostDto.builder()
-                        .postId(post.getId())
-                        .title(post.getTitle())
-                        .content(generatePreview(post.getContent()))
-                        .thumbnailImage(post.getThumbnailImage())
-                        .likeCount(post.getLikeCount())
-                        .commentCount(post.getCommentCount())
-                        .writerProfileImage(post.getUser().getProfileImage())
-                        .writerNickname(post.getUser().getNickname())
-                        .createdAt(formatDate(post.getCreatedAt()))
-                        .build())
+                .map(postMapper::toRandomBuyDto)
                 .toList();
 
         return HomePostPreviewResponse.builder()
@@ -244,28 +158,41 @@ public class PostService {
                 .build();
     }
 
-    @PersistenceContext
-    private EntityManager em;
-
     @Transactional
     public List<PostRankResponseDto> getRankedPosts() {
-        em.flush();
-        em.clear();
         List<Post> posts = postRepository.findTop10ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
 
         return posts.stream()
-                .map(PostRankResponseDto::from)
+                .map(postMapper::toRankDto)
                 .toList();
     }
 
     @Transactional
     public void updatePostScore(Post post) {
         post.updateScore();
-        postRepository.saveAndFlush(post);
-
     }
 
     // 공통 로직 분리
+    /// 게시글을 찾을 수 없을때
+    public Post findPostOrThrow(Long postId) {
+        Post post =  postRepository.findById(postId)
+                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+
+        if (post.isDeleted() || post.isReported()) {
+            throw new PostException(ErrorCode.POST_NOT_FOUND);
+        }
+
+        return post;
+    }
+
+    /// 게시글 찾을 없을때 - 삭제만 검사 (postLike)
+    public Post findUndeletedPostOrThrow(Long postId) {
+        return postRepository.findByIdAndIsDeletedFalse(postId)
+                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
+    }
+
+
+    /// 올바르지 않은 카테고리 일때
     private Post.Category parseCategory(String category) {
         try {
             return Post.Category.valueOf(category);
@@ -275,6 +202,7 @@ public class PostService {
     }
 
 
+    /// 올바르지 않은 태그 일때
     private Post.Tag convertTag(String tag) {
         try {
             return Post.Tag.valueOf(tag);
@@ -284,6 +212,7 @@ public class PostService {
     }
 
 
+    /// 텅장일기 카테고리 - 이미지 없을때
     private void validateImageRequirement(Post.Category category, List<String> postImages) {
         if (category == Post.Category.RANDOM_BUY &&
                 (postImages == null || postImages.isEmpty())) {
@@ -291,7 +220,7 @@ public class PostService {
         }
     }
 
-
+    /// 카테고리랑 일치하지 않은 태그를 선택했을때
     private void validateTagForCategory(Post.Category category, Post.Tag tag) {
         if (!category.isAllowed(tag)){
             throw new PostException(ErrorCode.INVALID_TAG_FOR_CATEGORY);
@@ -299,6 +228,7 @@ public class PostService {
     }
 
 
+    /// 이미지 리스트에 없는 썸네일 이미지를 넣었을때
     private String resolveThumbnail(String thumbnailImage, List<String> postImages) {
         if (thumbnailImage != null) {
             if (postImages == null || !postImages.contains(thumbnailImage)) {
@@ -314,10 +244,10 @@ public class PostService {
         return null;
     }
 
-    private String formatDate(LocalDateTime dateTime) {
-        return dateTime.toLocalDate().toString();
-    }
-    private String generatePreview(String content) {
-        return content.length() <= 30 ? content : content.substring(0, 30) + "...";
+    /// 수정, 삭제 권한이 없을때
+    private void validatePostNotOwner(Post post, User user) {
+        if (!post.getUser().equals(user)) {
+            throw new PostException(ErrorCode.INVALID_POST_OWNER);
+        }
     }
 }

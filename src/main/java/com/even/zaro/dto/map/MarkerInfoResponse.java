@@ -3,7 +3,6 @@ package com.even.zaro.dto.map;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
-import lombok.Setter;
 
 import java.util.List;
 
@@ -20,6 +19,8 @@ public class MarkerInfoResponse {
 
     double lat;
     double lng;
+
+    String category;
 
     int favoriteCount;
 

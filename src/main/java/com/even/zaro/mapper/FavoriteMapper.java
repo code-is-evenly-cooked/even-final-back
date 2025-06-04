@@ -2,7 +2,6 @@ package com.even.zaro.mapper;
 
 import com.even.zaro.dto.favorite.FavoriteAddResponse;
 import com.even.zaro.dto.favorite.FavoriteResponse;
-import com.even.zaro.dto.map.MarkerInfoResponse;
 import com.even.zaro.entity.Favorite;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;

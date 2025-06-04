@@ -8,6 +8,7 @@ import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.mapper.GroupMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.AllArgsConstructor;
@@ -26,6 +27,7 @@ import java.util.List;
 public class GroupService {
     private final UserRepository userRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
+    private final GroupMapper groupMapper;
 
     public void createGroup(GroupCreateRequest request, long userid) {
 
@@ -59,19 +61,7 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);
         }
 
-
-        // GroupResponse 리스트로 변환
-        List<GroupResponse> responseList = groupList.stream().map(group ->
-                        GroupResponse.builder()
-                                .groupId(group.getId())
-                                .name(group.getName())
-                                .isDeleted(group.isDeleted())
-                                .createdAt(group.getCreatedAt())
-                                .updatedAt(group.getUpdatedAt())
-                                .build())
-                .toList();
-
-        return responseList;
+        return groupMapper.toGroupResponseList(groupList);
     }
 
     public void deleteGroup(long groupId, long userId) {

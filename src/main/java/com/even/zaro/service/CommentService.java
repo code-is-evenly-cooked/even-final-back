@@ -80,7 +80,7 @@ public class CommentService {
         }
 
         Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalse(postId, pageable)
-                .map(comment -> toDto(comment, currentUserId));
+                .map(comment -> toDto(comment, currentUserId, null));
         return new PageResponse<>(page);
     }
 

@@ -1,10 +1,7 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.notification.NotificationDto;
-import com.even.zaro.entity.Notification;
-import com.even.zaro.entity.User;
-import com.even.zaro.entity.Post;
-import com.even.zaro.entity.Comment;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.notification.NotificationException;
@@ -49,9 +46,10 @@ public class NotificationService {
 
     @Transactional
     public void createCommentNotification(Comment comment) {
-        User postOwner = comment.getPost().getUser();
-        User commentAuthor = comment.getUser();
+        User postOwner = comment.getPost().getUser(); // 게시글 작성자
+        User commentAuthor = comment.getUser(); // 댓글 작성자
 
+        // 댓글 작성자==게시글 작성자일 때는 알림 생성 X
         if (postOwner.getId().equals(commentAuthor.getId())) return;
 
         Notification notification = new Notification();
@@ -62,7 +60,30 @@ public class NotificationService {
         notification.setRead(false);
 
         Notification saved = notificationRepository.save(notification);
+
+        // sse 실시간 전송
         notificationSseService.send(postOwner.getId(), saved);
+    }
+
+    @Transactional
+    public void createPostLikeNotification(PostLike postLike) {
+        User postOwner = postLike.getPost().getUser(); // 게시물 작성자
+        User likeUser = postLike.getUser(); // 좋아요 누른 유저
+
+        // 댓글 작성자==좋아요 누른 유저 일 때는 알림 생성 X
+        if (!postOwner.getId().equals(likeUser.getId())) {
+            Notification notification = new Notification();
+            notification.setUser(postOwner);
+            notification.setActorUserId(likeUser.getId());
+            notification.setType(Notification.Type.LIKE);
+            notification.setTargetId(postLike.getPost().getId());
+            notification.setRead(false);
+
+            Notification saved = notificationRepository.save(notification);
+
+            // sse 실시간 전송
+            notificationSseService.send(postOwner.getId(), saved);
+        }
     }
 
     public void markAsRead(Long notificationId, Long userId) {

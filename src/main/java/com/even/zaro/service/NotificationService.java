@@ -33,6 +33,7 @@ public class NotificationService {
     private final CommentRepository commentRepository;
     private final UserRepository userRepository;
     private final NotificationMapper notificationMapper;
+    private final NotificationSseService notificationSseService;
 
     @Transactional(readOnly = true)
     public List<NotificationDto> getNotificationsList(Long userId) {
@@ -44,6 +45,24 @@ public class NotificationService {
         return notifications.stream()
                 .map(notificationMapper::toDto)
                 .toList();
+    }
+
+    @Transactional
+    public void createCommentNotification(Comment comment) {
+        User postOwner = comment.getPost().getUser();
+        User commentAuthor = comment.getUser();
+
+        if (postOwner.getId().equals(commentAuthor.getId())) return;
+
+        Notification notification = new Notification();
+        notification.setUser(postOwner);
+        notification.setActorUserId(commentAuthor.getId());
+        notification.setType(Notification.Type.COMMENT);
+        notification.setTargetId(comment.getId());
+        notification.setRead(false);
+
+        Notification saved = notificationRepository.save(notification);
+        notificationSseService.send(postOwner.getId(), saved);
     }
 
     public void markAsRead(Long notificationId, Long userId) {

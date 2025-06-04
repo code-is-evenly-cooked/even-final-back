@@ -37,6 +37,7 @@ public class Place {
     private double lng;
 
     @Column(nullable = false)
+    @Builder.Default
     private String category = "ETC";
 
     @Column(name = "address", nullable = false)

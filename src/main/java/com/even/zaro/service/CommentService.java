@@ -121,7 +121,7 @@ public class CommentService {
     }
 
     // 공통 응답
-    private CommentResponseDto toDto(Comment comment, Long currentUserId) {
+    private CommentResponseDto toDto(Comment comment, Long currentUserId, Integer commentLocatedPage) {
         User writer = comment.getUser();
 
         boolean isMine = writer.getId().equals(currentUserId);
@@ -152,7 +152,8 @@ public class CommentService {
                 updatedAt,
                 isEdited,
                 isMine,
-                mentionedUser
+                mentionedUser,
+                commentLocatedPage
         );
     }
 

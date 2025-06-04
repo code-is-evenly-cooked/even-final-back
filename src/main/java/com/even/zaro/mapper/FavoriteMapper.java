@@ -24,6 +24,7 @@ public interface FavoriteMapper {
     @Mapping(source = "favorite.place.lat", target = "lat")
     @Mapping(source = "favorite.place.lng", target = "lng")
     @Mapping(source = "favorite.place.address", target = "address")
+    @Mapping(source = "favorite.place.name", target = "placeName")
     @Mapping(target = "isDeleted", expression = "java(favorite.isDeleted())")
     FavoriteResponse toFavoriteResponse(Favorite favorite);
 

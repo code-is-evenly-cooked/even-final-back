@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class PostLikeListener {
 
-    private final NotificationSseService notificationSseService;
+//    private final NotificationSseService notificationSseService;
 
     @PostPersist
     @Transactional
@@ -24,6 +24,9 @@ public class PostLikeListener {
         // 직접 Spring Bean 주입 받기
         NotificationRepository notificationRepository
                 = SpringContext.getBean(NotificationRepository.class);
+
+        NotificationSseService notificationSseService
+                = SpringContext.getBean(NotificationSseService.class);
 
         User postOwner = postlike.getPost().getUser(); // 게시물 작성자
         User likeUser = postlike.getUser(); // 좋아요 누른 유저

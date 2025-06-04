@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class CommentListener {
 
-    private final NotificationSseService notificationSseService;
+   // private final NotificationSseService notificationSseService;
 
     @PostPersist // Comment 엔티티 DB 저장 직후 자동 실행
     @Transactional
@@ -24,6 +24,9 @@ public class CommentListener {
         // 직접 Spring Bean 주입 받기
         NotificationRepository notificationRepository
                 = SpringContext.getBean(NotificationRepository.class);
+
+        NotificationSseService notificationSseService
+                = SpringContext.getBean(NotificationSseService.class);
 
         User postOwner = comment.getPost().getUser(); // 게시글 작성자
         User commentAuthor = comment.getUser(); // 댓글 작성자

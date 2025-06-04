@@ -15,7 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class FollowListener {
 
-    private final NotificationSseService notificationSseService;
+//    private final NotificationSseService notificationSseService;
 
     @PostPersist // Follow 엔티티 DB 저장 직후 자동 실행
     @Transactional
@@ -24,6 +24,9 @@ public class FollowListener {
         // 직접 Spring Bean 주입 받기
         NotificationRepository notificationRepository
                 = SpringContext.getBean(NotificationRepository.class);
+
+        NotificationSseService notificationSseService
+                = SpringContext.getBean(NotificationSseService.class);
 
         User followee = follow.getFollowee(); // 팔로우 당한 사용자 (알림 대상)
         User follower = follow.getFollower(); // 팔로우 한 사용자

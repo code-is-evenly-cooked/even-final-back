@@ -22,6 +22,7 @@ public class PlaceResponse {
         String category;
         double lat;
         double lng;
+        int favoriteCount;
     }
 
 }

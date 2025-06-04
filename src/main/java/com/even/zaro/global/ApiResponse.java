@@ -24,16 +24,4 @@ public class ApiResponse<T> {
     public static <T> ApiResponse<T> success(String message, T data) {
         return new ApiResponse<>("SUCCESS", message, data);
     }
-
-    public static <T> ApiResponse<T> fail(ErrorCode errorCode) {
-        return new ApiResponse<>(errorCode.getCode(), errorCode.getDefaultMessage(), null);
-    }
-
-    public static <T> ApiResponse<T> fail(ErrorCode errorCode, String message) {
-        return new ApiResponse<>(errorCode.getCode(), message, null);
-    }
-
-    public static <T> ApiResponse<T> fail(String code, String message) {
-        return new ApiResponse<>(code, message, null);
-    }
 }

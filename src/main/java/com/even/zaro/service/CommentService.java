@@ -161,4 +161,14 @@ public class CommentService {
             throw new CommentException(ErrorCode.COMMENT_TOO_LONG);
         }
     }
+
+    private int calculateTotalPages(Post post, int pageSize) {
+        int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
+        return (int) Math.ceil((double) totalComments / pageSize);
+    }
+
+    private int calculateCommentLocatedPage(Comment comment, int pageSize) {
+        int precedingCount = commentRepository.countByPostAndIsDeletedFalseAndCreatedAtBefore(comment.getPost(), comment.getCreatedAt());
+        return (precedingCount / pageSize) + 1;
+    }
 }

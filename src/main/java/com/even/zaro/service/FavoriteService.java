@@ -17,13 +17,13 @@ import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
@@ -145,23 +145,19 @@ public class FavoriteService {
 
     // Place 테이블에 해당 kakaoPlaceId를 가진 데이터 존재 여부 검증
     Place checkDuplicateByKakoPlaceId(FavoriteAddRequest request) {
-        Place getPlace = placeRepository.findByKakaoPlaceId(request.getKakaoPlaceId());
+        Optional<Place> getPlace = placeRepository.findByKakaoPlaceId(request.getKakaoPlaceId());
 
-        // 없다면 새로 생성
-        if (getPlace == null) {
-            Place newPlace = Place.builder()
-                    .kakaoPlaceId(request.getKakaoPlaceId())
-                    .name(request.getPlaceName())
-                    .lat(request.getLat())
-                    .lng(request.getLng())
-                    .category(request.getCategory())
-                    .address(request.getAddress())
-                    .build();
-            placeRepository.save(newPlace);
-
-            return newPlace;
-        }
-        return getPlace;
+        // 장소가 이미 추가되어있지 않았다면, 그 장소를 DB에 저장
+        return getPlace.orElseGet(() ->
+                placeRepository.save(Place.builder()
+                        .kakaoPlaceId(request.getKakaoPlaceId())
+                        .name(request.getPlaceName())
+                        .lat(request.getLat())
+                        .lng(request.getLng())
+                        .category(request.getCategory())
+                        .address(request.getAddress())
+                        .build())
+        );
     }
 
 }

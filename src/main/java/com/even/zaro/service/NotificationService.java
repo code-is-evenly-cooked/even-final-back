@@ -86,6 +86,24 @@ public class NotificationService {
         }
     }
 
+    @Transactional
+    public void createFollowNotification(Follow follow) {
+        User followee = follow.getFollowee(); // 팔로우 당한 사용자 (알림 대상)
+        User follower = follow.getFollower(); // 팔로우 한 사용자
+
+        Notification notification = new Notification();
+        notification.setUser(followee);
+        notification.setActorUserId(follower.getId());
+        notification.setType(Notification.Type.FOLLOW);
+        notification.setTargetId(follower.getId()); // 팔로우 한 사용자 userId
+        notification.setRead(false);
+
+        Notification saved = notificationRepository.save(notification);
+
+        // sse 실시간 전송
+        notificationSseService.send(followee.getId(), saved);
+    }
+
     public void markAsRead(Long notificationId, Long userId) {
         Notification notification = notificationRepository.findByIdAndUserId(notificationId, userId)
                 .orElseThrow(() -> new NotificationException(ErrorCode.NOTIFICATION_NOT_FOUND));

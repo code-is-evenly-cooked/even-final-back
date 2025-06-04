@@ -51,6 +51,8 @@ public class CommentService {
                     .orElseThrow(() -> new CommentException(ErrorCode.MENTIONED_USER_NOT_FOUND));
         }
 
+        validateCommentLength(requestDto.getContent());
+
         Comment comment = Comment.builder()
                 .post(post)
                 .user(user)
@@ -93,6 +95,8 @@ public class CommentService {
         if (!comment.getUser().getId().equals(currentUserId)) {
             throw new CommentException(ErrorCode.NOT_COMMENT_OWNER);
         }
+
+        validateCommentLength(requestDto.getContent());
 
         comment.updateContent(requestDto.getContent());
         return toDto(comment, currentUserId);
@@ -150,5 +154,11 @@ public class CommentService {
                 isMine,
                 mentionedUser
         );
+    }
+
+    private void validateCommentLength(String content) {
+        if (content.length() > 500) {
+            throw new CommentException(ErrorCode.COMMENT_TOO_LONG);
+        }
     }
 }

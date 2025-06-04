@@ -16,6 +16,7 @@ public interface FavoriteMapper {
     @Mapping(source = "favorite.place.lat", target = "lat")
     @Mapping(source = "favorite.place.lng", target = "lng")
     @Mapping(source = "favorite.place.address", target = "address")
+    @Mapping(source = "favorite.place.name", target = "placeName")
     FavoriteAddResponse toFavoriteAddResponse(Favorite favorite);
 
     @Mapping(source = "favorite.user.id", target = "userId")

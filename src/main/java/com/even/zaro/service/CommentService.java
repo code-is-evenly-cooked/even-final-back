@@ -33,7 +33,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
+    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
         Long currentUserId = userInfoDto.getUserId();
         if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
             throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
@@ -65,7 +65,9 @@ public class CommentService {
         post.updateScore();
         postRepository.save(post);
 
-        return toDto(comment, currentUserId);
+        int commentLocatedPage = calculateTotalPages(post, pageSize);
+
+        return toDto(comment, currentUserId, commentLocatedPage);
     }
 
     @Transactional(readOnly = true)

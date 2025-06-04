@@ -5,16 +5,20 @@ import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.Place;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
-import org.mapstruct.factory.Mappers;
 
 import java.util.List;
 
 @Mapper(componentModel = "spring")
 public interface MapMapper {
-    MapMapper INSTANCE = Mappers.getMapper(MapMapper.class);
 
     @Mapping(source = "place.id", target = "placeId")
     @Mapping(source = "place.name", target = "placeName")
+    @Mapping(source = "place.address", target = "address")
+    @Mapping(source = "place.lat", target = "lat")
+    @Mapping(source = "place.lng", target = "lng")
+    @Mapping(source = "place.category", target = "category")
+    @Mapping(source = "place.favoriteCount", target = "favoriteCount")
+    @Mapping(source = "userSimpleResponses", target = "usersInfo") // ❗ 명시적으로 매핑
     MarkerInfoResponse toMarkerInfoResponse(Place place, List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponses);
 
     @Mapping(source = "user.id", target = "userId")
@@ -28,5 +32,4 @@ public interface MapMapper {
                 .map(this::toUserSimpleResponse)
                 .toList();
     }
-
 }

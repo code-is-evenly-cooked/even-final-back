@@ -8,9 +8,11 @@ import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.mapper.GroupMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -20,11 +22,12 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class GroupService {
     private final UserRepository userRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
+    private final GroupMapper groupMapper;
 
     public void createGroup(GroupCreateRequest request, long userid) {
 
@@ -58,19 +61,7 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);
         }
 
-
-        // GroupResponse 리스트로 변환
-        List<GroupResponse> responseList = groupList.stream().map(group ->
-                        GroupResponse.builder()
-                                .groupId(group.getId())
-                                .name(group.getName())
-                                .isDeleted(group.isDeleted())
-                                .createdAt(group.getCreatedAt())
-                                .updatedAt(group.getUpdatedAt())
-                                .build())
-                .toList();
-
-        return responseList;
+        return groupMapper.toGroupResponseList(groupList);
     }
 
     public void deleteGroup(long groupId, long userId) {
@@ -107,12 +98,12 @@ public class GroupService {
         if (dupCheck) {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
-        group.setName(request.getGroupName());
+        group.editGroupName(request.getGroupName());
     }
 
 
     // 입력한 그룹 이름이 이미 해당 userId가 가지고 있는지 확인
     public boolean groupNameDuplicateCheck(String groupName, long userId) {
-        return favoriteGroupRepository.existsByUser_IdAndName(userId, groupName);
+        return favoriteGroupRepository.existsByUserIdAndName(userId, groupName);
     }
 }

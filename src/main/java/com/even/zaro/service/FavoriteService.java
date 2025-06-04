@@ -13,26 +13,29 @@ import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.mapper.FavoriteMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.PlaceRepository;
 import com.even.zaro.repository.UserRepository;
-import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class FavoriteService {
     private final FavoriteRepository favoriteRepository;
     private final UserRepository userRepository;
     private final PlaceRepository placeRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
+    private final FavoriteMapper favoriteMapper;
 
     // 그룹에 즐겨찾기를 추가
     public FavoriteAddResponse addFavorite(long groupId, FavoriteAddRequest request, long userId) {
@@ -67,15 +70,7 @@ public class FavoriteService {
 
         favoriteRepository.save(favorite);
 
-        FavoriteAddResponse favoriteAddResponse = FavoriteAddResponse.builder()
-                .placeId(favorite.getPlace().getId())
-                .memo(favorite.getMemo())
-                .lat(favorite.getPlace().getLat())
-                .lng(favorite.getPlace().getLng())
-                .address(favorite.getPlace().getAddress())
-                .build();
-
-        return favoriteAddResponse;
+        return favoriteMapper.toFavoriteAddResponse(favorite);
     }
 
     // 해당 그룹의 즐겨찾기 리스트를 조회
@@ -89,23 +84,7 @@ public class FavoriteService {
             throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
         }
 
-        List<FavoriteResponse> favoriteResponseList = favoriteList.stream().map(favorite ->
-                FavoriteResponse.builder()
-                        .id(favorite.getId())
-                        .userId(favorite.getUser().getId())
-                        .groupId(favorite.getGroup().getId())
-                        .placeId(favorite.getPlace().getId())
-                        .memo(favorite.getMemo())
-                        .createdAt(favorite.getCreatedAt())
-                        .updatedAt(favorite.getUpdatedAt())
-                        .isDeleted(favorite.isDeleted())
-                        .lat(favorite.getPlace().getLat())
-                        .lng(favorite.getPlace().getLng())
-                        .address(favorite.getPlace().getAddress())
-                        .build()
-        ).toList();
-
-        return favoriteResponseList;
+        return favoriteMapper.toFavoriteResponseList(favoriteList);
     }
 
     // 해당 즐겨찾기의 메모를 수정
@@ -118,7 +97,7 @@ public class FavoriteService {
             throw new FavoriteException(ErrorCode.UNAUTHORIZED_FAVORITE_UPDATE);
         }
 
-        favorite.setMemo(request.getMemo());
+        favorite.editMemo(request.getMemo());
     }
 
     // 해당 즐겨찾기를 soft 삭제
@@ -144,23 +123,19 @@ public class FavoriteService {
 
     // Place 테이블에 해당 kakaoPlaceId를 가진 데이터 존재 여부 검증
     Place checkDuplicateByKakoPlaceId(FavoriteAddRequest request) {
-        Place getPlace = placeRepository.findByKakaoPlaceId(request.getKakaoPlaceId());
+        Optional<Place> getPlace = placeRepository.findByKakaoPlaceId(request.getKakaoPlaceId());
 
-        // 없다면 새로 생성
-        if (getPlace == null) {
-            Place newPlace = Place.builder()
-                    .kakaoPlaceId(request.getKakaoPlaceId())
-                    .name(request.getPlaceName())
-                    .lat(request.getLat())
-                    .lng(request.getLng())
-                    .category(request.getCategory())
-                    .address(request.getAddress())
-                    .build();
-            placeRepository.save(newPlace);
-
-            return newPlace;
-        }
-        return getPlace;
+        // 장소가 이미 추가되어있지 않았다면, 그 장소를 DB에 저장
+        return getPlace.orElseGet(() ->
+                placeRepository.save(Place.builder()
+                        .kakaoPlaceId(request.getKakaoPlaceId())
+                        .name(request.getPlaceName())
+                        .lat(request.getLat())
+                        .lng(request.getLng())
+                        .category(request.getCategory())
+                        .address(request.getAddress())
+                        .build())
+        );
     }
 
 }

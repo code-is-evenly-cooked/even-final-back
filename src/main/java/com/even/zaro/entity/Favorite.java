@@ -36,7 +36,6 @@ public class Favorite {
     private Place place;
 
     @Column(name = "memo")
-    @Setter
     private String memo;
 
     @CreationTimestamp
@@ -50,8 +49,11 @@ public class Favorite {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-
     public void setDeleteTrue() {
         isDeleted = true;
+    }
+
+    public void editMemo(String memo) {
+        this.memo = memo;
     }
 }

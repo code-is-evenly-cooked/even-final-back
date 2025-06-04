@@ -26,7 +26,6 @@ public class FavoriteGroup {
 
     // Group 이름
     @Column(name = "name", nullable = false)
-    @Setter
     private String name;
 
     @Column(name = "is_deleted", nullable = false)
@@ -43,5 +42,9 @@ public class FavoriteGroup {
 
     public void setIsDeleted() {
         this.isDeleted = true;
+    }
+
+    public void editGroupName(String name) {
+        this.name = name;
     }
 }

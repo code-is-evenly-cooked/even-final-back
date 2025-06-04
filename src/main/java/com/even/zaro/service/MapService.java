@@ -7,10 +7,12 @@ import com.even.zaro.entity.Place;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.map.MapException;
 import com.even.zaro.global.exception.place.PlaceException;
+import com.even.zaro.mapper.MapMapper;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.MapQueryRepository;
 import com.even.zaro.repository.PlaceRepository;
 import lombok.AllArgsConstructor;
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -19,12 +21,13 @@ import java.util.List;
 
 @Service
 @Slf4j
-@AllArgsConstructor
+@RequiredArgsConstructor
 @Transactional
 public class MapService {
     private final PlaceRepository placeRepository;
     private final FavoriteRepository favoriteRepository;
     private final MapQueryRepository mapQueryRepository;
+    private final MapMapper mapMapper;
 
     public MarkerInfoResponse getPlaceInfo(long placeId) {
 
@@ -34,28 +37,11 @@ public class MapService {
         // 해당 지역에 메모를 남긴 사용자들 리스트를 가져와야 함.
         List<Favorite> allByPlace = favoriteRepository.findAllByPlace(selectPlace);
 
-        // 유저 요약 정보 순회하며 리스트에 저장
-        List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponses = allByPlace.stream()
-                .map(fav -> MarkerInfoResponse.UserSimpleResponse.builder()
-                        .userId(fav.getUser().getId())
-                        .profileImage(fav.getUser().getProfileImage())
-                        .nickname(fav.getUser().getNickname())
-                        .memo(fav.getMemo())
-                        .build())
-                .toList();
+        // 유저 메모 리스트 객체
+        List<MarkerInfoResponse.UserSimpleResponse> userSimpleResponseList = mapMapper.toUserSimpleResponseList(allByPlace);
 
-        // 생성자를 이용해 응답하도록 수정
-        MarkerInfoResponse markerInfo = new MarkerInfoResponse(
-                selectPlace.getId(),
-                selectPlace.getName(),
-                selectPlace.getAddress(),
-                selectPlace.getLat(),
-                selectPlace.getLng(),
-                selectPlace.getCategory(),
-                selectPlace.getFavoriteCount(),
-                userSimpleResponses
-        );
-
+        // 마커 정보
+        MarkerInfoResponse markerInfo = mapMapper.toMarkerInfoResponse(selectPlace, userSimpleResponseList);
 
         return markerInfo;
     }
@@ -71,7 +57,7 @@ public class MapService {
 
         List<PlaceResponse.PlaceInfo> placeInfos =  placeByCoordinate.stream()
                 .map(place -> PlaceResponse.PlaceInfo.builder()
-                        .place_id(place.getId())
+                        .placeId(place.getId())
                         .name(place.getName())
                         .address(place.getAddress())
                         .lat(place.getLat())

@@ -18,6 +18,7 @@ public interface PostMapper {
     @Mapping(source = "user.profileImage", target = "user.profileImage")
     PostDetailResponse toPostDetailDto(Post post);
 
+    @Mapping(source = "id", target = "postId")
     @Mapping(source = "user.nickname", target = "writerNickname")
     @Mapping(source = "user.profileImage", target = "writerProfileImage")
     PostPreviewDto toPostPreviewDto(Post post);

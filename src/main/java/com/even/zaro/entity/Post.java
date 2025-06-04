@@ -162,4 +162,36 @@ public class Post {
         }
     }
 
+    public static Post create(
+            String title,
+            String content,
+            Category category,
+            Tag tag,
+            String thumbnailImage,
+            List<String> postImageList,
+            User user
+    ){
+        Post post = Post.builder()
+                .title(title)
+                .content(content)
+                .category(category)
+                .tag(tag)
+                .thumbnailImage(thumbnailImage)
+                .postImageList(postImageList)
+                .user(user)
+                .build();
+
+        post.updateScore();
+        return post;
+    }
+
+    public void update(String title, String content, Tag tag, List<String> postImageList, String thumbnailImage) {
+        this.title = title;
+        this.content = content;
+        this.tag = tag;
+        this.postImageList = postImageList;
+        this.thumbnailImage = thumbnailImage;
+        this.updateScore();
+    }
+
 }

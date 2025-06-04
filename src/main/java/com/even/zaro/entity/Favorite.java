@@ -49,7 +49,6 @@ public class Favorite {
     @Column(name = "is_deleted", nullable = false)
     private boolean isDeleted;
 
-
     public void setDeleteTrue() {
         isDeleted = true;
     }

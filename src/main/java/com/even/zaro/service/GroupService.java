@@ -108,7 +108,7 @@ public class GroupService {
         if (dupCheck) {
             throw new GroupException(ErrorCode.GROUP_ALREADY_EXIST);
         }
-        group.setName(request.getGroupName());
+        group.editGroupName(request.getGroupName());
     }
 
 

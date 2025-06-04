@@ -84,23 +84,7 @@ public class FavoriteService {
             throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
         }
 
-        List<FavoriteResponse> favoriteResponseList = favoriteList.stream().map(favorite ->
-                FavoriteResponse.builder()
-                        .id(favorite.getId())
-                        .userId(favorite.getUser().getId())
-                        .groupId(favorite.getGroup().getId())
-                        .placeId(favorite.getPlace().getId())
-                        .memo(favorite.getMemo())
-                        .createdAt(favorite.getCreatedAt())
-                        .updatedAt(favorite.getUpdatedAt())
-                        .isDeleted(favorite.isDeleted())
-                        .lat(favorite.getPlace().getLat())
-                        .lng(favorite.getPlace().getLng())
-                        .address(favorite.getPlace().getAddress())
-                        .build()
-        ).toList();
-
-        return favoriteResponseList;
+        return favoriteMapper.toFavoriteResponseList(favoriteList);
     }
 
     // 해당 즐겨찾기의 메모를 수정

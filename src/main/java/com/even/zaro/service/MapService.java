@@ -63,6 +63,7 @@ public class MapService {
                         .lat(place.getLat())
                         .lng(place.getLng())
                         .category(place.getCategory())
+                        .favoriteCount(place.getFavoriteCount())
                         .build()
                 ).toList();
 

@@ -1,0 +1,48 @@
+package com.even.zaro.mapper;
+
+import com.even.zaro.dto.post.HomePostPreviewResponse;
+import com.even.zaro.dto.post.PostDetailResponse;
+import com.even.zaro.dto.post.PostPreviewDto;
+import com.even.zaro.dto.post.PostRankResponseDto;
+import com.even.zaro.entity.Post;
+import org.mapstruct.Mapper;
+import org.mapstruct.Mapping;
+import org.mapstruct.Mappings;
+
+@Mapper(componentModel = "spring")
+public interface PostMapper {
+
+    @Mapping(source = "id", target = "postId")
+    @Mapping(source = "user.id", target = "user.userId")
+    @Mapping(source = "user.nickname", target = "user.nickname")
+    @Mapping(source = "user.profileImage", target = "user.profileImage")
+    PostDetailResponse toPostDetailDto(Post post);
+
+    @Mapping(source = "user.nickname", target = "writerNickname")
+    @Mapping(source = "user.profileImage", target = "writerProfileImage")
+    PostPreviewDto toPostPreviewDto(Post post);
+
+    @Mapping(source = "id", target = "postId")
+    @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd")
+    HomePostPreviewResponse.SimplePostDto toSimplePostDto(Post post);
+
+    @Mappings({
+            @Mapping(source = "id", target = "postId"),
+            @Mapping(source = "title", target = "title"),
+            @Mapping(source = "content", target = "content"),
+            @Mapping(source = "thumbnailImage", target = "thumbnailImage"),
+            @Mapping(source = "likeCount", target = "likeCount"),
+            @Mapping(source = "commentCount", target = "commentCount"),
+            @Mapping(source = "user.profileImage", target = "writerProfileImage"),
+            @Mapping(source = "user.nickname", target = "writerNickname"),
+            @Mapping(source = "createdAt", target = "createdAt", dateFormat = "yyyy-MM-dd")
+    })
+    HomePostPreviewResponse.RandomBuyPostDto toRandomBuyDto(Post post);
+
+
+    @Mapping(source = "id", target = "postId")
+    @Mapping(source = "title", target = "title")
+    @Mapping(source = "likeCount", target = "likeCount")
+    @Mapping(source = "commentCount", target = "commentCount")
+    PostRankResponseDto toRankDto(Post post);
+}

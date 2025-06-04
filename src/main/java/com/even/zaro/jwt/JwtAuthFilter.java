@@ -7,7 +7,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
+import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
@@ -17,6 +19,7 @@ import java.io.IOException;
 public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
+    private final RedisTemplate<String, String> redisTemplate;
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -30,6 +33,12 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
         // 토큰 유효성 검사
         if (token != null && jwtUtil.validateAccessToken(token)) {
+
+            // 로그아웃(블랙리스트) 체크
+            if (redisTemplate.hasKey("BL:" + token)) {
+                throw new AuthenticationException("BLACKLISTED") {};
+            }
+
             Claims claims = jwtUtil.parseClaims(token);
             Long userId = Long.valueOf(claims.getSubject());
 

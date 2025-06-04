@@ -17,6 +17,8 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.Duration;
 import java.time.LocalDateTime;
 import java.util.Optional;
+import java.util.Date;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.Pattern;
 
 @Slf4j
@@ -38,6 +40,7 @@ public class AuthService {
 
     // 메서드
     // 회원가입
+    @Transactional
     public SignUpResponseDto signUp(SignUpRequestDto requestDto) {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
@@ -157,6 +160,19 @@ public class AuthService {
         String newAccessToken = jwtUtil.generateAccessToken(new JwtUserInfoDto(user.getId()));
 
         return new RefreshResponseDto(newAccessToken);
+    }
+
+    // 로그아웃
+    @Transactional
+    public void signOut(Long userId, String accessToken) {
+        redisTemplate.delete("refresh:" + userId);
+
+        Date expiration = jwtUtil.getAccessTokenExpiration(accessToken);
+        long now = System.currentTimeMillis();
+        long ttl = expiration.getTime() - now;
+
+        redisTemplate.opsForValue()
+                .set("BL:" + accessToken, "logout", ttl, TimeUnit.MILLISECONDS);
     }
 
     public SignInResponseDto generateLoginResponse(User user) {

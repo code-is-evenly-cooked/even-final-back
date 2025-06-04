@@ -105,40 +105,38 @@ public class PostService {
 
     @Transactional(readOnly = true)
     public PageResponse<PostPreviewDto> getPostListPage(String category, String tag, Pageable pageable) {
-        Page<Post> page;
-
-        boolean categoryEmpty = (category == null || category.isBlank());
-        boolean tagEmpty = (tag == null || tag.isBlank());
-
-        if (categoryEmpty && tagEmpty) {
-            page = postRepository.findByIsDeletedFalseAndIsReportedFalse(pageable);
-        }
-        else if (!categoryEmpty && tagEmpty) {
-            Post.Category postCategory = parseCategory(category);
-            page = postRepository.findByCategoryAndIsDeletedFalseAndIsReportedFalse(postCategory, pageable);
-        }
-        else if (!categoryEmpty) {
-            Post.Category postCategory = parseCategory(category);
-            Post.Tag postTag = convertTag(tag);
-            validateTagForCategory(postCategory, postTag);
-            page = postRepository.findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(postCategory, postTag, pageable);
-        }
-        else {
-            throw new PostException(ErrorCode.INVALID_CATEGORY);
-        }
-
+        Page<Post> page = resolvePostList(category, tag, pageable);
         return new PageResponse<>(page.map(PostPreviewDto::from));
     }
 
+    private Page<Post> resolvePostList(String category, String tag, Pageable pageable) {
+
+        boolean categoryEmpty = isBlank(category);
+        boolean tagEmpty = isBlank(tag);
+
+        if (categoryEmpty && tagEmpty) {
+            return postRepository.findByIsDeletedFalseAndIsReportedFalse(pageable);
+        }
+        if (!categoryEmpty && tagEmpty) {
+            Post.Category postCategory = parseCategory(category);
+            return postRepository.findByCategoryAndIsDeletedFalseAndIsReportedFalse(postCategory, pageable);
+        }
+        if (!categoryEmpty) {
+            Post.Category postCategory = parseCategory(category);
+            Post.Tag postTag = convertTag(tag);
+            validateTagForCategory(postCategory, postTag);
+            return postRepository.findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(postCategory, postTag, pageable);
+        }
+            throw new PostException(ErrorCode.INVALID_CATEGORY);
+        }
+    private boolean isBlank(String s) {
+        return s == null || s.isBlank();
+    }
+
+
     @Transactional(readOnly = true)
     public PostDetailResponse getPostDetail(Long postId) {
-        Post post = postRepository.findByIdAndIsDeletedFalse(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-
-        if (post.isReported()){
-            throw new PostException(ErrorCode.POST_NOT_FOUND);
-        }
-
+        Post post = findPostOrThrow(postId);
         User user = post.getUser();
 
         return PostDetailResponse.builder()
@@ -246,6 +244,12 @@ public class PostService {
         }
 
         return post;
+    }
+
+    /// 게시글 찾을 없을때 - 삭제만 검사 (postLike)
+    public Post findUndeletedPostOrThrow(Long postId) {
+        return postRepository.findByIdAndIsDeletedFalse(postId)
+                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
     }
 
 

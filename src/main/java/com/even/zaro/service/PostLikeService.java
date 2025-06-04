@@ -19,7 +19,7 @@ import org.springframework.transaction.annotation.Transactional;
 public class PostLikeService {
     private final PostLikeRepository postLikeRepository;
     private final PostRepository postRepository;
-    private final UserRepository userRepository;
+    private final UserService userService;
     private final PostService postService;
 
     @Transactional
@@ -28,8 +28,10 @@ public class PostLikeService {
             throw new PostException(ErrorCode.ALREADY_LIKED);
         }
 
-        User user = validateActiveUser(userId);
-        Post post = validatePost(postId);
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
+
+        Post post = postService.findUndeletedPostOrThrow(postId);
 
         postLikeRepository.save(PostLike.builder()
                 .user(user)
@@ -42,8 +44,9 @@ public class PostLikeService {
 
     @Transactional
     public void unlikePost(Long postId, Long userId) {
-        validateActiveUser(userId);
-        Post post = validatePost(postId);
+        User user = userService.findUserById(userId);
+        userService.validateNotPending(user);
+        Post post = postService.findUndeletedPostOrThrow(postId);
 
         PostLike postLike = postLikeRepository.findByUserIdAndPostId(userId, postId)
                 .orElseThrow(() -> new PostException(ErrorCode.LIKE_NOT_POST));
@@ -56,24 +59,7 @@ public class PostLikeService {
 
     @Transactional(readOnly = true)
     public boolean hasLikedPost(Long userId, Long postId) {
-        validatePost(postId);
+        postService.findUndeletedPostOrThrow(postId);
         return postLikeRepository.existsByUserIdAndPostId(userId, postId);
-    }
-
-    // 공통로직
-    private User validateActiveUser(Long userId) {
-        User user = userRepository.findById(userId)
-                .orElseThrow(() -> new PostException(ErrorCode.USER_NOT_FOUND));
-
-        if (user.getStatus() != Status.ACTIVE) {
-            throw new PostException(ErrorCode.EMAIL_NOT_VERIFIED_LIKE);
-        }
-
-        return user;
-    }
-
-    private Post validatePost(Long postId) {
-        return postRepository.findByIdAndIsDeletedFalse(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
     }
 }

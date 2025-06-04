@@ -114,6 +114,6 @@ public class GroupService {
 
     // 입력한 그룹 이름이 이미 해당 userId가 가지고 있는지 확인
     public boolean groupNameDuplicateCheck(String groupName, long userId) {
-        return favoriteGroupRepository.existsByUser_IdAndName(userId, groupName);
+        return favoriteGroupRepository.existsByUserIdAndName(userId, groupName);
     }
 }

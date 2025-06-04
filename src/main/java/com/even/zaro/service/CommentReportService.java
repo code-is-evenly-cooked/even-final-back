@@ -34,10 +34,7 @@ public class CommentReportService {
             throw new CommentException(ErrorCode.CANNOT_REPORT_OWN_COMMENT);
         }
 
-        if (request.getReasonType() == ReportReasonType.ETC &&
-                (request.getReasonText() == null || request.getReasonText().isEmpty())) {
-            throw new CommentException(ErrorCode.REASON_TEXT_REQUIRED_FOR_ETC);
-        }
+        request.validateReasonTextOrThrow();
 
        User user = userService.findUserById(userId);
         userService.validateNotPending(user);

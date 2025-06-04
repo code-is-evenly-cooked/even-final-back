@@ -8,6 +8,7 @@ import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.repository.WithdrawalHistoryRepository;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -15,6 +16,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 
 import java.time.LocalDate;
@@ -35,6 +37,12 @@ class UserServiceTest {
 
     @Mock
     private PasswordEncoder passwordEncoder;
+
+    @Mock
+    private RedisTemplate<String, String> redisTemplate;
+
+    @Mock
+    private WithdrawalHistoryRepository withdrawalHistoryRepository;
 
     @Nested
     class updateProfileImageTest {
@@ -338,10 +346,11 @@ class UserServiceTest {
         @Test
         void successfully_softDeleted() {
             User user = createTestUser();
-
             when(userRepository.findById(1L)).thenReturn(Optional.of(user));
 
-            userService.softDelete(user.getId());
+            WithdrawalRequestDto requestDto = new WithdrawalRequestDto("그냥요");
+
+            userService.softDelete(user.getId(), requestDto);
 
             assertEquals(Status.DELETED, user.getStatus());
             assertNotNull(user.getDeletedAt());
@@ -352,8 +361,10 @@ class UserServiceTest {
             User user = createTestUser();
             user.changeStatus(Status.DELETED);
             when(userRepository.findById(1L)).thenReturn(Optional.of(user));
+            WithdrawalRequestDto requestDto = new WithdrawalRequestDto("그냥요");
 
-            UserException ex = assertThrows(UserException.class, () -> userService.softDelete(user.getId()));
+
+            UserException ex = assertThrows(UserException.class, () -> userService.softDelete(user.getId(), requestDto));
 
             assertEquals(ErrorCode.USER_ALREADY_DELETED, ex.getErrorCode());
         }

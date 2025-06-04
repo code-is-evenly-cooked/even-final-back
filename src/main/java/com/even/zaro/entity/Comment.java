@@ -29,7 +29,7 @@ public class Comment {
     @JoinColumn(name = "user_id", nullable = false)
     private User user;
 
-    @Column(nullable = false)
+    @Column(columnDefinition = "TEXT", nullable = false)
     private String content;
 
     @Column(name = "is_deleted", nullable = false)

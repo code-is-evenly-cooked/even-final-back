@@ -33,7 +33,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
+    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
         if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
             throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
@@ -65,31 +65,25 @@ public class CommentService {
         post.updateScore();
         postRepository.save(post);
 
-        int commentLocatedPage = calculateTotalPages(post, pageSize);
-
-        return toDto(comment, currentUserId, commentLocatedPage);
+        return toDto(comment, currentUserId);
     }
 
     @Transactional(readOnly = true)
     public PageResponse<CommentResponseDto> readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
-        int pageSize = pageable.getPageSize();
 
         // 게시글 존재 여부 확인
         if (!postRepository.existsByIdAndIsDeletedFalse(postId)) {
             throw new PostException(ErrorCode.POST_NOT_FOUND);
         }
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-
         Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalse(postId, pageable)
-                .map(comment -> toDto(comment, currentUserId, null));
+                .map(comment -> toDto(comment, currentUserId));
         return new PageResponse<>(page);
     }
 
     @Transactional
-    public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
+    public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
         if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
             throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
@@ -105,9 +99,7 @@ public class CommentService {
         validateCommentLength(requestDto.getContent());
 
         comment.updateContent(requestDto.getContent());
-
-        int commentLocatedPage = calculateCommentLocatedPage(comment, pageSize);
-        return toDto(comment, currentUserId, commentLocatedPage);
+        return toDto(comment, currentUserId);
     }
 
     @Transactional
@@ -129,7 +121,7 @@ public class CommentService {
     }
 
     // 공통 응답
-    private CommentResponseDto toDto(Comment comment, Long currentUserId, Integer commentLocatedPage) {
+    private CommentResponseDto toDto(Comment comment, Long currentUserId) {
         User writer = comment.getUser();
 
         boolean isMine = writer.getId().equals(currentUserId);
@@ -160,8 +152,7 @@ public class CommentService {
                 updatedAt,
                 isEdited,
                 isMine,
-                mentionedUser,
-                commentLocatedPage
+                mentionedUser
         );
     }
 
@@ -169,15 +160,5 @@ public class CommentService {
         if (content.length() > 500) {
             throw new CommentException(ErrorCode.COMMENT_TOO_LONG);
         }
-    }
-
-    private int calculateTotalPages(Post post, int pageSize) {
-        int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
-        return (int) Math.ceil((double) totalComments / pageSize);
-    }
-
-    private int calculateCommentLocatedPage(Comment comment, int pageSize) {
-        int precedingCount = commentRepository.countByPostAndIsDeletedFalseAndCreatedAtBefore(comment.getPost(), comment.getCreatedAt());
-        return (precedingCount / pageSize) + 1;
     }
 }

@@ -23,7 +23,6 @@ public class NotificationMapper {
 
     public NotificationDto toDto(Notification notification) {
         Notification.Type type = notification.getType();
-
         Long actorId = notification.getActorUserId();
         if (actorId == null) {
             throw new NotificationException(ErrorCode.ACTOR_USER_NOT_FOUND);

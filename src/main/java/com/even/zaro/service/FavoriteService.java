@@ -119,7 +119,7 @@ public class FavoriteService {
             throw new FavoriteException(ErrorCode.UNAUTHORIZED_FAVORITE_UPDATE);
         }
 
-        favorite.setMemo(request.getMemo());
+        favorite.editMemo(request.getMemo());
     }
 
     // 해당 즐겨찾기를 soft 삭제

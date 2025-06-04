@@ -8,6 +8,9 @@ import lombok.Getter;
 @Builder
 public class FavoriteAddResponse {
 
+    @Schema(description = "장소 이름", example = "육전 맛집")
+    private String placeName;
+
     @Schema(description = "장소 id", example = "1")
     private long placeId;
 

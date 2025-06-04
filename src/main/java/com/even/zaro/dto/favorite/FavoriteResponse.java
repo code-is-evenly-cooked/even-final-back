@@ -22,6 +22,9 @@ public class FavoriteResponse {
     @Schema(description = "장소 id", example = "1")
     private long placeId;
 
+    @Schema(description = "장소 이름", example = "육전식당")
+    private String placeName;
+
     @Schema(description = "위도", example = "37.5665")
     private double lat;
 

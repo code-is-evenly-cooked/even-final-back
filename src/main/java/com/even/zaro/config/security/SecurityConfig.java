@@ -49,6 +49,8 @@ public class SecurityConfig {
                                 .requestMatchers( "/api/posts/rank").permitAll()
                                 .requestMatchers("/api/profile/{userId}").permitAll()
                                 .requestMatchers("/api/es/reindex").permitAll()
+                                .requestMatchers(HttpMethod.GET, "/api/favorite/{groupId}/items").permitAll() // 조회는 인증 x
+                                .requestMatchers(HttpMethod.GET, "/api/group/user/{userId}/group").permitAll()
 //                        .requestMatchers("/**").permitAll() // 전체 인증 없이 개발용
                         .anyRequest().authenticated()
                 )

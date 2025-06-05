@@ -24,4 +24,7 @@ public class GroupResponse {
 
     @Schema(description = "수정 시각", example = "2025-03-25T05:20:00")
     private LocalDateTime updatedAt;
+
+    @Schema(description = "그룹의 즐겨찾기 개수", example = "2")
+    private int groupFavoriteCount;
 }

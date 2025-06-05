@@ -67,4 +67,15 @@ public class FavoriteController {
 
         return ResponseEntity.ok(ApiResponse.success("즐겨찾기가 성공적으로 삭제되었습니다."));
     }
+
+    @Operation(summary = "즐겨찾기 여부 확인", description = "유저가 해당 장소를 즐겨찾기 추가했는지 여부를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @GetMapping("/check")
+    public ResponseEntity<ApiResponse<Boolean>> checkFavorite(@RequestParam long placeId,
+                                                              @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+        long userId = userInfoDto.getUserId();
+
+        boolean check = favoriteService.checkFavorite(userId, placeId);
+
+        return ResponseEntity.ok(ApiResponse.success(String.format("즐겨찾기 상태 : " + check), check));
+    }
 }

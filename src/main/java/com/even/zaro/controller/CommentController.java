@@ -70,11 +70,10 @@ public class CommentController {
     @PatchMapping("comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
             @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
-            @RequestParam(defaultValue = "10") int pageSize,
             @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
-        CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userInfoDto, pageSize);
+        CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글을 수정했습니다.", responseDto));
     }
 

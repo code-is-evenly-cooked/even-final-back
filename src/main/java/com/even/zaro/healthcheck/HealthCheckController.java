@@ -2,6 +2,7 @@ package com.even.zaro.healthcheck;
 
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.ErrorResponse;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
@@ -24,14 +25,14 @@ public class HealthCheckController {
 
     @Operation(summary = "DB 헬스 체크", description = "DB 연결 상태를 확인합니다.")
     @GetMapping("/health/db")
-    public ResponseEntity<ApiResponse<String>> dbHealth() {
+    public ResponseEntity<?> dbHealth() {
         try {
             mockRepository.count(); // 실제 쿼리로 DB 연결 확인
             return ResponseEntity.ok(ApiResponse.success("DB 연결 성공",null));
         } catch (Exception e) {
             return ResponseEntity
                     .status(ErrorCode.DB_CONNECTION_FAILED.getHttpStatus())
-                    .body(ApiResponse.fail(ErrorCode.DB_CONNECTION_FAILED));
+                    .body(ErrorResponse.fail(ErrorCode.DB_CONNECTION_FAILED));
         }
     }
 }

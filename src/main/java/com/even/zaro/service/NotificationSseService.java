@@ -2,6 +2,7 @@ package com.even.zaro.service;
 
 import com.even.zaro.dto.notification.NotificationDto;
 import com.even.zaro.entity.Notification;
+import com.even.zaro.global.util.NotificationMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -17,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 public class NotificationSseService {
 
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private final NotificationMapper notificationMapper;
 
     public SseEmitter connect(Long userId) {
         log.info("[SSE] 유저 {} 연결 시도", userId);
@@ -55,14 +57,7 @@ public class NotificationSseService {
 
         if (emitter != null) {
             try {
-                NotificationDto dto = NotificationDto.builder()
-                        .id(notification.getId())
-                        .type(notification.getType())
-                        .targetId(notification.getTargetId())
-                        .isRead(notification.isRead())
-                        .createdAt(notification.getCreatedAt())
-                        .build();
-
+                NotificationDto dto = notificationMapper.toDto(notification);
                 emitter.send(SseEmitter.event()
                         .name("notification")
                         .data(dto));

@@ -1,18 +1,12 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.notification.NotificationDto;
-import com.even.zaro.entity.Notification;
-import com.even.zaro.entity.User;
-import com.even.zaro.entity.Post;
-import com.even.zaro.entity.Comment;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
-import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.notification.NotificationException;
-import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.global.exception.user.UserException;
+import com.even.zaro.global.util.NotificationMapper;
 import com.even.zaro.repository.NotificationRepository;
-import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,9 +22,9 @@ import java.util.List;
 public class NotificationService {
 
     private final NotificationRepository notificationRepository;
-    private final PostRepository postRepository;
-    private final CommentRepository commentRepository;
     private final UserRepository userRepository;
+    private final NotificationMapper notificationMapper;
+    private final NotificationSseService notificationSseService;
 
     @Transactional(readOnly = true)
     public List<NotificationDto> getNotificationsList(Long userId) {
@@ -40,43 +34,68 @@ public class NotificationService {
         List<Notification> notifications = notificationRepository.findAllByUserOrderByCreatedAtDesc(user);
 
         return notifications.stream()
-                .map(notification -> {
-                    Notification.Type type = notification.getType();
+                .map(notificationMapper::toDto)
+                .toList();
+    }
 
-                    Long actorId = notification.getActorUserId();
-                    if (actorId == null) {
-                        throw new NotificationException(ErrorCode.ACTOR_USER_NOT_FOUND);
-                    }
-                    User actor = userRepository.findById(actorId)
-                            .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+    @Transactional
+    public void createCommentNotification(Comment comment) {
+        User postOwner = comment.getPost().getUser(); // 게시글 작성자
+        User commentAuthor = comment.getUser(); // 댓글 작성자
 
-                    NotificationDto.NotificationDtoBuilder builder = NotificationDto.builder()
-                            .id(notification.getId())
-                            .type(type)
-                            .targetId(notification.getTargetId())
-                            .isRead(notification.isRead())
-                            .createdAt(notification.getCreatedAt())
-                            .actorId(actor.getId())
-                            .actorName(actor.getNickname())
-                            .actorProfileImage(actor.getProfileImage());
+        // 댓글 작성자==게시글 작성자일 때는 알림 생성 X
+        if (postOwner.getId().equals(commentAuthor.getId())) return;
 
-                    // LIKE, COMMENT 타입은 게시글, 댓글 정보 추가
-                    if (type == Notification.Type.LIKE || type == Notification.Type.COMMENT) {
-                        Post post = postRepository.findById(notification.getTargetId())
-                                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-                        builder.postId(post.getId())
-                                .category(post.getCategory().name())
-                                .thumbnailImage(post.getThumbnailImage());
+        Notification notification = new Notification();
+        notification.setUser(postOwner);
+        notification.setActorUserId(commentAuthor.getId());
+        notification.setType(Notification.Type.COMMENT);
+        notification.setTargetId(comment.getId());
+        notification.setRead(false);
 
-                        if (type == Notification.Type.COMMENT) {
-                            Comment comment = commentRepository.findById(notification.getTargetId())
-                                    .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
-                            builder.comment(comment.getContent());
-                        }
-                    }
+        Notification saved = notificationRepository.save(notification);
 
-                    return builder.build();
-                }).toList();
+        // sse 실시간 전송
+        notificationSseService.send(postOwner.getId(), saved);
+    }
+
+    @Transactional
+    public void createPostLikeNotification(PostLike postLike) {
+        User postOwner = postLike.getPost().getUser(); // 게시물 작성자
+        User likeUser = postLike.getUser(); // 좋아요 누른 유저
+
+        // 댓글 작성자==좋아요 누른 유저 일 때는 알림 생성 X
+        if (!postOwner.getId().equals(likeUser.getId())) {
+            Notification notification = new Notification();
+            notification.setUser(postOwner);
+            notification.setActorUserId(likeUser.getId());
+            notification.setType(Notification.Type.LIKE);
+            notification.setTargetId(postLike.getPost().getId());
+            notification.setRead(false);
+
+            Notification saved = notificationRepository.save(notification);
+
+            // sse 실시간 전송
+            notificationSseService.send(postOwner.getId(), saved);
+        }
+    }
+
+    @Transactional
+    public void createFollowNotification(Follow follow) {
+        User followee = follow.getFollowee(); // 팔로우 당한 사용자 (알림 대상)
+        User follower = follow.getFollower(); // 팔로우 한 사용자
+
+        Notification notification = new Notification();
+        notification.setUser(followee);
+        notification.setActorUserId(follower.getId());
+        notification.setType(Notification.Type.FOLLOW);
+        notification.setTargetId(follower.getId()); // 팔로우 한 사용자 userId
+        notification.setRead(false);
+
+        Notification saved = notificationRepository.save(notification);
+
+        // sse 실시간 전송
+        notificationSseService.send(followee.getId(), saved);
     }
 
     public void markAsRead(Long notificationId, Long userId) {

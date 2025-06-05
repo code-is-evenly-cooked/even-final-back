@@ -1,6 +1,7 @@
 package com.even.zaro.dto.post;
 
 import com.even.zaro.entity.Post;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
@@ -8,6 +9,8 @@ import lombok.Builder;
 import lombok.Getter;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Getter
@@ -47,9 +50,13 @@ public class PostPreviewDto {
     @Schema(description = "작성자 닉네임", example = "이브니쨩", nullable = true)
     private String writerNickname;
 
-
-    @Schema(description = "게시글 생성 일시", example = "2025-05-21T12:34:56")
-    private LocalDateTime createdAt;
+    @Schema(description = "게시글 생성 일시", example = "2025-05-21T12:34:56.111Z")
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime createdAt;
 
     public static PostPreviewDto from(Post post) {
         PostPreviewDto.PostPreviewDtoBuilder builder = PostPreviewDto.builder()
@@ -61,7 +68,7 @@ public class PostPreviewDto {
                 .tag(post.getTag() != null ? post.getTag().name() : null)
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
-                .createdAt(post.getCreatedAt());
+                .createdAt(post.getCreatedAt().atOffset(ZoneOffset.UTC));
 
         if (post.getCategory() == Post.Category.RANDOM_BUY){
             builder.writerProfileImage(post.getUser().getProfileImage());

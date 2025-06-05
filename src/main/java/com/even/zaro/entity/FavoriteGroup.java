@@ -40,7 +40,7 @@ public class FavoriteGroup {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
-    @Column(name = "favorite_count") // 그룹에 속한 즐겨찾기 개수
+    @Column(name = "favorite_count", nullable = false) // 그룹에 속한 즐겨찾기 개수
     @Builder.Default
     private int favoriteCount = 0;
 

@@ -12,7 +12,7 @@ spring:
 
   #시간 설정
   jackson:
-    time-zone: Asia/Seoul
+    time-zone: UTC
 
   # JPA
   jpa:

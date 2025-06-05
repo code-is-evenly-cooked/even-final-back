@@ -10,6 +10,8 @@ import org.springframework.data.elasticsearch.annotations.Document;
 import org.springframework.data.elasticsearch.annotations.Field;
 import org.springframework.data.elasticsearch.annotations.FieldType;
 
+import java.time.ZoneOffset;
+
 @Document(indexName = "posts")
 @Getter
 @Builder
@@ -61,7 +63,7 @@ public class PostEsDocument {
                 .tag(post.getTag().name())
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
-                .createdAt(post.getCreatedAt().toString())
+                .createdAt(post.getCreatedAt().atOffset(ZoneOffset.UTC).toString())
                 .build();
     }
 }

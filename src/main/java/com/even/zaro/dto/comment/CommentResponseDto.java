@@ -1,5 +1,6 @@
 package com.even.zaro.dto.comment;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -7,7 +8,7 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 
 import java.time.LocalDate;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @AllArgsConstructor
@@ -29,11 +30,21 @@ public class CommentResponseDto {
     @Schema(description = "자취 시작일", example = "2024-03-01")
     private LocalDate liveAloneDate;
 
-    @Schema(description = "댓글 작성 시간", example = "2025-05-21T14:33:00")
-    private LocalDateTime createdAt;
+    @Schema(description = "댓글 작성 시간", example = "2025-05-21T05:33:00.111Z")
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime createdAt;
 
-    @Schema(description = "댓글 수정 시간", example = "2025-05-22T08:15:12")
-    private LocalDateTime updatedAt;
+    @Schema(description = "댓글 수정 시간", example = "2025-05-22T23:15:12.111Z")
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime updatedAt;
 
     @Schema(description = "수정 여부", example = "true")
     @JsonProperty("isEdited")

@@ -1,11 +1,12 @@
 package com.even.zaro.dto.post;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
 
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 
 @Getter
@@ -41,8 +42,13 @@ public class PostDetailResponse {
     @Schema(description = "포스트 이미지 key 리스트", example = "[\"/images/post/uuid1.png\", \"/images/post/uuid2.png\"]")
     private List<String> postImageList;
 
-    @Schema(description = "게시글 생성 일시", example = "2025-05-21T10:15:30")
-    private LocalDateTime createdAt;
+    @Schema(description = "게시글 생성 일시", example = "2025-05-21T10:15:30.111Z")
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime createdAt;
 
     @Schema(description = "작성자 정보")
     private UserInfo user;

@@ -1,8 +1,9 @@
 package com.even.zaro.dto.post;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonPropertyOrder;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Getter;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 
 @JsonPropertyOrder({
@@ -44,11 +45,16 @@ public class PostSearchDto {
     @Schema(description = "댓글 수", example = "7")
     private final int commentCount;
 
-    @Schema(description = "게시글 작성 시간", example = "2025-05-23T09:30:00")
-    private final LocalDateTime createdAt;
+    @Schema(description = "게시글 작성 시간", example = "2025-05-23T09:30:00.111Z")
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private final OffsetDateTime createdAt;
 
     public PostSearchDto(Long postId, String title, String content, String thumbnailImage,
-                         String category, String tag, int likeCount, int commentCount, LocalDateTime createdAt) {
+                         String category, String tag, int likeCount, int commentCount, OffsetDateTime createdAt) {
         this.postId = postId;
         this.title = title;
         this.contentPreview = truncate(content, 50);

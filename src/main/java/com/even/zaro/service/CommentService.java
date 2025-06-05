@@ -22,6 +22,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
 import java.time.temporal.ChronoUnit;
 
 @Service
@@ -124,6 +126,9 @@ public class CommentService {
         LocalDateTime createdAt = comment.getCreatedAt();
         LocalDateTime updatedAt = comment.getUpdatedAt();
 
+        OffsetDateTime createdAtUtc = createdAt.atOffset(ZoneOffset.UTC);
+        OffsetDateTime updatedAtUtc = updatedAt.atOffset(ZoneOffset.UTC);
+
         boolean isEdited = !createdAt.truncatedTo(ChronoUnit.SECONDS)
                 .isEqual(updatedAt.truncatedTo(ChronoUnit.SECONDS));
 
@@ -144,8 +149,8 @@ public class CommentService {
                 writer.getNickname(),
                 writer.getProfileImage(),
                 writer.getLiveAloneDate(),
-                createdAt,
-                updatedAt,
+                createdAtUtc,
+                updatedAtUtc,
                 isEdited,
                 isMine,
                 mentionedUser

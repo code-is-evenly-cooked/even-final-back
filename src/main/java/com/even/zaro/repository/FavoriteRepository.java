@@ -15,4 +15,5 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     @EntityGraph(attributePaths = { "user"})
     List<Favorite> findAllByPlace(Place place);
     List<Favorite> findByPlaceAndUser(Place place, User user);
+    List<Favorite> findAllByGroupAndIsDeletedFalse(FavoriteGroup group);
 }

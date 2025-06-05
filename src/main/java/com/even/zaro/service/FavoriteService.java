@@ -81,16 +81,8 @@ public class FavoriteService {
         FavoriteGroup group = favoriteGroupRepository.findById(groupId)
                 .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
 
-        List<Favorite> favoriteList = favoriteRepository.findAllByGroup(group);
-
-        if (favoriteList.isEmpty()) {
-            throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
-        }
-
-        // 삭제되지 않은 즐겨찾기만 조회
-        List<Favorite> activeFavoriteList = favoriteList.stream()
-                .filter(favorite -> !favorite.isDeleted())
-                .toList();
+        // 삭제된 데이터 제외하고 조회
+        List<Favorite> activeFavoriteList = favoriteRepository.findAllByGroupAndIsDeletedFalse(group);
 
         if (activeFavoriteList.isEmpty()) {
             throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
@@ -141,6 +133,7 @@ public class FavoriteService {
         favorite.setDeleteTrue();
     }
 
+
     // Place 테이블에 해당 kakaoPlaceId를 가진 데이터 존재 여부 검증
     Place checkDuplicateByKakoPlaceId(FavoriteAddRequest request) {
         Optional<Place> getPlace = placeRepository.findByKakaoPlaceId(request.getKakaoPlaceId());
@@ -158,4 +151,12 @@ public class FavoriteService {
         );
     }
 
+    public boolean checkFavorite(long userId, long placeId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+
+
+        return false;
+    }
 }

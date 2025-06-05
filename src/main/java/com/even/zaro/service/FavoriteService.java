@@ -84,7 +84,16 @@ public class FavoriteService {
             throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
         }
 
-        return favoriteMapper.toFavoriteResponseList(favoriteList);
+        // 삭제되지 않은 즐겨찾기만 조회
+        List<Favorite> activeFavoriteList = favoriteList.stream()
+                .filter(favorite -> !favorite.isDeleted())
+                .toList();
+
+        if (activeFavoriteList.isEmpty()) {
+            throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
+        }
+
+        return favoriteMapper.toFavoriteResponseList(activeFavoriteList);
     }
 
     // 해당 즐겨찾기의 메모를 수정

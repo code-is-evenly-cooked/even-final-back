@@ -9,8 +9,16 @@ import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
 
+import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
+import java.time.ZoneOffset;
+
 @Mapper(componentModel = "spring")
 public interface PostMapper {
+
+    default OffsetDateTime map(LocalDateTime time) {
+        return time != null ? time.atOffset(ZoneOffset.UTC) : null;
+    }
 
     @Mapping(source = "id", target = "postId")
     @Mapping(source = "user.id", target = "user.userId")

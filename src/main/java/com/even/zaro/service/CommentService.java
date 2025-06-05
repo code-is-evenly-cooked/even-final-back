@@ -85,7 +85,7 @@ public class CommentService {
     }
 
     @Transactional
-    public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
+    public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
         if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
             throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
@@ -102,8 +102,7 @@ public class CommentService {
 
         comment.updateContent(requestDto.getContent());
 
-        int commentLocatedPage = calculateCommentLocatedPage(comment, pageSize);
-        return toDto(comment, currentUserId, commentLocatedPage);
+        return toDto(comment, currentUserId, null);
     }
 
     @Transactional
@@ -170,10 +169,5 @@ public class CommentService {
     private int calculateTotalPages(Post post, int pageSize) {
         int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
         return (int) Math.ceil((double) totalComments / pageSize);
-    }
-
-    private int calculateCommentLocatedPage(Comment comment, int pageSize) {
-        int precedingCount = commentRepository.countByPostAndIsDeletedFalseAndCreatedAtBefore(comment.getPost(), comment.getCreatedAt());
-        return (precedingCount / pageSize) + 1;
     }
 }

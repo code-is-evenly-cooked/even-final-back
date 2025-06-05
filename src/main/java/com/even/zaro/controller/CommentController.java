@@ -44,9 +44,10 @@ public class CommentController {
     @PostMapping("/posts/{postId}/comments")
     public ResponseEntity<ApiResponse<CommentResponseDto>> createComment(
             @Parameter(description = "게시글 ID", example = "1") @PathVariable Long postId,
+            @RequestParam(defaultValue = "10") int pageSize,
             @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userInfoDto);
+        CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userInfoDto, pageSize);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
                 .body(ApiResponse.success("댓글을 작성했습니다.", responseDto));

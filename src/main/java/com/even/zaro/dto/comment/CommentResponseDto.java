@@ -52,6 +52,9 @@ public class CommentResponseDto {
                 """)
     private MentionedUserDto mentionedUser;
 
+    @Schema(description = "댓글이 위치한 페이지 번호", example = "2", nullable = true)
+    private Integer commentLocatedPage;
+
     @JsonIgnore
     public boolean getMine() {
         return isMine;

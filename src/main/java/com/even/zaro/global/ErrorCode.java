@@ -97,6 +97,7 @@ public enum ErrorCode {
     CANNOT_REPORT_OWN_COMMENT(HttpStatus.BAD_REQUEST,"본인의 댓글은 신고할 수 없습니다."),
     ALREADY_REPORTED_COMMENT(HttpStatus.CONFLICT,"이미 신고한 댓글입니다."),
     HIDDEN_BY_REPORT_COMMENT(HttpStatus.FORBIDDEN, "신고 누적으로 숨김 처리된 댓글입니다."),
+    COMMENT_TOO_LONG(HttpStatus.BAD_REQUEST, "댓글은 500자 이내로 작성해주세요."),
 
     // 프로필 Profile
     FOLLOW_SELF_NOT_ALLOWED(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우할 수 없습니다."),

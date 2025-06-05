@@ -33,7 +33,7 @@ public class CommentService {
     private final UserRepository userRepository;
 
     @Transactional
-    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
+    public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
         Long currentUserId = userInfoDto.getUserId();
         if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
             throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
@@ -51,6 +51,8 @@ public class CommentService {
                     .orElseThrow(() -> new CommentException(ErrorCode.MENTIONED_USER_NOT_FOUND));
         }
 
+        validateCommentLength(requestDto.getContent());
+
         Comment comment = Comment.builder()
                 .post(post)
                 .user(user)
@@ -63,7 +65,9 @@ public class CommentService {
         post.updateScore();
         postRepository.save(post);
 
-        return toDto(comment, currentUserId);
+        int commentLocatedPage = calculateTotalPages(post, pageSize);
+
+        return toDto(comment, currentUserId, commentLocatedPage);
     }
 
     @Transactional(readOnly = true)
@@ -76,7 +80,7 @@ public class CommentService {
         }
 
         Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalse(postId, pageable)
-                .map(comment -> toDto(comment, currentUserId));
+                .map(comment -> toDto(comment, currentUserId, null));
         return new PageResponse<>(page);
     }
 
@@ -94,8 +98,11 @@ public class CommentService {
             throw new CommentException(ErrorCode.NOT_COMMENT_OWNER);
         }
 
+        validateCommentLength(requestDto.getContent());
+
         comment.updateContent(requestDto.getContent());
-        return toDto(comment, currentUserId);
+
+        return toDto(comment, currentUserId, null);
     }
 
     @Transactional
@@ -117,7 +124,7 @@ public class CommentService {
     }
 
     // 공통 응답
-    private CommentResponseDto toDto(Comment comment, Long currentUserId) {
+    private CommentResponseDto toDto(Comment comment, Long currentUserId, Integer commentLocatedPage) {
         User writer = comment.getUser();
 
         boolean isMine = writer.getId().equals(currentUserId);
@@ -148,7 +155,19 @@ public class CommentService {
                 updatedAt,
                 isEdited,
                 isMine,
-                mentionedUser
+                mentionedUser,
+                commentLocatedPage
         );
+    }
+
+    private void validateCommentLength(String content) {
+        if (content.length() > 500) {
+            throw new CommentException(ErrorCode.COMMENT_TOO_LONG);
+        }
+    }
+
+    private int calculateTotalPages(Post post, int pageSize) {
+        int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
+        return (int) Math.ceil((double) totalComments / pageSize);
     }
 }

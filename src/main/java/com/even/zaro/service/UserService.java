@@ -15,6 +15,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
+import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
 import java.util.regex.Pattern;
 
@@ -42,9 +43,9 @@ public class UserService {
                 .liveAloneDate(user.getLiveAloneDate())
                 .gender(user.getGender())
                 .mbti(user.getMbti())
-                .createdAt(user.getCreatedAt())
-                .updatedAt(user.getUpdatedAt())
-                .lastLoginAt(user.getLastLoginAt())
+                .createdAt(user.getCreatedAt().atOffset(ZoneOffset.UTC))
+                .updatedAt(user.getUpdatedAt().atOffset(ZoneOffset.UTC))
+                .lastLoginAt(user.getLastLoginAt().atOffset(ZoneOffset.UTC))
                 .provider(user.getProvider().name())
                 .isValidated(user.isValidated())
                 .build();
@@ -101,7 +102,7 @@ public class UserService {
 
         return new UpdateNicknameResponseDto(
                 newNickname,
-                user.getLastNicknameUpdatedAt().plusDays(14)
+                user.getLastNicknameUpdatedAt().plusDays(14).toLocalDate()
         );
     }
 

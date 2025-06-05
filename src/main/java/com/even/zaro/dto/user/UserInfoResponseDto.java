@@ -2,6 +2,7 @@ package com.even.zaro.dto.user;
 
 import com.even.zaro.entity.Gender;
 import com.even.zaro.entity.Mbti;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -10,6 +11,7 @@ import lombok.Getter;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Getter
 @Builder
@@ -39,13 +41,28 @@ public class UserInfoResponseDto {
     private Mbti mbti;
 
     @Schema(description = "계정 생성일", example = "2024-01-01T12:00:00")
-    private LocalDateTime createdAt;
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime createdAt;
 
     @Schema(description = "계정 수정일", example = "2024-04-01T18:20:00")
-    private LocalDateTime updatedAt;
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime updatedAt;
 
     @Schema(description = "마지막 로그인 일시", example = "2025-05-15T12:30:00")
-    private LocalDateTime lastLoginAt;
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime lastLoginAt;
 
     @Schema(description = "회원가입 경로", example = "LOCAL")
     private String provider;

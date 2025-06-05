@@ -61,6 +61,7 @@ public class GroupService {
             throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);
         }
 
+        // 삭제되지 않은 그룹만 조회
        List<FavoriteGroup> activeGroups = groupList.stream()
                .filter(group -> !group.isDeleted()) // false인 데이터들만 남김
                .toList();

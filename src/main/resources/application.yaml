@@ -10,10 +10,6 @@ spring:
   config:
     import: optional:file:.env[.properties]
 
-  #시간 설정
-  jackson:
-    time-zone: Asia/Seoul
-
   # JPA
   jpa:
     open-in-view: false

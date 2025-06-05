@@ -16,7 +16,7 @@ import org.springframework.stereotype.Service;
 
 
 import java.io.IOException;
-import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 import java.util.List;
 import java.util.Objects;
 
@@ -87,7 +87,7 @@ public class PostEsSearchService {
                             doc.getTag(),
                             doc.getLikeCount(),
                             doc.getCommentCount(),
-                            LocalDateTime.parse(doc.getCreatedAt())
+                            OffsetDateTime.parse(doc.getCreatedAt())
                     );
                 })
                 .filter(Objects::nonNull)

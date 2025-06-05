@@ -50,11 +50,11 @@ public class FavoriteService {
         // 해당 장소가 이미 저장되어있는지 없다면 장소 추가
         Place place = checkDuplicateByKakoPlaceId(request);
 
-        // 해당 유저가 이미 그 장소를 추가했는지 확인하고 저장
-        List<Favorite> placeList = favoriteRepository.findByPlaceAndUser(place, user);
+        // 해당 유저가 이미 그 장소를 추가했는지 확인
+        boolean check = favoriteRepository.existsByPlaceAndUser(place, user);
 
         // 해당 유저가 placeId가 일치하는 장소가 이미 추가되어있다면
-        if (placeList.size() > 0) {
+        if (check) {
             throw new FavoriteException(ErrorCode.FAVORITE_ALREADY_EXISTS);
         }
 
@@ -159,13 +159,10 @@ public class FavoriteService {
         Place place = placeRepository.findById(placeId)
                 .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND));
 
-        // 해당 유저가 이미 그 장소를 추가했는지 확인하고 저장
-        List<Favorite> placeList = favoriteRepository.findByPlaceAndUser(place, user);
 
-        // 해당 유저가 placeId가 일치하는 장소가 이미 추가되어있다면
-        if (placeList.size() > 0) {
-            return true;
-        }
-        return false;
+        // 해당 유저가 이미 그 장소를 추가했는지 확인
+        boolean check = favoriteRepository.existsByPlaceAndUser(place, user);
+
+        return check;
     }
 }

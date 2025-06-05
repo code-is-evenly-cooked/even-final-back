@@ -12,6 +12,7 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.map.MapException;
+import com.even.zaro.global.exception.place.PlaceException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.mapper.FavoriteMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
@@ -155,8 +156,16 @@ public class FavoriteService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND));
 
+        // 해당 유저가 이미 그 장소를 추가했는지 확인하고 저장
+        List<Favorite> placeList = favoriteRepository.findByPlaceAndUser(place, user);
 
+        // 해당 유저가 placeId가 일치하는 장소가 이미 추가되어있다면
+        if (placeList.size() > 0) {
+            return true;
+        }
         return false;
     }
 }

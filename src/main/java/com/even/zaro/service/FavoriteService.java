@@ -68,6 +68,9 @@ public class FavoriteService {
         // 즐겨찾기 개수 1 증가
         place.incrementFavoriteCount();
 
+        // 그룹의 즐겨찾기 개수 1 증가
+        group.incrementFavoriteCount();
+
         favoriteRepository.save(favorite);
 
         return favoriteMapper.toFavoriteAddResponse(favorite);
@@ -126,6 +129,14 @@ public class FavoriteService {
 
         // 즐겨찾기 개수 1 감소
         place.decrementFavoriteCount();
+
+        // 해당 즐겨찾기가 포함된 그룹
+        FavoriteGroup group = favoriteGroupRepository.findById(favorite.getGroup().getId())
+                .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
+
+        // 그룹의 즐겨찾기 개수 1 감소
+        group.decrementFavoriteCount();
+
         // 삭제 상태 변경
         favorite.setDeleteTrue();
     }

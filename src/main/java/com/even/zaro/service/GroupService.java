@@ -10,14 +10,13 @@ import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.mapper.GroupMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
+import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +27,7 @@ public class GroupService {
     private final UserRepository userRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
     private final GroupMapper groupMapper;
+    private final FavoriteRepository favoriteRepository;
 
     public void createGroup(GroupCreateRequest request, long userid) {
 
@@ -63,7 +63,7 @@ public class GroupService {
 
         // 삭제되지 않은 그룹만 조회
        List<FavoriteGroup> activeGroups = groupList.stream()
-               .filter(group -> !group.isDeleted()) // false인 데이터들만 남김
+               .filter(group -> !group.isDeleted())// false인 데이터들만 남김
                .toList();
 
         if (activeGroups.isEmpty()) {

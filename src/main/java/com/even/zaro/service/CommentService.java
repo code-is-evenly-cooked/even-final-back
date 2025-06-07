@@ -77,7 +77,7 @@ public class CommentService {
         Long currentUserId = userInfoDto.getUserId();
 
         // 게시글 존재 여부 확인
-        if (!postRepository.existsByIdAndIsDeletedFalse(postId)) {
+        if (!postRepository.existsByIdAndIsDeletedFalseAndIsReportedFalse(postId)) {
             throw new PostException(ErrorCode.POST_NOT_FOUND);
         }
 

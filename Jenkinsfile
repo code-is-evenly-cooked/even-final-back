@@ -138,7 +138,6 @@ pipeline {
               echo "📦 B 서버에 파일 전송 중..."
               sh """
                 scp -i "$PEM_FILE" -o StrictHostKeyChecking=no "$PROJECT_DIR"/app.tar ubuntu@${B_IP}:/home/ubuntu/
-                scp -i "$PEM_FILE" -o StrictHostKeyChecking=no "$PROJECT_DIR"/.env ubuntu@${B_IP}:/home/ubuntu/
               """
             } catch (err) {
               def msg = err.getMessage().replaceAll('"', '\\"').take(200)

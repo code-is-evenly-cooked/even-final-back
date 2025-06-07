@@ -20,18 +20,29 @@ pipeline {
           string(credentialsId: 'discord-webhook', variable: 'WEBHOOK_URL')
         ]) {
           script {
-            try {
-              sh """
-                echo "프록시를 B 서버로 전환 중..."
-                ssh -i "$PEM_FILE" -o StrictHostKeyChecking=no ubuntu@${A_IP} 'sudo bash /home/ubuntu/swap_proxy.sh'
-              """
-            } catch (err) {
-              def msg = err.getMessage().replaceAll('"', '\\"').take(200)
-              sh """
-                curl -H "Content-Type: application/json" -X POST \
-                  -d '{"content": "🅱️❌ B 프록시 전환 실패\\n${msg}"}' $WEBHOOK_URL
-              """
-              error("프록시 전환 실패")
+            def isB = sh(
+              script: """
+                ssh -i "$PEM_FILE" -o StrictHostKeyChecking=no ubuntu@${A_IP} 'grep -q "proxy_pass http://${B_IP}:8080;" /etc/nginx/sites-enabled/default && echo true || echo false'
+              """,
+              returnStdout: true
+            ).trim()
+
+            if (isB == "true") {
+              echo "이미 B 프록시입니다. 전환 생략."
+            } else {
+              try {
+                sh """
+                  echo "프록시를 B 서버로 전환 중..."
+                  ssh -i "$PEM_FILE" -o StrictHostKeyChecking=no ubuntu@${A_IP} 'sudo bash /home/ubuntu/swap_proxy.sh'
+                """
+              } catch (err) {
+                def msg = err.getMessage().replaceAll('"', '\\"').take(200)
+                sh """
+                  curl -H "Content-Type: application/json" -X POST \
+                    -d '{"content": "🅱️❌ B 프록시 전환 실패\\n${msg}"}' $WEBHOOK_URL
+                """
+                error("프록시 전환 실패")
+              }
             }
           }
         }

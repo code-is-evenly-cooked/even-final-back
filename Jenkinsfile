@@ -80,6 +80,9 @@ pipeline {
           withCredentials([string(credentialsId: 'discord-webhook', variable: 'WEBHOOK_URL')]) {
             script {
               try {
+                sh 'echo "🧹 불필요한 Docker 리소스 정리 중..."'
+                sh 'docker system prune -f'
+
                 sh 'echo "🔨 Docker 이미지 빌드 중..."'
                 sh 'docker-compose -f docker-compose.prod.yml stop app'
                 sh 'docker-compose -f docker-compose.prod.yml rm -f app'

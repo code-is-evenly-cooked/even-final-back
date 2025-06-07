@@ -81,7 +81,7 @@ public class CommentService {
             throw new PostException(ErrorCode.POST_NOT_FOUND);
         }
 
-        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalse(postId, pageable)
+        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalseAndIsReportedFalse(postId, pageable)
                 .map(comment -> toDto(comment, currentUserId, null));
         return new PageResponse<>(page);
     }
@@ -93,7 +93,7 @@ public class CommentService {
             throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
         }
 
-        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+        Comment comment = commentRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(currentUserId)) {
@@ -110,7 +110,7 @@ public class CommentService {
     @Transactional
     public void softDeleteComment(Long commentId, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
-        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+        Comment comment = commentRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(currentUserId)) {
@@ -172,7 +172,7 @@ public class CommentService {
     }
 
     private int calculateTotalPages(Post post, int pageSize) {
-        int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
+        int totalComments = commentRepository.countByPostAndIsDeletedFalseAndIsReportedFalse(post);
         return (int) Math.ceil((double) totalComments / pageSize);
     }
 }

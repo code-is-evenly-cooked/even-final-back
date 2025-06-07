@@ -97,7 +97,7 @@ public class ProfileService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        Page<UserCommentDto> page = commentRepository.findByUserAndIsDeletedFalse(user, pageable)
+        Page<UserCommentDto> page = commentRepository.findByUserAndIsDeletedFalseAndIsReportedFalse(user, pageable)
                 .map(comment -> {
                     Post post = comment.getPost();
                     if (post == null) {

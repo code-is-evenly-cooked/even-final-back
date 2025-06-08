@@ -8,6 +8,7 @@ import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -30,5 +31,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(Post.Category category, Post.Tag tag, Pageable pageable);
 
-    List<Post> findTop10ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
+    List<Post> findTop5ByIsDeletedFalseAndIsReportedFalseAndCreatedAtGreaterThanEqualOrderByScoreDescCreatedAtDesc(LocalDateTime fromDate);
 }

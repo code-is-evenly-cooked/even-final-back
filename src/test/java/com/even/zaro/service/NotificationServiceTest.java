@@ -122,6 +122,15 @@ public class NotificationServiceTest {
     @Nested
     class MarkAllAsReadTest {
 
+        @Test
+        void 모든_알림이_이미_읽음상태면_예외없이_전체_유지() {
+            when(notificationRepository.findAllByUserIdAndIsReadFalse(userId)).thenReturn(List.of());
+
+            assertThatCode(() -> notificationService.markAllAsRead(userId))
+                    .doesNotThrowAnyException();
+
+            verify(notificationRepository).findAllByUserIdAndIsReadFalse(userId);
+        }
     }
 
 

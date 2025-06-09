@@ -55,10 +55,8 @@ public class NotificaitonServiceTest {
             Notification noti1 = createNotification(user, Notification.Type.FOLLOW, false);
             Notification noti2 = createNotification(user, Notification.Type.LIKE, false);
 
-            NotificationDto dto1 = NotificationDto.builder()
-                    .id(noti1.getId()).type(Notification.Type.FOLLOW).build();
-            NotificationDto dto2 = NotificationDto.builder()
-                    .id(noti2.getId()).type(Notification.Type.LIKE).build();
+            NotificationDto dto1 = createDto(noti1.getId(), Notification.Type.FOLLOW);
+            NotificationDto dto2 = createDto(noti2.getId(), Notification.Type.LIKE);
 
             when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(noti1, noti2));
@@ -73,7 +71,7 @@ public class NotificaitonServiceTest {
         }
 
         @Test
-        void 알림이_없을_경우_빈리스트_반환() {
+        void 알림이_없을_경우_빈리스트_반환_검증() {
             when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of());
 
@@ -81,6 +79,25 @@ public class NotificaitonServiceTest {
 
             assertThat(result).isEmpty();
         }
+
+        @Test
+        void 알림_목록의_최신순_정렬_검증() {
+            Notification newOne = createNotification(user, Notification.Type.LIKE, false);
+            Notification oldOne = createNotification(user, Notification.Type.FOLLOW, false);
+
+            NotificationDto dtoNew = createDto(2L, Notification.Type.LIKE);
+            NotificationDto dtoOld = createDto(1L, Notification.Type.FOLLOW);
+
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+            when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(newOne, oldOne));
+            when(notificationMapper.toDto(newOne)).thenReturn(dtoNew);
+            when(notificationMapper.toDto(oldOne)).thenReturn(dtoOld);
+
+            List<NotificationDto> result = notificationService.getNotificationsList(userId);
+
+            assertThat(result).containsExactly(dtoNew, dtoOld);
+        }
+
     }
 
     private Notification createNotification(User user, Notification.Type type, boolean isRead) {
@@ -90,6 +107,13 @@ public class NotificaitonServiceTest {
                 .targetId(1L)
                 .actorUserId(99L)
                 .isRead(isRead)
+                .build();
+    }
+
+    private NotificationDto createDto(Long id, Notification.Type type) {
+        return NotificationDto.builder()
+                .id(id)
+                .type(type)
                 .build();
     }
 }

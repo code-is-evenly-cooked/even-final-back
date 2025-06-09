@@ -1,4 +1,4 @@
-package com.even.zaro.healthcheck;
+package com.even.zaro.global.healthcheck;
 
 import io.swagger.v3.oas.annotations.media.Schema;
 import jakarta.persistence.*;

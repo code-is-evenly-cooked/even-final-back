@@ -1,4 +1,4 @@
-package com.even.zaro.jwt;
+package com.even.zaro.global.jwt;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import io.jsonwebtoken.Claims;

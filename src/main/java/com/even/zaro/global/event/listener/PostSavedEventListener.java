@@ -1,9 +1,9 @@
-package com.even.zaro.listener;
+package com.even.zaro.global.event.listener;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import com.even.zaro.elasticsearch.document.PostEsDocument;
+import com.even.zaro.global.elasticsearch.document.PostEsDocument;
 import com.even.zaro.entity.Post;
-import com.even.zaro.event.PostSavedEvent;
+import com.even.zaro.global.event.event.PostSavedEvent;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionPhase;

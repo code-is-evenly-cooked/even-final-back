@@ -1,14 +1,12 @@
-package com.even.zaro.elasticsearch;
+package com.even.zaro.global.elasticsearch;
 
 import co.elastic.clients.elasticsearch.ElasticsearchClient;
-import com.even.zaro.elasticsearch.document.PostEsDocument;
+import com.even.zaro.global.elasticsearch.document.PostEsDocument;
 import com.even.zaro.entity.Post;
 import com.even.zaro.repository.PostRepository;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.context.annotation.Profile;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

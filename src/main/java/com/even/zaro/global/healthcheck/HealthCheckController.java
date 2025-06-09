@@ -1,4 +1,4 @@
-package com.even.zaro.healthcheck;
+package com.even.zaro.global.healthcheck;
 
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;

@@ -1,4 +1,4 @@
-package com.even.zaro.healthcheck;
+package com.even.zaro.global.healthcheck;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 

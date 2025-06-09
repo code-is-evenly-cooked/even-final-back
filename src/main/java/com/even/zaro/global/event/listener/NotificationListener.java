@@ -1,8 +1,8 @@
-package com.even.zaro.listener;
+package com.even.zaro.global.event.listener;
 
-import com.even.zaro.event.CommentCreatedEvent;
-import com.even.zaro.event.FollowCreatedEvent;
-import com.even.zaro.event.PostLikeCreatedEvent;
+import com.even.zaro.global.event.event.CommentCreatedEvent;
+import com.even.zaro.global.event.event.FollowCreatedEvent;
+import com.even.zaro.global.event.event.PostLikeCreatedEvent;
 import com.even.zaro.service.NotificationService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;

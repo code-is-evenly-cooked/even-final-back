@@ -1,7 +1,7 @@
-package com.even.zaro.listener;
+package com.even.zaro.global.event.listener;
 
 import com.even.zaro.entity.PostLike;
-import com.even.zaro.event.PostLikeCreatedEvent;
+import com.even.zaro.global.event.event.PostLikeCreatedEvent;
 import jakarta.persistence.PostPersist;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;

@@ -1,4 +1,4 @@
-package com.even.zaro.event;
+package com.even.zaro.global.event.event;
 
 import com.even.zaro.entity.PostLike;
 import lombok.Getter;

@@ -2,17 +2,15 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.auth.*;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
-import com.even.zaro.entity.PasswordResetToken;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
-import com.even.zaro.jwt.JwtUtil;
+import com.even.zaro.global.jwt.JwtUtil;
 import com.even.zaro.service.AuthService;
 import com.even.zaro.service.EmailVerificationService;
 import com.even.zaro.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.servlet.http.HttpServletResponse;
@@ -21,7 +19,6 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;

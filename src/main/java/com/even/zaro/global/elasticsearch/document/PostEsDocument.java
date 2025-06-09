@@ -1,4 +1,4 @@
-package com.even.zaro.elasticsearch.document;
+package com.even.zaro.global.elasticsearch.document;
 
 import com.even.zaro.entity.Post;
 import jakarta.persistence.Id;

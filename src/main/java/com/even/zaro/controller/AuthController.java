@@ -5,7 +5,7 @@ import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
-import com.even.zaro.jwt.JwtUtil;
+import com.even.zaro.global.jwt.JwtUtil;
 import com.even.zaro.service.AuthService;
 import com.even.zaro.service.EmailVerificationService;
 import com.even.zaro.service.PasswordResetService;

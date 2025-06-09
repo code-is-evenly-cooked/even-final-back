@@ -6,7 +6,7 @@ import co.elastic.clients.elasticsearch._types.query_dsl.*;
 import co.elastic.clients.elasticsearch.core.SearchResponse;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.PostSearchDto;
-import com.even.zaro.elasticsearch.document.PostEsDocument;
+import com.even.zaro.global.elasticsearch.document.PostEsDocument;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import lombok.RequiredArgsConstructor;

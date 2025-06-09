@@ -5,7 +5,7 @@ import com.even.zaro.dto.profile.*;
 import com.even.zaro.service.ProfileService;
 
 import com.even.zaro.global.ApiResponse;
-import com.even.zaro.jwt.JwtUtil;
+import com.even.zaro.global.jwt.JwtUtil;
 import com.even.zaro.dto.PageResponse;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -25,7 +25,6 @@ import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 @RestController
 @RequestMapping("/api/profile")

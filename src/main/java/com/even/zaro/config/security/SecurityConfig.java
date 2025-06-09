@@ -1,8 +1,8 @@
 package com.even.zaro.config.security;
 
-import com.even.zaro.jwt.JwtAuthFilter;
-import com.even.zaro.jwt.JwtAuthenticationEntryPoint;
-import com.even.zaro.jwt.JwtUtil;
+import com.even.zaro.global.jwt.JwtAuthFilter;
+import com.even.zaro.global.jwt.JwtAuthenticationEntryPoint;
+import com.even.zaro.global.jwt.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;

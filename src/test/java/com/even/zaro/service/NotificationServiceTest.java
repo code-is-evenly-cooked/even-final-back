@@ -181,7 +181,7 @@ public class NotificationServiceTest {
             Notification n1 = createNotification(user, Notification.Type.FOLLOW, false);
             Notification n2 = createNotification(user, Notification.Type.LIKE, false);
 
-            when(notificationRepository.findAllByUserIdAndIsReadFalse(userId)).thenReturn(List.of(n1, n2));
+            mockUnreadNotifications(n1,n2);
 
             notificationService.markAllAsRead(userId);
 
@@ -191,7 +191,7 @@ public class NotificationServiceTest {
 
         @Test
         void 모든_알림이_이미_읽음상태면_예외없이_전체_유지() {
-            when(notificationRepository.findAllByUserIdAndIsReadFalse(userId)).thenReturn(List.of());
+            mockUnreadNotifications();
 
             assertThatCode(() -> notificationService.markAllAsRead(userId))
                     .doesNotThrowAnyException();
@@ -205,7 +205,7 @@ public class NotificationServiceTest {
             Notification alreadyRead = createNotification(user, Notification.Type.LIKE, true);
 
             // markAllAsRead는 isRead=false인 알림만 가져옴
-            when(notificationRepository.findAllByUserIdAndIsReadFalse(userId)).thenReturn(List.of(unread));
+            mockUnreadNotifications(unread);
 
             notificationService.markAllAsRead(userId);
 
@@ -215,7 +215,13 @@ public class NotificationServiceTest {
             verify(notificationRepository).findAllByUserIdAndIsReadFalse(userId);
         }
 
+        private void mockUnreadNotifications(Notification... notifications) {
+            when(notificationRepository.findAllByUserIdAndIsReadFalse(userId))
+                    .thenReturn(List.of(notifications));
+        }
     }
+
+    /******** 헬퍼 메서드 ********/
 
     private User createUser(Long id) {
         return User.builder()

@@ -21,5 +21,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNickname(String nickname);
 
+    List<User> findByStatusAndLastLoginAtBefore(Status status, LocalDateTime time);
+    List<User> findByStatusAndUpdatedAtBefore(Status status, LocalDateTime time);
     List<User> findByStatusAndDeletedAtBefore(Status status, LocalDateTime threshold);
 }

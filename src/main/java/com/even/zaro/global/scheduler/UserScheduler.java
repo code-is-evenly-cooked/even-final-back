@@ -17,7 +17,21 @@ public class UserScheduler {
 
     private final UserRepository userRepository;
 
-    @Scheduled(cron = "0 30 3 * * *") // 매일 3시 30분
+    // 휴면 처리, 탈퇴 처리
+    @Scheduled(cron = "0 30 3 * * *")// 매일 3시 30분
+    @Transactional
+    public void handleDormantAndSoftDelete() {
+        LocalDateTime now = LocalDateTime.now();
+        // 6개월 이상 미접속 -> 휴면
+        List<User> toDormant = userRepository.findByStatusAndLastLoginAtBefore(Status.ACTIVE, now.minusMonths(6));
+        toDormant.forEach(user -> user.changeStatus(Status.DORMANT));
+        // 휴면 1년 경과 -> 탈퇴 처리
+        List<User> softDeleteUser = userRepository.findByStatusAndUpdatedAtBefore(Status.DORMANT, now.minusYears(1));
+        softDeleteUser.forEach(User::softDeleted);
+    }
+
+    // 탈퇴 30일 경과 -> 회원 정보 영구 삭제
+    @Scheduled(cron = "0 45 3 * * *") // 매일 3시 45분
     @Transactional
     public void deleteWithdrawnUsers() {
         LocalDateTime threshold = LocalDateTime.now().minusDays(30);

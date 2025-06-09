@@ -181,6 +181,8 @@ public class AuthService {
         String accessToken = tokens[0];
         String refreshToken = tokens[1];
 
+        reactivateIfDormant(user);
+
         // lastLoginAt
         user.updateLastLoginAt(LocalDateTime.now());
         userRepository.save(user);
@@ -207,6 +209,12 @@ public class AuthService {
     private void validateNotDeleted(User user) {
         if (user.getStatus() == Status.DELETED) {
             throw new UserException(ErrorCode.USER_ALREADY_DELETED);
+        }
+    }
+
+    private void reactivateIfDormant(User user) {
+        if (user.getStatus() == Status.DORMANT) {
+            user.updateStatusToActive();
         }
     }
 }

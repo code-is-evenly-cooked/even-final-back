@@ -30,5 +30,5 @@ public interface PostRepository extends JpaRepository<Post, Long> {
 
     Page<Post> findByCategoryAndTagAndIsDeletedFalseAndIsReportedFalse(Post.Category category, Post.Tag tag, Pageable pageable);
 
-    List<Post> findTop10ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
+    List<Post> findTop5ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
 }

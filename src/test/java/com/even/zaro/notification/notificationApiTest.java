@@ -6,6 +6,7 @@ import com.even.zaro.global.exception.notification.NotificationException;
 import com.even.zaro.repository.*;
 import com.even.zaro.dto.notification.NotificationDto;
 import com.even.zaro.service.NotificationService;
+import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
@@ -37,8 +38,9 @@ public class notificationApiTest {
     @Autowired
     private NotificationService notificationService;
 
+    @DisplayName("팔로우 알림 생성 후 조회 시 DTO 정상 반환")
     @Test
-    void 알림_DTO_매핑_성공_FOLLOW() {
+    void 팔로우_알림_생성_및_조회_성공() {
         User follower = createUser("follower@even.com", "팔로워닉");
         User followee = createUser("followee@even.com", "팔로위닉");
 
@@ -53,8 +55,9 @@ public class notificationApiTest {
         assertThat(dto.getActorName()).isEqualTo("팔로워닉");
     }
 
+    @DisplayName("좋아요 알림 생성 후 조회 시 DTO 정상 반환")
     @Test
-    void 알림_DTO_매핑_성공_LIKE() {
+    void 좋아요_알림_생성_및_조회_성공() {
         User liker = createUser("liker@even.com", "좋아요닉");
         User owner = createUser("owner@even.com", "게시글주인");
 
@@ -71,8 +74,9 @@ public class notificationApiTest {
         assertThat(dto.getCategory()).isEqualTo("TOGETHER");
     }
 
+    @DisplayName("댓글 알림 생성 후 조회 시 DTO 정상 반환")
     @Test
-    void 알림_DTO_매핑_성공_COMMENT() {
+    void 댓글_알림_생성_및_조회_성공() {
         User commenter = createUser("commenter@even.com", "댓글러닉");
         User owner = createUser("owner@even.com", "게시글주인");
 

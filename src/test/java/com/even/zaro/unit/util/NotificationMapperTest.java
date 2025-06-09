@@ -5,6 +5,8 @@ import com.even.zaro.entity.Comment;
 import com.even.zaro.entity.Notification;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.User;
+import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.notification.NotificationException;
 import com.even.zaro.global.util.NotificationMapper;
 import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostRepository;
@@ -19,6 +21,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.junit.jupiter.api.Assertions.assertThrows;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -94,6 +97,19 @@ class NotificationMapperTest {
         assertThat(dto.getComment()).isEqualTo("댓글 내용");
         assertThat(dto.getCategory()).isEqualTo("TOGETHER");
         assertThat(dto.getPostId()).isEqualTo(post.getId());
+    }
+
+    @Test
+    void ACTOR_ID_없으면_예외발생() {
+        Notification noti = Notification.builder()
+                .id(notificationId)
+                .type(Notification.Type.FOLLOW)
+                .actorUserId(null)
+                .build();
+
+        NotificationException exception = assertThrows(NotificationException.class,
+                () -> notificationMapper.toDto(noti));
+        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.ACTOR_USER_NOT_FOUND);
     }
 
     private Notification createNotification(Notification.Type type, Long targetId, boolean isRead) {

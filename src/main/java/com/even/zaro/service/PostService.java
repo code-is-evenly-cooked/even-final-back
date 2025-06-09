@@ -163,8 +163,7 @@ public class PostService {
 
     @Transactional
     public List<PostRankResponseDto> getRankedPosts() {
-        LocalDateTime fromDate = LocalDateTime.now().minusDays(1);
-        List<Post> posts = postRepository.findTop5ByIsDeletedFalseAndIsReportedFalseAndCreatedAtGreaterThanEqualOrderByScoreDescCreatedAtDesc(fromDate);
+        List<Post> posts = postRepository.findTop5ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
 
         return posts.stream()
                 .map(postMapper::toRankDto)

@@ -29,6 +29,7 @@ public interface PostMapper {
     @Mapping(source = "id", target = "postId")
     @Mapping(source = "user.nickname", target = "writerNickname")
     @Mapping(source = "user.profileImage", target = "writerProfileImage")
+    @Mapping(target = "content", expression = "java(stripHtmlTags(post.getContent()))")
     PostPreviewDto toPostPreviewDto(Post post);
 
     @Mapping(source = "id", target = "postId")
@@ -54,4 +55,14 @@ public interface PostMapper {
     @Mapping(source = "likeCount", target = "likeCount")
     @Mapping(source = "commentCount", target = "commentCount")
     PostRankResponseDto toRankDto(Post post);
+
+    default String stripHtmlTags(String html) {
+        if (html == null) return "";
+        html = html.replace("&lt;", "<").replace("&gt;", ">");
+        return html
+                .replaceAll("(?i)<br\\s*/?>", "")
+                .replaceAll("<[^>]*>", "")
+                .replaceAll("\\\\","")
+                .trim();
+    }
 }

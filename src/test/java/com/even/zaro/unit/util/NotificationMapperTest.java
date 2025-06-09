@@ -52,13 +52,7 @@ class NotificationMapperTest {
 
     @Test
     void FOLLOW_알림_DTO_변환_성공() {
-        Notification noti = Notification.builder()
-                .id(notificationId)
-                .type(Notification.Type.FOLLOW)
-                .targetId(2L)
-                .actorUserId(actor.getId())
-                .isRead(false)
-                .build();
+        Notification noti = createNotification(Notification.Type.FOLLOW, 2L, false);
 
         when(userRepository.findById(actor.getId())).thenReturn(Optional.of(actor));
 
@@ -71,19 +65,9 @@ class NotificationMapperTest {
 
     @Test
     void LIKE_알림_DTO_변환_성공() {
-        Post post = Post.builder()
-                .id(10L)
-                .category(Post.Category.TOGETHER)
-                .thumbnailImage(null)
-                .build();
+        Post post = createPost(8L);
 
-        Notification noti = Notification.builder()
-                .id(notificationId)
-                .type(Notification.Type.LIKE)
-                .targetId(post.getId())
-                .actorUserId(actor.getId())
-                .isRead(true)
-                .build();
+        Notification noti = createNotification(Notification.Type.LIKE, post.getId(), false);
 
         when(userRepository.findById(actor.getId())).thenReturn(Optional.of(actor));
         when(postRepository.findById(post.getId())).thenReturn(Optional.of(post));
@@ -97,25 +81,10 @@ class NotificationMapperTest {
 
     @Test
     void COMMENT_알림_DTO_변환_성공() {
-        Post post = Post.builder()
-                .id(10L)
-                .category(Post.Category.TOGETHER)
-                .thumbnailImage(null)
-                .build();
+        Post post = createPost(10L);
+        Comment comment = createComment(5L, post);
 
-        Comment comment = Comment.builder()
-                .id(20L)
-                .content("댓글 내용")
-                .post(post)
-                .build();
-
-        Notification noti = Notification.builder()
-                .id(notificationId)
-                .type(Notification.Type.COMMENT)
-                .targetId(comment.getId())
-                .actorUserId(actor.getId())
-                .isRead(false)
-                .build();
+        Notification noti = createNotification(Notification.Type.COMMENT, comment.getId(), false);
 
         when(userRepository.findById(actor.getId())).thenReturn(Optional.of(actor));
         when(commentRepository.findById(comment.getId())).thenReturn(Optional.of(comment));
@@ -126,4 +95,31 @@ class NotificationMapperTest {
         assertThat(dto.getCategory()).isEqualTo("TOGETHER");
         assertThat(dto.getPostId()).isEqualTo(post.getId());
     }
+
+    private Notification createNotification(Notification.Type type, Long targetId, boolean isRead) {
+        return Notification.builder()
+                .id(notificationId)
+                .type(type)
+                .targetId(targetId)
+                .actorUserId(actor.getId())
+                .isRead(isRead)
+                .build();
+    }
+
+    private Post createPost(Long id) {
+        return Post.builder()
+                .id(id)
+                .category(Post.Category.TOGETHER)
+                .thumbnailImage(null)
+                .build();
+    }
+
+    private Comment createComment(Long id, Post post) {
+        return Comment.builder()
+                .id(id)
+                .content("댓글 내용")
+                .post(post)
+                .build();
+    }
+
 }

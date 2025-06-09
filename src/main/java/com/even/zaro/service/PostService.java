@@ -13,6 +13,7 @@ import com.even.zaro.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -161,7 +162,7 @@ public class PostService {
 
     @Transactional
     public List<PostRankResponseDto> getRankedPosts() {
-        List<Post> posts = postRepository.findTop5ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
+        List<Post> posts = postRepository.findTopPosts(0, PageRequest.of(0, 5));
 
         return posts.stream()
                 .map(postMapper::toRankDto)

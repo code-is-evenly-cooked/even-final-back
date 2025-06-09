@@ -63,6 +63,7 @@ public interface PostMapper {
                 .replaceAll("(?i)<br\\s*/?>", "")
                 .replaceAll("<[^>]*>", "")
                 .replaceAll("\\\\","")
+                .replaceAll("\\s+", " ")
                 .trim();
     }
 }

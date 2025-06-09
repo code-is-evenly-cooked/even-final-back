@@ -1,14 +1,10 @@
 package com.even.zaro.notification;
 
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.notification.NotificationException;
-import com.even.zaro.repository.NotificationRepository;
-import com.even.zaro.repository.UserRepository;
+import com.even.zaro.repository.*;
 import com.even.zaro.dto.notification.NotificationDto;
-import com.even.zaro.entity.Notification;
-import com.even.zaro.entity.User;
-import com.even.zaro.entity.Provider;
-import com.even.zaro.entity.Status;
 import com.even.zaro.service.NotificationService;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -38,7 +34,7 @@ public class notificationApiTest {
     @Test
     void 알림_목록_조회_성공() {
         // given
-        User user = createUser("test1@even.com");
+        User user = createUser("user1@even.com", "유저1닉");
         Notification noti1 = createNotification(user, false);
         Notification noti2 = createNotification(user, true);
 
@@ -54,7 +50,7 @@ public class notificationApiTest {
     @Test
     void 알림_1개_읽음_처리_성공() {
         // given
-        User user = createUser("test2@even.com");
+        User user = createUser("user2@even.com", "유저2닉");
         Notification noti = createNotification(user, false);
 
         // when
@@ -68,7 +64,7 @@ public class notificationApiTest {
     @Test
     void 알림_전체_읽음_처리_성공() {
         // given
-        User user = createUser("test3@even.com");
+        User user = createUser("user3@even.com", "유저3닉");
         createNotification(user, false);
         createNotification(user, false);
 
@@ -83,7 +79,7 @@ public class notificationApiTest {
     @Test
     void 존재하지_않는_알림_읽음_처리_실패() {
         // given
-        User user = createUser("user3@even.com");
+        User user = createUser("user4@even.com", "유저4닉");
 
         // when & then
         NotificationException exception = assertThrows(NotificationException.class, () ->
@@ -93,11 +89,12 @@ public class notificationApiTest {
     }
 
 
-    private User createUser(String email) {
+    private User createUser(String email, String nickname) {
         return userRepository.save(User.builder()
                 .email(email)
                 .password("password")
-                .nickname("닉네임")
+                .nickname(nickname)
+                .profileImage(null)
                 .provider(Provider.LOCAL)
                 .status(Status.ACTIVE)
                 .build());

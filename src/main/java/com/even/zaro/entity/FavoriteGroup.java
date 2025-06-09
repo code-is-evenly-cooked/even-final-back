@@ -30,7 +30,7 @@ public class FavoriteGroup {
 
     @Column(name = "is_deleted", nullable = false)
     @Builder.Default
-    private boolean isDeleted = false;
+    private boolean deleted = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -45,7 +45,7 @@ public class FavoriteGroup {
     private int favoriteCount = 0;
 
     public void setIsDeleted() {
-        this.isDeleted = true;
+        this.deleted = true;
     }
 
     public void editGroupName(String name) {

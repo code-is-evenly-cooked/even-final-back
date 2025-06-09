@@ -63,7 +63,7 @@ public class FavoriteService {
                 .group(group)
                 .place(place)
                 .memo(request.getMemo())
-                .isDeleted(false)
+                .deleted(false)
                 .build();
 
         // 즐겨찾기 개수 1 증가
@@ -83,7 +83,7 @@ public class FavoriteService {
                 .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
 
         // 삭제된 데이터 제외하고 조회
-        List<Favorite> activeFavoriteList = favoriteRepository.findAllByGroupAndIsDeletedFalse(group);
+        List<Favorite> activeFavoriteList = favoriteRepository.findAllByGroupAndDeletedFalse(group);
 
         if (activeFavoriteList.isEmpty()) {
             throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);

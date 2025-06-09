@@ -10,11 +10,9 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.List;
 
 public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
-    List<Favorite> findAllByGroup(FavoriteGroup group);
-
     @EntityGraph(attributePaths = { "user"})
     List<Favorite> findAllByPlace(Place place);
-    List<Favorite> findAllByGroupAndIsDeletedFalse(FavoriteGroup group);
+    List<Favorite> findAllByGroupAndDeletedFalse(FavoriteGroup group);
 
     boolean existsByPlaceAndUser(Place place, User user);
 }

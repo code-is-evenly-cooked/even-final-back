@@ -54,17 +54,8 @@ public class GroupService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        // userId 값이 일치하는 데이터 조회
-        List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
-
-        if (groupList.isEmpty()) {
-            throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);
-        }
-
-        // 삭제되지 않은 그룹만 조회
-       List<FavoriteGroup> activeGroups = groupList.stream()
-               .filter(group -> !group.isDeleted())// false인 데이터들만 남김
-               .toList();
+        // userId 값이 일치하고, 삭제된 데이터를 제외하고 조회
+        List<FavoriteGroup> activeGroups = favoriteGroupRepository.findAllByUserAndDeletedFalse(user);
 
         if (activeGroups.isEmpty()) {
             throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);

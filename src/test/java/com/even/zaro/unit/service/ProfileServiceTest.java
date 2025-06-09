@@ -6,6 +6,7 @@ import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.profile.ProfileException;
+import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.FollowRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.service.ProfileService;
@@ -58,6 +59,16 @@ public class ProfileServiceTest {
             assertThat(dto.getNickname()).isEqualTo("유저1닉");
             assertThat(dto.getPostCount()).isEqualTo(3);
         }
+
+        @Test
+        void 존재하지_않는_유저_프로필_조회_실패() {
+            when(userService.findUserById(9999L)).thenThrow(new UserException(ErrorCode.USER_NOT_FOUND));
+
+            UserException exception = assertThrows(UserException.class, () ->
+                    profileService.getUserProfile(9999L));
+
+            assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
+        }
     }
 
     @Nested
@@ -89,6 +100,18 @@ public class ProfileServiceTest {
                     profileService.followUser(follower.getId(), followee.getId()));
 
             assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_ALREADY_EXISTS);
+        }
+
+        @Test
+        void 존재하지_않는_유저에게_팔로우_시도_실패() {
+            when(userService.findUserById(2L))
+                    .thenReturn(createUser(1L, "a@even.com", "A"));
+            when(userService.findUserById(99999L)).thenThrow(new UserException(ErrorCode.USER_NOT_FOUND));
+
+            UserException exception = assertThrows(UserException.class, () ->
+                    profileService.followUser(2L, 99999L));
+
+            assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
         }
 
         @Test

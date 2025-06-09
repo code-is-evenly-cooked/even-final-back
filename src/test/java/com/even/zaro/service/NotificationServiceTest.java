@@ -1,8 +1,7 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.notification.NotificationDto;
-import com.even.zaro.entity.Notification;
-import com.even.zaro.entity.User;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.notification.NotificationException;
 import com.even.zaro.global.util.NotificationMapper;
@@ -22,8 +21,7 @@ import java.util.Optional;
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
 import static org.junit.jupiter.api.Assertions.assertThrows;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationServiceTest {
@@ -48,7 +46,7 @@ public class NotificationServiceTest {
 
     @BeforeEach
     void setUp() {
-        user = User.builder().id(userId).build();
+        user = createUser(userId);
     }
 
     @Nested
@@ -109,11 +107,36 @@ public class NotificationServiceTest {
 
     @Nested
     class CreateCommentNotificationTest {
+        @Test
+        void 본인이_자신의_게시글에_댓글을_작성한_경우_알림_생성되지_않음() {
+            // given
+            User user = createUser(1L);
+            Post post = Post.builder().user(user).build();
+            Comment comment = Comment.builder().user(user).post(post).build();
 
+            // when
+            notificationService.createCommentNotification(comment);
+
+            // then
+            verify(notificationRepository, never()).save(any());
+            verify(notificationSseService, never()).send(anyLong(), any());
+        }
     }
 
     @Nested
-    class CreatePostLikeNotificationTest {}
+    class CreatePostLikeNotificationTest {
+        @Test
+        void 본인이_자신의_게시글에_좋아요를_누른_경우_알림_생성되지_않음() {
+            User user = createUser(1L);
+            Post post = Post.builder().user(user).build();
+            PostLike like = PostLike.builder().user(user).post(post).build();
+
+            notificationService.createPostLikeNotification(like);
+
+            verify(notificationRepository, never()).save(any());
+            verify(notificationSseService, never()).send(anyLong(), any());
+        }
+    }
 
     @Nested
     class MarkAsReadTest {
@@ -194,6 +217,14 @@ public class NotificationServiceTest {
 
     }
 
+    private User createUser(Long id) {
+        return User.builder()
+                .id(id)
+                .email("test" + id + "@even.com")
+                .nickname("유저" + id)
+                .status(Status.ACTIVE)
+                .build();
+    }
 
     private Notification createNotification(User user, Notification.Type type, boolean isRead) {
         return Notification.builder()

@@ -54,7 +54,49 @@ public class notificationApiTest {
 //    }
 
     @Test
-    void 알림_목록_조회_성공_COMMENT() {
+    void 알림_DTO_매핑_성공_FOLLOW() {
+        User follower = createUser("follower@even.com", "팔로워닉");
+        User followee = createUser("followee@even.com", "팔로위닉");
+
+        Follow follow = Follow.builder().follower(follower).followee(followee).build();
+        notificationService.createFollowNotification(follow);
+
+        List<NotificationDto> list = notificationService.getNotificationsList(followee.getId());
+        NotificationDto dto = list.get(0);
+
+        assertThat(dto.getType()).isEqualTo(Notification.Type.FOLLOW);
+        assertThat(dto.getTargetId()).isEqualTo(follower.getId());
+        assertThat(dto.getActorName()).isEqualTo("팔로워닉");
+    }
+
+    @Test
+    void 알림_DTO_매핑_성공_LIKE() {
+        User liker = createUser("liker@even.com", "좋아요닉");
+        User owner = createUser("owner@even.com", "게시글주인");
+
+        Post post = postRepository.save(Post.builder()
+                .user(owner)
+                .category(Post.Category.TOGETHER)
+                .tag(Post.Tag.GROUP_BUY)
+                .thumbnailImage(null)
+                .title("게시글제목")
+                .content("게시글내용임다")
+                .build());
+
+        PostLike postLike = PostLike.builder().user(liker).post(post).build();
+
+        notificationService.createPostLikeNotification(postLike);
+
+        List<NotificationDto> list = notificationService.getNotificationsList(owner.getId());
+        NotificationDto dto = list.get(0);
+
+        assertThat(dto.getType()).isEqualTo(Notification.Type.LIKE);
+        assertThat(dto.getPostId()).isEqualTo(post.getId());
+        assertThat(dto.getCategory()).isEqualTo("TOGETHER");
+    }
+
+    @Test
+    void 알림_DTO_매핑_성공_COMMENT() {
         User commenter = createUser("commenter@even.com", "댓글러닉");
         User owner = createUser("owner@even.com", "게시글주인");
 

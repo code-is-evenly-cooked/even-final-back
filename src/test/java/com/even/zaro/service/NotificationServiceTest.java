@@ -98,6 +98,17 @@ public class NotificationServiceTest {
 
     }
 
+    @Nested
+    class MarkAsReadTest {
+
+    }
+
+    @Nested
+    class MarkAllAsReadTest {
+
+    }
+
+
     private Notification createNotification(User user, Notification.Type type, boolean isRead) {
         return Notification.builder()
                 .user(user)

@@ -131,6 +131,23 @@ public class NotificationServiceTest {
 
             verify(notificationRepository).findAllByUserIdAndIsReadFalse(userId);
         }
+
+        @Test
+        void 일부_알림만_읽지_않은_경우_읽지_않은_알림만_읽음처리_성공() {
+            Notification unread = createNotification(user, Notification.Type.FOLLOW, false);
+            Notification alreadyRead = createNotification(user, Notification.Type.LIKE, true);
+
+            // markAllAsRead는 isRead=false인 알림만 가져옴
+            when(notificationRepository.findAllByUserIdAndIsReadFalse(userId)).thenReturn(List.of(unread));
+
+            notificationService.markAllAsRead(userId);
+
+            assertThat(unread.isRead()).isTrue();
+            assertThat(alreadyRead.isRead()).isTrue();
+
+            verify(notificationRepository).findAllByUserIdAndIsReadFalse(userId);
+        }
+
     }
 
 

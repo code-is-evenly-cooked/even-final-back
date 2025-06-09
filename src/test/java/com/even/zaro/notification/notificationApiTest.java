@@ -74,15 +74,7 @@ public class notificationApiTest {
         User liker = createUser("liker@even.com", "좋아요닉");
         User owner = createUser("owner@even.com", "게시글주인");
 
-        Post post = postRepository.save(Post.builder()
-                .user(owner)
-                .category(Post.Category.TOGETHER)
-                .tag(Post.Tag.GROUP_BUY)
-                .thumbnailImage(null)
-                .title("게시글제목")
-                .content("게시글내용임다")
-                .build());
-
+        Post post = createPost(owner);
         PostLike postLike = PostLike.builder().user(liker).post(post).build();
 
         notificationService.createPostLikeNotification(postLike);
@@ -100,14 +92,7 @@ public class notificationApiTest {
         User commenter = createUser("commenter@even.com", "댓글러닉");
         User owner = createUser("owner@even.com", "게시글주인");
 
-        Post post = postRepository.save(Post.builder()
-                .user(owner)
-                .category(Post.Category.TOGETHER)
-                .tag(Post.Tag.GROUP_BUY)
-                .thumbnailImage(null)
-                .title("게시글제목")
-                .content("게시글내용임다")
-                .build());
+        Post post = createPost(owner);
         Comment comment = commentRepository.save(Comment.builder()
                 .user(commenter)
                 .post(post)
@@ -188,5 +173,16 @@ public class notificationApiTest {
                 .isRead(isRead)
                 .build();
         return notificationRepository.save(noti);
+    }
+
+    private Post createPost(User owner) {
+        return postRepository.save(Post.builder()
+                .user(owner)
+                .category(Post.Category.TOGETHER)
+                .tag(Post.Tag.GROUP_BUY)
+                .thumbnailImage(null)
+                .title("게시글제목")
+                .content("게시글내용임다")
+                .build());
     }
 }

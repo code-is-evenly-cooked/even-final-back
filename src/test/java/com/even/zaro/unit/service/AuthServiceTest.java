@@ -1,10 +1,11 @@
-package com.even.zaro.service;
+package com.even.zaro.unit.service;
 
 import com.even.zaro.dto.auth.SignUpRequestDto;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.jwt.JwtUtil;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.service.AuthService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;

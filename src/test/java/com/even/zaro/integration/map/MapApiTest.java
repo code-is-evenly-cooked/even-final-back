@@ -1,4 +1,4 @@
-package com.even.zaro.map;
+package com.even.zaro.integration.map;
 
 import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.group.GroupCreateRequest;

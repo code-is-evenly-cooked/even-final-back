@@ -1,4 +1,4 @@
-package com.even.zaro.favorite;
+package com.even.zaro.integration.favorite;
 
 import com.even.zaro.dto.favorite.FavoriteAddRequest;
 import com.even.zaro.dto.favorite.FavoriteEditRequest;

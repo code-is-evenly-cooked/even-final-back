@@ -1,4 +1,4 @@
-package com.even.zaro.profile;
+package com.even.zaro.integration.profile;
 
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.profile.FollowerFollowingListDto;

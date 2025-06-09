@@ -1,4 +1,4 @@
-package com.even.zaro.service;
+package com.even.zaro.unit.service;
 
 import com.even.zaro.dto.notification.NotificationDto;
 import com.even.zaro.entity.*;
@@ -7,6 +7,8 @@ import com.even.zaro.global.exception.notification.NotificationException;
 import com.even.zaro.global.util.NotificationMapper;
 import com.even.zaro.repository.NotificationRepository;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.service.NotificationService;
+import com.even.zaro.service.NotificationSseService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

@@ -1,4 +1,4 @@
-package com.even.zaro.group;
+package com.even.zaro.integration.group;
 
 import com.even.zaro.dto.group.GroupCreateRequest;
 import com.even.zaro.dto.group.GroupEditRequest;

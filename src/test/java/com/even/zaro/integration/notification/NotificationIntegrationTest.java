@@ -1,4 +1,4 @@
-package com.even.zaro.notification;
+package com.even.zaro.integration.notification;
 
 import com.even.zaro.entity.*;
 import com.even.zaro.repository.*;
@@ -18,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-public class notificationApiTest {
+public class NotificationIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;

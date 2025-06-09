@@ -1,4 +1,4 @@
-package com.even.zaro.service;
+package com.even.zaro.unit.service;
 
 import com.even.zaro.dto.user.*;
 import com.even.zaro.entity.Gender;
@@ -9,6 +9,7 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.UserRepository;
 import com.even.zaro.repository.WithdrawalHistoryRepository;
+import com.even.zaro.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;

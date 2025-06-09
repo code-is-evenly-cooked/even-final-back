@@ -45,7 +45,7 @@ public class UserSchedulerIntegrationTest {
                     .password("Password1!")
                     .provider(Provider.LOCAL)
                     .status(Status.ACTIVE)
-                    .lastLoginAt(now.minusMonths(7))
+                    .lastLoginAt(now.minusMonths(6).minusDays(1))
                     .build();
 
             userRepository.save(activeUser);

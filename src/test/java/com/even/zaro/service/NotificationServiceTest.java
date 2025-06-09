@@ -56,8 +56,8 @@ public class NotificationServiceTest {
             Notification noti1 = createNotification(user, Notification.Type.FOLLOW, false);
             Notification noti2 = createNotification(user, Notification.Type.LIKE, false);
 
-            NotificationDto dto1 = createDto(noti1.getId(), Notification.Type.FOLLOW);
-            NotificationDto dto2 = createDto(noti2.getId(), Notification.Type.LIKE);
+            NotificationDto dto1 = createDto(noti1);
+            NotificationDto dto2 = createDto(noti2);
 
             when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(noti1, noti2));
             when(notificationMapper.toDto(noti1)).thenReturn(dto1);
@@ -84,8 +84,8 @@ public class NotificationServiceTest {
             Notification newOne = createNotification(user, Notification.Type.LIKE, false);
             Notification oldOne = createNotification(user, Notification.Type.FOLLOW, false);
 
-            NotificationDto dtoNew = createDto(2L, Notification.Type.LIKE);
-            NotificationDto dtoOld = createDto(1L, Notification.Type.FOLLOW);
+            NotificationDto dtoNew = createDto(newOne);
+            NotificationDto dtoOld = createDto(oldOne);
 
             when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(newOne, oldOne));
             when(notificationMapper.toDto(newOne)).thenReturn(dtoNew);
@@ -108,10 +108,10 @@ public class NotificationServiceTest {
                 .build();
     }
 
-    private NotificationDto createDto(Long id, Notification.Type type) {
+    private NotificationDto createDto(Notification notification) {
         return NotificationDto.builder()
-                .id(id)
-                .type(type)
+                .id(notification.getId())
+                .type(notification.getType())
                 .build();
     }
 }

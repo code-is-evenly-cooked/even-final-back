@@ -71,6 +71,16 @@ public class NotificaitonServiceTest {
             // then
             assertThat(result).containsExactly(dto1, dto2);
         }
+
+        @Test
+        void 알림이_없을_경우_빈리스트_반환() {
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+            when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of());
+
+            List<NotificationDto> result = notificationService.getNotificationsList(userId);
+
+            assertThat(result).isEmpty();
+        }
     }
 
     private Notification createNotification(User user, Notification.Type type, boolean isRead) {

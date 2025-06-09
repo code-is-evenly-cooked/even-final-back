@@ -2,7 +2,6 @@ package com.even.zaro.controller;
 
 import com.even.zaro.dto.auth.*;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
-import com.even.zaro.entity.PasswordResetToken;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
@@ -12,16 +11,15 @@ import com.even.zaro.service.EmailVerificationService;
 import com.even.zaro.service.PasswordResetService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.enums.ParameterIn;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.security.core.parameters.P;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -74,10 +72,11 @@ public class AuthController {
     @Operation(summary = "로그아웃", description = "헤더의 access-token를 받아 로그아웃 처리를 합니다.",
             security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping("/signout")
-    public ResponseEntity<ApiResponse<Void>> signOut(@RequestHeader("Authorization") String accessToken,
+    public ResponseEntity<ApiResponse<Void>> signOut(HttpServletRequest request,
                                                      @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        String token = jwtUtil.extractBearerPrefix(accessToken);
+        String token = jwtUtil.extractBearerPrefix(request.getHeader("Authorization"));
         authService.signOut(userInfoDto.getUserId(), token);
+
         return ResponseEntity.ok(ApiResponse.success("로그아웃 되었습니다."));
     }
 

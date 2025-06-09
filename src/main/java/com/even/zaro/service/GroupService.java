@@ -10,14 +10,13 @@ import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.mapper.GroupMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
+import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.UserRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
@@ -28,6 +27,7 @@ public class GroupService {
     private final UserRepository userRepository;
     private final FavoriteGroupRepository favoriteGroupRepository;
     private final GroupMapper groupMapper;
+    private final FavoriteRepository favoriteRepository;
 
     public void createGroup(GroupCreateRequest request, long userid) {
 
@@ -54,14 +54,14 @@ public class GroupService {
         User user = userRepository.findById(userId)
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
-        // userId 값이 일치하는 데이터 조회
-        List<FavoriteGroup> groupList = favoriteGroupRepository.findByUser(user);
+        // userId 값이 일치하고, 삭제된 데이터를 제외하고 조회
+        List<FavoriteGroup> activeGroups = favoriteGroupRepository.findAllByUserAndDeletedFalse(user);
 
-        if (groupList.isEmpty()) {
+        if (activeGroups.isEmpty()) {
             throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);
         }
 
-        return groupMapper.toGroupResponseList(groupList);
+        return groupMapper.toGroupResponseList(activeGroups);
     }
 
     public void deleteGroup(long groupId, long userId) {

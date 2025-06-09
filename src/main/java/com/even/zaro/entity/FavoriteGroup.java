@@ -30,7 +30,7 @@ public class FavoriteGroup {
 
     @Column(name = "is_deleted", nullable = false)
     @Builder.Default
-    private boolean isDeleted = false;
+    private boolean deleted = false;
 
     @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
@@ -40,11 +40,25 @@ public class FavoriteGroup {
     @UpdateTimestamp
     private LocalDateTime updatedAt;
 
+    @Column(name = "favorite_count", nullable = false) // 그룹에 속한 즐겨찾기 개수
+    @Builder.Default
+    private int favoriteCount = 0;
+
     public void setIsDeleted() {
-        this.isDeleted = true;
+        this.deleted = true;
     }
 
     public void editGroupName(String name) {
         this.name = name;
     }
+
+    public void incrementFavoriteCount() {
+        this.favoriteCount++;
+    }
+
+    public void decrementFavoriteCount() {
+        this.favoriteCount--;
+    }
+
+
 }

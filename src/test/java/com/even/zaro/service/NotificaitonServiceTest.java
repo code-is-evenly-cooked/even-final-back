@@ -6,6 +6,8 @@ import com.even.zaro.entity.User;
 import com.even.zaro.global.util.NotificationMapper;
 import com.even.zaro.repository.NotificationRepository;
 import com.even.zaro.repository.UserRepository;
+import org.junit.jupiter.api.BeforeEach;
+import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
@@ -36,30 +38,39 @@ public class NotificaitonServiceTest {
     @Mock
     private NotificationSseService notificationSseService;
 
-    @Test
-    void 알림_목록_조회_성공() {
-        // given
-        Long userId = 1L;
-        User user = User.builder().id(userId).build();
+    private final Long userId = 1L;
+    private User user;
 
-        Notification noti1 = createNotification(user, Notification.Type.FOLLOW, false);
-        Notification noti2 = createNotification(user, Notification.Type.LIKE, false);
+    @BeforeEach
+    void setUp() {
+        user = User.builder().id(userId).build();
+    }
 
-        NotificationDto dto1 = NotificationDto.builder()
-                .id(noti1.getId()).type(Notification.Type.FOLLOW).build();
-        NotificationDto dto2 = NotificationDto.builder()
-                .id(noti2.getId()).type(Notification.Type.LIKE).build();
+    @Nested
+    class GetNotificationsListTest {
 
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
-        when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(noti1, noti2));
-        when(notificationMapper.toDto(noti1)).thenReturn(dto1);
-        when(notificationMapper.toDto(noti2)).thenReturn(dto2);
+        @Test
+        void 알림_목록_조회_성공() {
+            // given
+            Notification noti1 = createNotification(user, Notification.Type.FOLLOW, false);
+            Notification noti2 = createNotification(user, Notification.Type.LIKE, false);
 
-        // when
-        List<NotificationDto> result = notificationService.getNotificationsList(userId);
+            NotificationDto dto1 = NotificationDto.builder()
+                    .id(noti1.getId()).type(Notification.Type.FOLLOW).build();
+            NotificationDto dto2 = NotificationDto.builder()
+                    .id(noti2.getId()).type(Notification.Type.LIKE).build();
 
-        // then
-        assertThat(result).containsExactly(dto1, dto2);
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+            when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(noti1, noti2));
+            when(notificationMapper.toDto(noti1)).thenReturn(dto1);
+            when(notificationMapper.toDto(noti2)).thenReturn(dto2);
+
+            // when
+            List<NotificationDto> result = notificationService.getNotificationsList(userId);
+
+            // then
+            assertThat(result).containsExactly(dto1, dto2);
+        }
     }
 
     private Notification createNotification(User user, Notification.Type type, boolean isRead) {

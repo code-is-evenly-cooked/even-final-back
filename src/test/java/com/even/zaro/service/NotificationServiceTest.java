@@ -108,6 +108,14 @@ public class NotificationServiceTest {
     }
 
     @Nested
+    class CreateCommentNotificationTest {
+
+    }
+
+    @Nested
+    class CreatePostLikeNotificationTest {}
+
+    @Nested
     class MarkAsReadTest {
 
         @Test

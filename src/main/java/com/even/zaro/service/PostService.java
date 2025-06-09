@@ -161,7 +161,7 @@ public class PostService {
 
     @Transactional
     public List<PostRankResponseDto> getRankedPosts() {
-        List<Post> posts = postRepository.findTop5ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
+        List<Post> posts = postRepository.findTop5ByIsDeletedFalseAndIsReportedFalseAndScoreGreaterThanOrderByScoreDescCreatedAtDesc(0);
 
         return posts.stream()
                 .map(postMapper::toRankDto)

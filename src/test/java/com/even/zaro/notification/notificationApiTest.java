@@ -1,8 +1,6 @@
 package com.even.zaro.notification;
 
 import com.even.zaro.entity.*;
-import com.even.zaro.global.ErrorCode;
-import com.even.zaro.global.exception.notification.NotificationException;
 import com.even.zaro.repository.*;
 import com.even.zaro.dto.notification.NotificationDto;
 import com.even.zaro.service.NotificationService;
@@ -16,7 +14,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.util.List;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.junit.jupiter.api.Assertions.assertThrows;
 
 @SpringBootTest
 @Transactional

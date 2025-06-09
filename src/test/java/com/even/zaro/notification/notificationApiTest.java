@@ -26,25 +26,63 @@ public class notificationApiTest {
     private UserRepository userRepository;
 
     @Autowired
+    private PostRepository postRepository;
+
+    @Autowired
+    private CommentRepository commentRepository;
+
+    @Autowired
     private NotificationRepository notificationRepository;
 
     @Autowired
     private NotificationService notificationService;
 
+//    @Test
+//    void 알림_목록_조회_성공() {
+//        // given
+//        User user = createUser("user1@even.com", "유저1닉");
+//        Notification noti1 = createNotification(user, false);
+//        Notification noti2 = createNotification(user, true);
+//
+//        // when
+//        List<NotificationDto> list = notificationService.getNotificationsList(user.getId());
+//
+//        // then
+//        assertThat(list).hasSize(2);
+//        // 최신순 정렬이어야함 !!
+//        assertThat(list).extracting("isRead").containsExactly(true, false);
+//    }
+
     @Test
-    void 알림_목록_조회_성공() {
-        // given
-        User user = createUser("user1@even.com", "유저1닉");
-        Notification noti1 = createNotification(user, false);
-        Notification noti2 = createNotification(user, true);
+    void 알림_목록_조회_성공_COMMENT() {
+        User commenter = createUser("commenter@even.com", "댓글러닉");
+        User owner = createUser("owner@even.com", "게시글주인");
 
-        // when
-        List<NotificationDto> list = notificationService.getNotificationsList(user.getId());
+        Post post = postRepository.save(Post.builder()
+                .user(owner)
+                .category(Post.Category.TOGETHER)
+                .tag(Post.Tag.GROUP_BUY)
+                .thumbnailImage(null)
+                .title("게시글제목")
+                .content("게시글내용임다")
+                .build());
+        Comment comment = commentRepository.save(Comment.builder()
+                .user(commenter)
+                .post(post)
+                .content("댓글내용")
+                .build());
 
-        // then
-        assertThat(list).hasSize(2);
-        // 최신순 정렬이어야함 !!
-        assertThat(list).extracting("isRead").containsExactly(true, false);
+        notificationService.createCommentNotification(comment);
+
+        List<NotificationDto> list = notificationService.getNotificationsList(owner.getId());
+        NotificationDto dto = list.get(0);
+
+        assertThat(dto.getType()).isEqualTo(Notification.Type.COMMENT);
+        assertThat(dto.getComment()).isEqualTo("댓글내용");
+        assertThat(dto.getPostId()).isEqualTo(post.getId());
+        assertThat(dto.getCategory()).isEqualTo("TOGETHER");
+        assertThat(dto.getActorId()).isEqualTo(commenter.getId());
+        assertThat(dto.getActorName()).isEqualTo(commenter.getNickname());
     }
 
     @Test

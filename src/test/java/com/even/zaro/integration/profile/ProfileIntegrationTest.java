@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-public class ProfileApiTest {
+public class ProfileIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;

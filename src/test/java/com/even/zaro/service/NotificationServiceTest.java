@@ -18,6 +18,8 @@ import java.util.List;
 import java.util.Optional;
 
 import static org.assertj.core.api.Assertions.assertThat;
+import static org.assertj.core.api.AssertionsForClassTypes.assertThatCode;
+import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
@@ -44,11 +46,15 @@ public class NotificationServiceTest {
     @BeforeEach
     void setUp() {
         user = User.builder().id(userId).build();
-        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     }
 
     @Nested
     class GetNotificationsListTest {
+
+        @BeforeEach
+        void setUp() {
+            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
+        }
 
         @Test
         void 알림_목록_조회_성공() {
@@ -101,6 +107,16 @@ public class NotificationServiceTest {
     @Nested
     class MarkAsReadTest {
 
+        @Test
+        void 이미_읽은_알림을_다시_읽으면_예외_없이_읽음_유지() {
+            Notification alreadyRead = createNotification(user, Notification.Type.FOLLOW, true);
+            when(notificationRepository.findByIdAndUserId(alreadyRead.getId(), userId)).thenReturn(Optional.of(alreadyRead));
+
+            assertThatCode(() -> notificationService.markAsRead(alreadyRead.getId(), userId))
+                    .doesNotThrowAnyException();
+
+            assertThat(alreadyRead.isRead()).isTrue();
+        }
     }
 
     @Nested

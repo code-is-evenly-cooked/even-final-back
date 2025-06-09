@@ -16,7 +16,8 @@ import java.io.IOException;
 import java.util.Map;
 
 import static org.assertj.core.api.Assertions.assertThat;
-import static org.mockito.Mockito.when;
+import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
 public class NotificationSseServiceTest {
@@ -53,6 +54,35 @@ public class NotificationSseServiceTest {
             when(notificationMapper.toDto(notification)).thenReturn(dto);
 
             notificationSseService.send(userId, notification); // 예외 안 나면 성공
+        }
+
+        @Test
+        void send_시_emitter가_null이면_예외없이_스킵() {
+            Notification notification = createNotification();
+
+            // emitters 등록 안할 때
+            notificationSseService.send(userId, notification);
+        }
+
+
+        @Test
+        void send_도중_IOException_발생시_emitter_제거() throws IOException {
+            Notification notification = createNotification();
+            NotificationDto dto = createDto();
+
+            SseEmitter emitter = mock(SseEmitter.class);
+            when(notificationMapper.toDto(notification)).thenReturn(dto);
+
+            getEmittersMap().put(userId, emitter);
+
+            // void 메서드에 예외 발생하도록 설정
+            doThrow(new IOException("SSE 전송 실패 메시지"))
+                    .when(emitter)
+                    .send(any(SseEmitter.SseEventBuilder.class));
+
+            notificationSseService.send(userId, notification);
+
+            assertThat(getEmittersMap().containsKey(userId)).isFalse(); // 제거 확인
         }
 
 

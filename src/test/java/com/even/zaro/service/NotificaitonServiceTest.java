@@ -44,6 +44,7 @@ public class NotificaitonServiceTest {
     @BeforeEach
     void setUp() {
         user = User.builder().id(userId).build();
+        when(userRepository.findById(userId)).thenReturn(Optional.of(user));
     }
 
     @Nested
@@ -58,7 +59,6 @@ public class NotificaitonServiceTest {
             NotificationDto dto1 = createDto(noti1.getId(), Notification.Type.FOLLOW);
             NotificationDto dto2 = createDto(noti2.getId(), Notification.Type.LIKE);
 
-            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(noti1, noti2));
             when(notificationMapper.toDto(noti1)).thenReturn(dto1);
             when(notificationMapper.toDto(noti2)).thenReturn(dto2);
@@ -72,7 +72,6 @@ public class NotificaitonServiceTest {
 
         @Test
         void 알림이_없을_경우_빈리스트_반환_검증() {
-            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of());
 
             List<NotificationDto> result = notificationService.getNotificationsList(userId);
@@ -88,7 +87,6 @@ public class NotificaitonServiceTest {
             NotificationDto dtoNew = createDto(2L, Notification.Type.LIKE);
             NotificationDto dtoOld = createDto(1L, Notification.Type.FOLLOW);
 
-            when(userRepository.findById(userId)).thenReturn(Optional.of(user));
             when(notificationRepository.findAllByUserOrderByCreatedAtDesc(user)).thenReturn(List.of(newOne, oldOne));
             when(notificationMapper.toDto(newOne)).thenReturn(dtoNew);
             when(notificationMapper.toDto(oldOne)).thenReturn(dtoOld);

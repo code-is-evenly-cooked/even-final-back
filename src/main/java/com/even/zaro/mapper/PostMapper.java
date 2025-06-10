@@ -50,12 +50,6 @@ public interface PostMapper {
     HomePostPreviewResponse.RandomBuyPostDto toRandomBuyDto(Post post);
 
 
-    @Mapping(source = "id", target = "postId")
-    @Mapping(source = "title", target = "title")
-    @Mapping(source = "likeCount", target = "likeCount")
-    @Mapping(source = "commentCount", target = "commentCount")
-    PostRankResponseDto toRankDto(Post post);
-
     default String stripHtmlTags(String html) {
         if (html == null) return "";
         html = html.replace("&lt;", "<").replace("&gt;", ">");

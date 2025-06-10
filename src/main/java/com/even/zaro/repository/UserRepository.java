@@ -28,7 +28,7 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByStatusAndDeletedAtBefore(Status status, LocalDateTime threshold);
 
     @Query(value = """
-            SELECT * FROM user u
+            SELECT * FROM users u
             WHERE u.status = :status
             AND u.last_login_at < :time
             AND NOT EXISTS (

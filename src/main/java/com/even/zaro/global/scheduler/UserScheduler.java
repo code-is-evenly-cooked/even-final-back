@@ -1,8 +1,11 @@
 package com.even.zaro.global.scheduler;
 
+import com.even.zaro.entity.DormancyNoticeLog;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
+import com.even.zaro.repository.DormancyNoticeLogRepository;
 import com.even.zaro.repository.UserRepository;
+import com.even.zaro.service.EmailService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Component;
@@ -16,6 +19,8 @@ import java.util.List;
 public class UserScheduler {
 
     private final UserRepository userRepository;
+    private final DormancyNoticeLogRepository dormancyNoticeLogRepository;
+    private final EmailService emailService;
 
     // 휴면 처리, 탈퇴 처리
     @Scheduled(cron = "0 30 3 * * *")// 매일 3시 30분
@@ -37,5 +42,19 @@ public class UserScheduler {
         LocalDateTime threshold = LocalDateTime.now().minusDays(30);
         List<User> users = userRepository.findByStatusAndDeletedAtBefore(Status.DELETED, threshold);
         userRepository.deleteAll(users);
+    }
+
+    // 휴면 예정 메일 전송
+    @Scheduled(cron = "0 0 14 * * *") // 매일 오후 2시
+    @Transactional
+    public void sendDormancyPendingEmail() {
+        LocalDateTime now = LocalDateTime.now();
+
+        List<User> users = userRepository.findDormancyNoticeTargetsNative(Status.ACTIVE, now.minusMonths(5));
+
+        users.forEach(user -> {
+            emailService.sendDormancyPendingEmail(user.getEmail());
+            dormancyNoticeLogRepository.save(new DormancyNoticeLog(user.getId(), user.getLastLoginAt().toLocalDate()));
+        });
     }
 }

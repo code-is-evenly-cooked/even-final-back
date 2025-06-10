@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -38,6 +37,32 @@ public class UserSchedulerIntegrationTest {
 
     @PersistenceContext
     private EntityManager em;
+
+    @Nested
+    class DeleteExpiredPendingUserTest {
+        @Test
+        void shouldDeletePendingUserAfter1DayOfCreation() {
+            User user = User.builder()
+                    .email("pending@even.com")
+                    .nickname("이메일인증안함")
+                    .provider(Provider.LOCAL)
+                    .status(Status.PENDING)
+                    .build();
+            userRepository.save(user);
+
+            em.createQuery("UPDATE User u SET u.createdAt = :time WHERE u.id = :id")
+                    .setParameter("time", LocalDateTime.now().minusDays(1).minusMinutes(1))
+                    .setParameter("id", user.getId())
+                    .executeUpdate();
+
+            em.flush();
+            em.clear();
+
+            userScheduler.deleteExpiredPendingUsers();
+
+            assertThat(userRepository.findById(user.getId())).isNotPresent();
+        }
+    }
 
     @Nested
     class DormantUserTest {

@@ -39,6 +39,7 @@ public enum ErrorCode {
 
     EMAIL_NOT_FOUND(HttpStatus.NOT_FOUND, "가입된 이메일이 아닙니다."),
     INCORRECT_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+    ALREADY_SIGNED_UP_NOT_VERIFIED_YET(HttpStatus.CONFLICT, "이미 가입한 계정입니다. 인증 메일을 다시 전송했습니다."),
 
     INVALID_OAUTH_TOKEN(HttpStatus.UNAUTHORIZED, "유효하지 않은 소셜 인증 토큰입니다."),
 

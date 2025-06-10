@@ -1,11 +1,14 @@
 package com.even.zaro.entity;
 
 import jakarta.persistence.*;
+import lombok.AccessLevel;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
 @Entity
 @Getter
 @Table(name = "dormancy_notice_log")

@@ -76,4 +76,34 @@ public class MapService {
 
         return placeResponse;
     }
+
+    public PlaceResponse getPlaceAll() {
+        List<Place> all = placeRepository.findAll();
+
+        // 조회된 장소가 없을 때
+        if (all.isEmpty()) {
+            throw new MapException(ErrorCode.BY_COORDINATE_NOT_FOUND_PLACE_LIST);
+        }
+
+        List<PlaceResponse.PlaceInfo> placeInfos =  all.stream()
+                .map(place -> PlaceResponse.PlaceInfo.builder()
+                        .placeId(place.getId())
+                        .name(place.getName())
+                        .address(place.getAddress())
+                        .lat(place.getLat())
+                        .lng(place.getLng())
+                        .category(place.getCategory())
+                        .favoriteCount(place.getFavoriteCount())
+                        .build()
+                ).toList();
+
+        int totalCount = all.size();
+
+        PlaceResponse placeResponse = PlaceResponse.builder()
+                .totalCount(totalCount)
+                .placeInfos(placeInfos)
+                .build();
+
+        return placeResponse;
+    }
 }

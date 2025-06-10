@@ -19,6 +19,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -164,8 +165,11 @@ public class PostService {
     public List<PostRankResponseDto> getRankedPosts() {
         List<Post> posts = postRepository.findTopPosts(0, PageRequest.of(0, 5));
 
+
+        AtomicInteger rankIndex = new AtomicInteger(1);
+
         return posts.stream()
-                .map(postMapper::toRankDto)
+                .map(post -> PostRankResponseDto.from(post, rankIndex.getAndIncrement()))
                 .toList();
     }
 

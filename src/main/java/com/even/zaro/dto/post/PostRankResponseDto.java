@@ -24,12 +24,16 @@ public class PostRankResponseDto {
     @Schema(description = "댓글 수", example = "3")
     private int commentCount;
 
-    public static PostRankResponseDto from(Post post) {
+    @Schema(description = "기준 순위", example = "1")
+    private int baselineRankIndex;
+
+    public static PostRankResponseDto from(Post post, int baselineRankIndex) {
         return PostRankResponseDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
+                .baselineRankIndex(baselineRankIndex)
                 .build();
     }
 }

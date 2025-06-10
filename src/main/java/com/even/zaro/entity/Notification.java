@@ -33,6 +33,7 @@ public class Notification {
     @Column(name = "target_id", nullable = false)
     private Long targetId;
 
+    @Builder.Default
     @Column(name = "is_read", nullable = false)
     private boolean isRead = false;
 

@@ -111,4 +111,67 @@ public class UserSchedulerIntegrationTest {
 
         assertThat(userRepository.findById(user.getId())).isEmpty();
     }
+
+    @Nested
+    class dormantPendingTest {
+        @Test
+        void shouldSendEmailAndSaveLog_ifNotAlreadySent() {
+            LocalDateTime loginAt = LocalDateTime.now().minusMonths(5).minusDays(1);
+            User user = userRepository.save(createActiveUser(loginAt));
+            em.flush();
+            em.clear();
+
+            userScheduler.sendDormancyPendingEmail();
+
+            List<DormancyNoticeLog> logs = dormancyNoticeLogRepository.findAll();
+            assertThat(logs).hasSize(1);
+            assertThat(logs.getFirst().getUserId()).isEqualTo(user.getId());
+        }
+
+        @Test
+        void shouldNotSendEmail_ifAlreadySentForSameLoginDate() {
+            LocalDateTime loginAt = LocalDateTime.now().minusMonths(5).minusDays(1);
+            User user = userRepository.save(createActiveUser(loginAt));
+            dormancyNoticeLogRepository.save(
+                    new DormancyNoticeLog(user.getId(), loginAt.toLocalDate())
+            );
+            em.flush();
+            em.clear();
+
+            userScheduler.sendDormancyPendingEmail();
+
+            List<DormancyNoticeLog> logs = dormancyNoticeLogRepository.findAll();
+            assertThat(logs).hasSize(1);
+        }
+
+        @Test
+        void shouldSendEmail_ifLastCheckedDateIsDifferent() {
+            LocalDateTime baseDate = LocalDateTime.of(2025, 6, 10, 0, 0);
+            LocalDateTime loginAt = baseDate.minusMonths(5).minusDays(1);
+
+            User user = userRepository.save(createActiveUser(loginAt));
+
+            dormancyNoticeLogRepository.save(
+                    new DormancyNoticeLog(user.getId(), loginAt.minusDays(1).toLocalDate())
+            );
+            em.flush();
+            em.clear();
+
+            userScheduler.sendDormancyPendingEmail();
+
+            List<DormancyNoticeLog> logs = dormancyNoticeLogRepository.findAll();
+            assertThat(logs).hasSize(2);
+        }
+
+        private User createActiveUser(LocalDateTime lastLoginAt) {
+            return User.builder()
+                    .email("test@even.com")
+                    .nickname("휴면대상")
+                    .password("Password1!")
+                    .provider(Provider.LOCAL)
+                    .status(Status.ACTIVE)
+                    .lastLoginAt(lastLoginAt)
+                    .build();
+        }
+    }
 }

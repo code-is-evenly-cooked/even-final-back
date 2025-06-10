@@ -5,7 +5,6 @@ import com.even.zaro.dto.map.MarkerInfoResponse;
 import com.even.zaro.dto.map.PlaceResponse;
 import com.even.zaro.global.ApiResponse;
 import com.even.zaro.service.MapService;
-import com.nimbusds.openid.connect.sdk.claims.UserInfo;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
@@ -38,8 +37,6 @@ public class MapController {
     }
 
 
-
-
     @Operation(summary = "사용자 위치 기반 인근 맛집? 조회", description = "사용자의 위치를 이용해 인근 맛집 또는 장소를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/place")
     public ResponseEntity<ApiResponse<PlaceResponse>> getPlacesByCoordinate(
@@ -57,4 +54,15 @@ public class MapController {
 
         return ResponseEntity.ok(ApiResponse.success("인근 장소 리스트를 성공적으로 조회했습니다.", placesByCoordinate));
     }
+
+
+    @Operation(summary = "모든 장소 조회", description = "등록되어 있는 모든 장소를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @GetMapping("/place/all")
+    public ResponseEntity<ApiResponse<PlaceResponse>> getPlaceAll(
+            @AuthenticationPrincipal JwtUserInfoDto userInfo) {
+        PlaceResponse places = mapService.getPlaceAll();
+
+        return ResponseEntity.ok(ApiResponse.success("등록된 모든 장소를 조회했습니다.", places));
+    }
+
 }

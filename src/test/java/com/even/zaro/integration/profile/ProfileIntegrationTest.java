@@ -30,7 +30,7 @@ import static org.junit.jupiter.api.Assertions.assertThrows;
 @SpringBootTest
 @Transactional
 @ActiveProfiles("test")
-public class ProfileApiTest {
+public class ProfileIntegrationTest {
 
     @Autowired
     private UserRepository userRepository;
@@ -46,19 +46,6 @@ public class ProfileApiTest {
 
     @Autowired
     private ProfileService profileService;
-
-    @Test
-    void 유저_기본_프로필_조회_성공() {
-        // given
-        User user = createUser("test@naver.com", "닉네임");
-
-        // when
-        UserProfileDto profile = profileService.getUserProfile(user.getId());
-
-        // then
-        assertThat(profile.getUserId()).isEqualTo(user.getId());
-        assertThat(profile.getNickname()).isEqualTo(user.getNickname());
-    }
 
     @Test
     void 유저가_쓴_게시물_목록_조회_성공() {
@@ -168,74 +155,6 @@ public class ProfileApiTest {
                 .containsExactlyInAnyOrder(userB.getId(), userC.getId());
     }
 
-    /******** 실패 테스트 케이스 ******/
-
-    @Test
-    void 존재하지_않는_유저_프로필_조회_실패() {
-        // when & then
-        UserException exception = assertThrows(UserException.class, () ->
-                profileService.getUserProfile(9999L));
-
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
-    }
-
-    @Test
-    void 존재하지_않는_유저에게_팔로우_시도_실패() {
-        // given
-        User validUser = createUser("valid@even.com", "valid");
-
-        // when & then
-        UserException exception = assertThrows(UserException.class, () ->
-                profileService.followUser(validUser.getId(), 99999L));
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
-    }
-
-    @Test
-    void 자기자신을_팔로우_시도_실패() {
-        // given
-        User user = createUser("self@even.com", "self");
-
-        // when & then
-        ProfileException exception = assertThrows(ProfileException.class, () ->
-                profileService.followUser(user.getId(), user.getId()));
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_SELF_NOT_ALLOWED);
-    }
-
-    @Test
-    void 이미_팔로우한_유저_중복_팔로우_실패() {
-        // given
-        User follower = createUser("a@even.com", "a");
-        User followee = createUser("b@even.com", "b");
-        profileService.followUser(follower.getId(), followee.getId());
-
-        // when & then
-        ProfileException exception = assertThrows(ProfileException.class, () ->
-                profileService.followUser(follower.getId(), followee.getId()));
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_ALREADY_EXISTS);
-    }
-
-    @Test
-    void 존재하지_않는_팔로우관계_언팔로우_실패() {
-        // given
-        User follower = createUser("a@even.com", "a");
-        User followee = createUser("b@even.com", "b");
-
-        // when & then
-        ProfileException exception = assertThrows(ProfileException.class, () ->
-                profileService.unfollowUser(follower.getId(), followee.getId()));
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_NOT_EXIST);
-    }
-
-    @Test
-    void 자기자신을_언팔로우_시도_실패() {
-        // given
-        User user = createUser("self@even.com", "self");
-
-        // when & then
-        ProfileException exception = assertThrows(ProfileException.class, () ->
-                profileService.unfollowUser(user.getId(), user.getId()));
-        assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.FOLLOW_UNFOLLOW_SELF_NOT_ALLOWED);
-    }
 
     /******** 헬퍼 메서드 ******/
 

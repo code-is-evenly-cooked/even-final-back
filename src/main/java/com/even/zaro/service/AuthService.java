@@ -67,6 +67,14 @@ public class AuthService {
         }
 
         // 중복 확인
+        Optional<User> pendingUser = userRepository.findByEmailAndNickname(email, nickname);
+
+        if (pendingUser.isPresent() && pendingUser.get().getStatus() == Status.PENDING) {
+            // 인증 메일 재전송
+            emailVerificationService.resendVerificationEmail(pendingUser.get().getEmail());
+            throw new UserException(ErrorCode.ALREADY_SIGNED_UP_NOT_VERIFIED_YET);
+        }
+
         if (userRepository.existsByEmail(email)) {
             throw new UserException(ErrorCode.EMAIL_ALREADY_EXISTED);
         }

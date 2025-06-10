@@ -50,11 +50,11 @@ public class UserScheduler {
     public void sendDormancyPendingEmail() {
         LocalDateTime now = LocalDateTime.now();
 
-        List<User> users = userRepository.findDormancyNoticeTargets(Status.ACTIVE, now.minusMonths(5));
+        List<User> users = userRepository.findDormancyNoticeTargetsNative(Status.ACTIVE, now.minusMonths(5));
 
         users.forEach(user -> {
             emailService.sendDormancyPendingEmail(user.getEmail());
-            dormancyNoticeLogRepository.save(new DormancyNoticeLog(user.getId()));
+            dormancyNoticeLogRepository.save(new DormancyNoticeLog(user.getId(), user.getLastLoginAt().toLocalDate()));
         });
     }
 }

@@ -40,7 +40,7 @@ public class UserSchedulerIntegrationTest {
     private EntityManager em;
 
     @Nested
-    class dormantUserTest {
+    class DormantUserTest {
         @Test
         void shouldSetUserToDormantIfInactiveFor6Months() {
             LocalDateTime now = LocalDateTime.now();
@@ -94,26 +94,29 @@ public class UserSchedulerIntegrationTest {
         }
     }
 
-    @Test
-    void shouldDeleteUsersWithdrawnOver30DaysAgo_fromDatabase() {
-        User user = User.builder()
-                .email("test@even.com")
-                .nickname("이브니")
-                .password("Password1!")
-                .provider(Provider.LOCAL)
-                .status(Status.DELETED)
-                .deletedAt(LocalDateTime.now().minusDays(31))
-                .build();
+    @Nested
+    class DeleteUserTest {
+        @Test
+        void shouldDeleteUsersWithdrawnOver30DaysAgo_fromDatabase() {
+            User user = User.builder()
+                    .email("test@even.com")
+                    .nickname("이브니")
+                    .password("Password1!")
+                    .provider(Provider.LOCAL)
+                    .status(Status.DELETED)
+                    .deletedAt(LocalDateTime.now().minusDays(31))
+                    .build();
 
-        userRepository.save(user);
+            userRepository.save(user);
 
-        userScheduler.deleteWithdrawnUsers();
+            userScheduler.deleteWithdrawnUsers();
 
-        assertThat(userRepository.findById(user.getId())).isEmpty();
+            assertThat(userRepository.findById(user.getId())).isEmpty();
+        }
     }
 
     @Nested
-    class dormantPendingTest {
+    class DormantPendingTest {
         @Test
         void shouldSendEmailAndSaveLog_ifNotAlreadySent() {
             LocalDateTime loginAt = LocalDateTime.now().minusMonths(5).minusDays(1);

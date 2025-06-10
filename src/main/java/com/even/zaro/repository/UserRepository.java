@@ -3,6 +3,7 @@ package com.even.zaro.repository;
 import com.even.zaro.entity.Provider;
 import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
+import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -26,13 +27,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     List<User> findByStatusAndUpdatedAtBefore(Status status, LocalDateTime time);
     List<User> findByStatusAndDeletedAtBefore(Status status, LocalDateTime threshold);
 
-    @Query("""
-            SELECT u FROM User u
+    @Query(value = """
+            SELECT * FROM user u
             WHERE u.status = :status
-            AND u.lastLoginAt < :time
-            AND u.id NOT IN (
-                SELECT l.userId FROM DormancyNoticeLog l
+            AND u.last_login_at < :time
+            AND NOT EXISTS (
+                SELECT l.user_id FROM dormancy_notice_log l
+                WHERE l.user_id = u.id
+                AND l.last_checked_login_date = DATE(u.last_login_at)
             )
-            """)
-    List<User> findDormancyNoticeTargets(Status status, LocalDateTime time);
+            """, nativeQuery = true)
+    List<User> findDormancyNoticeTargetsNative(@Param("status") Status status, @Param("time") LocalDateTime time);
 }

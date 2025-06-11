@@ -18,6 +18,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.ZoneOffset;
 import java.util.List;
 
 @Service
@@ -64,7 +65,7 @@ public class ProfileService {
                         .thumbnailImage(post.getThumbnailImage())
                         .likeCount(post.getLikeCount())
                         .commentCount(post.getCommentCount())
-                        .createdAt(post.getCreatedAt())
+                        .createdAt(post.getCreatedAt().atOffset(ZoneOffset.UTC))
                         .build());
 
         return new PageResponse<>(page);
@@ -84,7 +85,7 @@ public class ProfileService {
                         .thumbnailImage(postLike.getPost().getThumbnailImage())
                         .likeCount(postLike.getPost().getLikeCount())
                         .commentCount(postLike.getPost().getCommentCount())
-                        .createdAt(postLike.getPost().getCreatedAt())
+                        .createdAt(postLike.getPost().getCreatedAt().atOffset(ZoneOffset.UTC))
                         .build());
 
         return new PageResponse<>(page);
@@ -109,7 +110,7 @@ public class ProfileService {
                             .likeCount(post.getLikeCount())
                             .commentCount(post.getCommentCount())
                             .commentContent(comment.getContent())
-                            .commentCreatedAt(comment.getCreatedAt())
+                            .commentCreatedAt(comment.getCreatedAt().atOffset(ZoneOffset.UTC))
                             .build();
                 });
 

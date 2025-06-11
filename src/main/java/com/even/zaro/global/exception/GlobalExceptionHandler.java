@@ -20,6 +20,7 @@ import java.util.List;
 @RestControllerAdvice
 public class GlobalExceptionHandler {
     private static final List<String> PRIORITY = List.of(
+            "CURRENT_PASSWORD_REQUIRED",
             "EMAIL_REQUIRED",
             "INVALID_EMAIL_FORMAT",
             "PASSWORD_REQUIRED",

@@ -13,9 +13,21 @@ import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Comparator;
+import java.util.List;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final List<String> PRIORITY = List.of(
+            "EMAIL_REQUIRED",
+            "INVALID_EMAIL_FORMAT",
+            "PASSWORD_REQUIRED",
+            "INVALID_PASSWORD_FORMAT",
+            "NICKNAME_REQUIRED",
+            "INVALID_NICKNAME_FORMAT"
+    );
+
     // 커스텀 처리
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustom(CustomException ex) {
@@ -33,10 +45,11 @@ public class GlobalExceptionHandler {
     // ValidException  처리
     @ExceptionHandler(MethodArgumentNotValidException.class)
     public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
-        FieldError error = ex.getBindingResult().getFieldError();
-        String codeName = error.getDefaultMessage();
+        ErrorCode errorCode = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> ErrorCode.valueOf(error.getDefaultMessage()))
+                .min(Comparator.comparingInt(e -> PRIORITY.indexOf(e.name())))
+                .orElseThrow();
 
-        ErrorCode errorCode = ErrorCode.valueOf(codeName);
         return ResponseEntity.badRequest()
                 .body(new ErrorResponse(errorCode.getCode(), errorCode.getDefaultMessage()));
     }

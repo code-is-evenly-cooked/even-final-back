@@ -1,11 +1,13 @@
 package com.even.zaro.dto.profile;
 
+import com.fasterxml.jackson.annotation.JsonFormat;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 import java.time.LocalDateTime;
+import java.time.OffsetDateTime;
 
 @Data
 @Builder
@@ -37,6 +39,11 @@ public class UserPostDto {
     @Schema(description = "댓글 수", example = "3")
     private int commentCount;
 
-    @Schema(description = "게시글 생성일시", example = "2025-05-09T12:00:00")
-    private LocalDateTime createdAt;
+    @Schema(description = "게시글 생성일시", example = "2025-05-09T12:00:00.111Z")
+    @JsonFormat(
+            shape = JsonFormat.Shape.STRING,
+            pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
+            timezone = "UTC"
+    )
+    private OffsetDateTime createdAt;
 }

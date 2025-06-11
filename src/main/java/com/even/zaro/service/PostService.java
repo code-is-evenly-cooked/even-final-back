@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -29,6 +31,7 @@ public class PostService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserService userService;
     private final PostMapper postMapper;
+    private final PostRankBaselineMemoryStore postRankBaselineMemoryStore;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
@@ -165,12 +168,38 @@ public class PostService {
     public List<PostRankResponseDto> getRankedPosts() {
         List<Post> posts = postRepository.findTopPosts(0, PageRequest.of(0, 5));
 
+        if (postRankBaselineMemoryStore.getBaselineRankIndexMap().isEmpty()) {
+            postRankBaselineMemoryStore.updateBaselineRank(posts);
+        }
+        if (postRankBaselineMemoryStore.getPrevRankIndexMap().isEmpty()) {
+            postRankBaselineMemoryStore.updatePrevRank(posts);
+        }
+        Map<Long, Integer> prevRankMapBeforeUpdate = new ConcurrentHashMap<>(postRankBaselineMemoryStore.getPrevRankIndexMap());
 
-        AtomicInteger rankIndex = new AtomicInteger(1);
+        AtomicInteger currentIndex = new AtomicInteger(1);
 
-        return posts.stream()
-                .map(post -> PostRankResponseDto.from(post, rankIndex.getAndIncrement()))
+        Map<Long, Integer> baselineMap = postRankBaselineMemoryStore.getBaselineRankIndexMap();
+
+        List<PostRankResponseDto> result =  posts.stream()
+                .map(post -> {
+                    int currentRankIndex = currentIndex.getAndIncrement();
+                    int baselineRankIndex = baselineMap.getOrDefault(post.getId(), currentRankIndex);
+                    int prevRankIndex = prevRankMapBeforeUpdate.getOrDefault(post.getId(), currentRankIndex);
+
+                    int rankChange = prevRankIndex - currentRankIndex;
+
+                    return PostRankResponseDto.from(post,baselineRankIndex,currentRankIndex,rankChange);
+                })
                 .toList();
+
+        postRankBaselineMemoryStore.updatePrevRank(posts);
+        return result;
+    }
+
+    @Transactional
+    public void updateBaselineRank() {
+        List<Post> posts = postRepository.findTopPosts(0, PageRequest.of(0, 5));
+        postRankBaselineMemoryStore.updateBaselineRank(posts);
     }
 
     @Transactional

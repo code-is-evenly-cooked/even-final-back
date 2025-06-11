@@ -19,7 +19,6 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 
-import static org.assertj.core.api.Assertions.as;
 import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest
@@ -40,7 +39,33 @@ public class UserSchedulerIntegrationTest {
     private EntityManager em;
 
     @Nested
-    class dormantUserTest {
+    class DeleteExpiredPendingUserTest {
+        @Test
+        void shouldDeletePendingUserAfter1DayOfCreation() {
+            User user = User.builder()
+                    .email("pending@even.com")
+                    .nickname("이메일인증안함")
+                    .provider(Provider.LOCAL)
+                    .status(Status.PENDING)
+                    .build();
+            userRepository.save(user);
+
+            em.createQuery("UPDATE User u SET u.createdAt = :time WHERE u.id = :id")
+                    .setParameter("time", LocalDateTime.now().minusDays(1).minusMinutes(1))
+                    .setParameter("id", user.getId())
+                    .executeUpdate();
+
+            em.flush();
+            em.clear();
+
+            userScheduler.deleteExpiredPendingUsers();
+
+            assertThat(userRepository.findById(user.getId())).isNotPresent();
+        }
+    }
+
+    @Nested
+    class DormantUserTest {
         @Test
         void shouldSetUserToDormantIfInactiveFor6Months() {
             LocalDateTime now = LocalDateTime.now();
@@ -94,26 +119,29 @@ public class UserSchedulerIntegrationTest {
         }
     }
 
-    @Test
-    void shouldDeleteUsersWithdrawnOver30DaysAgo_fromDatabase() {
-        User user = User.builder()
-                .email("test@even.com")
-                .nickname("이브니")
-                .password("Password1!")
-                .provider(Provider.LOCAL)
-                .status(Status.DELETED)
-                .deletedAt(LocalDateTime.now().minusDays(31))
-                .build();
+    @Nested
+    class DeleteUserTest {
+        @Test
+        void shouldDeleteUsersWithdrawnOver30DaysAgo_fromDatabase() {
+            User user = User.builder()
+                    .email("test@even.com")
+                    .nickname("이브니")
+                    .password("Password1!")
+                    .provider(Provider.LOCAL)
+                    .status(Status.DELETED)
+                    .deletedAt(LocalDateTime.now().minusDays(31))
+                    .build();
 
-        userRepository.save(user);
+            userRepository.save(user);
 
-        userScheduler.deleteWithdrawnUsers();
+            userScheduler.deleteWithdrawnUsers();
 
-        assertThat(userRepository.findById(user.getId())).isEmpty();
+            assertThat(userRepository.findById(user.getId())).isEmpty();
+        }
     }
 
     @Nested
-    class dormantPendingTest {
+    class DormantPendingTest {
         @Test
         void shouldSendEmailAndSaveLog_ifNotAlreadySent() {
             LocalDateTime loginAt = LocalDateTime.now().minusMonths(5).minusDays(1);

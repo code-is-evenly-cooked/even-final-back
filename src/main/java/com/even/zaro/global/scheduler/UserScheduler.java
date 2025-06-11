@@ -22,6 +22,14 @@ public class UserScheduler {
     private final DormancyNoticeLogRepository dormancyNoticeLogRepository;
     private final EmailService emailService;
 
+    // PENDING 회원 삭제
+    @Scheduled(cron = "0 15 3 * * *") // 매일 3시 15분
+    @Transactional
+    public void deleteExpiredPendingUsers() {
+        LocalDateTime threshold = LocalDateTime.now().minusDays(1);
+        userRepository.deleteByStatusAndCreatedAtBefore(Status.PENDING, threshold);
+    }
+
     // 휴면 처리, 탈퇴 처리
     @Scheduled(cron = "0 30 3 * * *")// 매일 3시 30분
     @Transactional

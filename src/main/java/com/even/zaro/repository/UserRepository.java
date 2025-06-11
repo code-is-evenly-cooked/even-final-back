@@ -17,12 +17,15 @@ public interface UserRepository extends JpaRepository<User, Long> {
     boolean existsByEmail(String email);
     Optional<User> findByEmail(String email);
 
+    Optional<User> findByEmailAndNickname(String email, String nickname);
+
     Optional<User> findByProviderAndProviderId(Provider provider, String providerId);
 
     boolean existsByNickname(String nickname);
 
     Optional<User> findByNickname(String nickname);
 
+    List<User> deleteByStatusAndCreatedAtBefore(Status status, LocalDateTime threshold);
     List<User> findByStatusAndLastLoginAtBefore(Status status, LocalDateTime time);
     List<User> findByStatusAndUpdatedAtBefore(Status status, LocalDateTime time);
     List<User> findByStatusAndDeletedAtBefore(Status status, LocalDateTime threshold);

@@ -25,10 +25,6 @@ import java.util.regex.Pattern;
 @Service
 @RequiredArgsConstructor
 public class AuthService {
-    // 상수
-    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[_!@#$%^&*])[A-Za-z\\d_!@#$%^&*]{6,}$";
-    private static final String NICKNAME_REGEX = "^[a-zA-Z0-9가-힣_-]{2,12}$";
-
     // 필드, 생성자
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -44,20 +40,6 @@ public class AuthService {
         String email = requestDto.getEmail();
         String password = requestDto.getPassword();
         String nickname = requestDto.getNickname();
-
-        // 유효성 검사
-        if (password == null || password.isBlank()) {
-            throw new UserException(ErrorCode.PASSWORD_REQUIRED);
-        }
-        if (!Pattern.matches(PASSWORD_REGEX, password)) {
-            throw new UserException(ErrorCode.INVALID_PASSWORD_FORMAT);
-        }
-        if (nickname == null || nickname.isBlank()) {
-            throw new UserException(ErrorCode.NICKNAME_REQUIRED);
-        }
-        if (!Pattern.matches(NICKNAME_REGEX, nickname)) {
-            throw new UserException(ErrorCode.INVALID_NICKNAME_FORMAT);
-        }
 
         // 중복 확인
         Optional<User> pendingUser = userRepository.findByEmailAndNickname(email, nickname);

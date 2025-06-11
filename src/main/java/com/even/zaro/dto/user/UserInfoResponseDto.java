@@ -39,7 +39,7 @@ public class UserInfoResponseDto {
     @Schema(description = "MBTI", example = "INFP", nullable = true)
     private Mbti mbti;
 
-    @Schema(description = "계정 생성일", example = "2024-01-01T12:00:00")
+    @Schema(description = "계정 생성일", example = "2024-01-01T12:00:00.111Z")
     @JsonFormat(
             shape = JsonFormat.Shape.STRING,
             pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
@@ -47,7 +47,7 @@ public class UserInfoResponseDto {
     )
     private OffsetDateTime createdAt;
 
-    @Schema(description = "계정 수정일", example = "2024-04-01T18:20:00")
+    @Schema(description = "계정 수정일", example = "2024-04-01T18:20:00.111Z")
     @JsonFormat(
             shape = JsonFormat.Shape.STRING,
             pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",
@@ -55,7 +55,7 @@ public class UserInfoResponseDto {
     )
     private OffsetDateTime updatedAt;
 
-    @Schema(description = "마지막 로그인 일시", example = "2025-05-15T12:30:00")
+    @Schema(description = "마지막 로그인 일시", example = "2025-05-15T12:30:00.111Z")
     @JsonFormat(
             shape = JsonFormat.Shape.STRING,
             pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSX",

@@ -26,7 +26,6 @@ import java.util.regex.Pattern;
 @RequiredArgsConstructor
 public class AuthService {
     // 상수
-    private static final String EMAIL_REGEX = "^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$";
     private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[_!@#$%^&*])[A-Za-z\\d_!@#$%^&*]{6,}$";
     private static final String NICKNAME_REGEX = "^[a-zA-Z0-9가-힣_-]{2,12}$";
 
@@ -47,12 +46,6 @@ public class AuthService {
         String nickname = requestDto.getNickname();
 
         // 유효성 검사
-        if (email == null || email.isBlank()) {
-            throw new UserException(ErrorCode.EMAIL_REQUIRED);
-        }
-        if (!Pattern.matches(EMAIL_REGEX, email)) {
-            throw new UserException(ErrorCode.INVALID_EMAIL_FORMAT);
-        }
         if (password == null || password.isBlank()) {
             throw new UserException(ErrorCode.PASSWORD_REQUIRED);
         }

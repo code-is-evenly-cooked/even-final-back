@@ -7,6 +7,7 @@ import com.even.zaro.service.UserService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -41,7 +42,7 @@ public class UserController {
     @Operation(summary = "닉네임 변경", description = "로그인한 사용자의 닉네임을 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/me/nickname")
     public ResponseEntity<ApiResponse<UpdateNicknameResponseDto>> updateNickname(
-            @RequestBody UpdateNicknameRequestDto requestDto,
+            @RequestBody @Valid UpdateNicknameRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
             ) {
         UpdateNicknameResponseDto responseDto = userService.updateNickname(userInfoDto.getUserId(), requestDto);
@@ -66,7 +67,7 @@ public class UserController {
     @Operation(summary = "비밀번호 변경", description = "로그인한 사용자의 비밀번호를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/me/password")
     public ResponseEntity<ApiResponse<Void>> updatePassword(
-            @RequestBody UpdatePasswordRequestDto requestDto,
+            @RequestBody @Valid UpdatePasswordRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         userService.updatePassword(userInfoDto.getUserId(), requestDto);
         return ResponseEntity.ok(ApiResponse.success("비밀번호가 변경되었습니다."));

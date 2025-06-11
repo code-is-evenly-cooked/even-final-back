@@ -19,6 +19,8 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
@@ -29,6 +31,7 @@ public class PostService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserService userService;
     private final PostMapper postMapper;
+    private final PostRankBaselineMemoryStore postRankBaselineMemoryStore;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
@@ -165,12 +168,39 @@ public class PostService {
     public List<PostRankResponseDto> getRankedPosts() {
         List<Post> posts = postRepository.findTopPosts(0, PageRequest.of(0, 5));
 
+        // 최초 baseline 순위 등록 (처음 진입 시 기준 순위 기록용)
+        if (postRankBaselineMemoryStore.getBaselineRankIndexMap().isEmpty()) {
+            postRankBaselineMemoryStore.updateBaselineRank(posts);
+        }
 
-        AtomicInteger rankIndex = new AtomicInteger(1);
+        // 최초 prevRank 등록 (처음 진입 시 이전 순위 기록용)
+        if (postRankBaselineMemoryStore.getPrevRankIndexMap().isEmpty()) {
+            postRankBaselineMemoryStore.updatePrevRank(posts);
+        }
 
-        return posts.stream()
-                .map(post -> PostRankResponseDto.from(post, rankIndex.getAndIncrement()))
+        // 직전 순위 기준으로 rankChange 계산해야하므로 prevRankIndexMap 복사본을 확보
+        Map<Long, Integer> prevRankMapBeforeUpdate = new ConcurrentHashMap<>(postRankBaselineMemoryStore.getPrevRankIndexMap());
+
+        // 현재 순위 계산( 1 ~ 5 순위 )
+        AtomicInteger currentIndex = new AtomicInteger(1);
+
+        Map<Long, Integer> baselineMap = postRankBaselineMemoryStore.getBaselineRankIndexMap();
+
+        List<PostRankResponseDto> result =  posts.stream()
+                .map(post -> {
+                    int currentRankIndex = currentIndex.getAndIncrement();
+                    int baselineRankIndex = baselineMap.getOrDefault(post.getId(), currentRankIndex);
+                    int prevRankIndex = prevRankMapBeforeUpdate.getOrDefault(post.getId(), currentRankIndex);
+
+                    // 직전순위 - 현재순위
+                    int rankChange = prevRankIndex - currentRankIndex;
+
+                    return PostRankResponseDto.from(post,baselineRankIndex,currentRankIndex,rankChange);
+                })
                 .toList();
+
+        postRankBaselineMemoryStore.updatePrevRank(posts);
+        return result;
     }
 
     @Transactional

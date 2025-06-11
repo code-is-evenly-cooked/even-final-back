@@ -27,13 +27,21 @@ public class PostRankResponseDto {
     @Schema(description = "기준 순위", example = "1")
     private int baselineRankIndex;
 
-    public static PostRankResponseDto from(Post post, int baselineRankIndex) {
+    @Schema(description = "현재 순위", example = "2")
+    private int currentRankIndex;
+
+    @Schema(description = "순위 변화량", example = "직전순위 - 현재순위")
+    private int rankChange;
+
+    public static PostRankResponseDto from(Post post, int baselineRankIndex, int currentRankIndex, int rankChange) {
         return PostRankResponseDto.builder()
                 .postId(post.getId())
                 .title(post.getTitle())
                 .likeCount(post.getLikeCount())
                 .commentCount(post.getCommentCount())
                 .baselineRankIndex(baselineRankIndex)
+                .currentRankIndex(currentRankIndex)
+                .rankChange(rankChange)
                 .build();
     }
 }

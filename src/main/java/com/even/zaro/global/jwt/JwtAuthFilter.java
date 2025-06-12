@@ -1,6 +1,8 @@
 package com.even.zaro.global.jwt;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
+import com.github.benmanes.caffeine.cache.Cache;
+import com.github.benmanes.caffeine.cache.Caffeine;
 import io.jsonwebtoken.Claims;
 import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
@@ -16,8 +18,7 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
-import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,6 +26,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
     private final JwtUtil jwtUtil;
     private final RedisTemplate<String, String> redisTemplate;
+
+    private final Cache<String, Boolean> expiredTokenLogCache = Caffeine.newBuilder()
+            .expireAfterWrite(5, TimeUnit.MINUTES) // 5분 후 삭제
+            .maximumSize(1000) // 최대 1000개
+            .build();
 
     @Override
     protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain filterChain) throws ServletException, IOException {
@@ -57,9 +63,11 @@ public class JwtAuthFilter extends OncePerRequestFilter {
                 SecurityContextHolder.getContext().setAuthentication(auth);
             }
         } catch (ExpiredJwtException e) {
-            log.warn("만료된 JWT: {}", e.getMessage());
+            if (expiredTokenLogCache.getIfPresent(token) == null) {
+                log.warn("만료된 JWT: {}", e.getMessage());
+                expiredTokenLogCache.put(token, true);
+            }
         }
-
         filterChain.doFilter(request,response);
     }
 

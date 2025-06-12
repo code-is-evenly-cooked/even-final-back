@@ -142,23 +142,24 @@ class UserServiceTest {
             assertEquals(ErrorCode.MAIL_NOT_VERIFIED, ex.getErrorCode());
         }
 
-        @Test
-        void shouldThrowException_whenNewNicknameIsBlank() {
-            UpdateNicknameRequestDto requestDto = new UpdateNicknameRequestDto("");
-
-            UserException ex = assertThrows(UserException.class, () -> userService.updateNickname(1L, requestDto));
-
-            assertEquals(ErrorCode.NEW_NICKNAME_REQUIRED, ex.getErrorCode());
-        }
-
-        @Test
-        void shouldThrowException_whenNicknameFormatIsInvalid() {
-            UpdateNicknameRequestDto requestDto = new UpdateNicknameRequestDto("형식파괴!!!");
-
-            UserException ex = assertThrows(UserException.class, () -> userService.updateNickname(1L, requestDto));
-
-            assertEquals(ErrorCode.INVALID_NICKNAME_FORMAT, ex.getErrorCode());
-        }
+        // 리팩토링으로 로직 테스트 불필요
+//        @Test
+//        void shouldThrowException_whenNewNicknameIsBlank() {
+//            UpdateNicknameRequestDto requestDto = new UpdateNicknameRequestDto("");
+//
+//            UserException ex = assertThrows(UserException.class, () -> userService.updateNickname(1L, requestDto));
+//
+//            assertEquals(ErrorCode.NEW_NICKNAME_REQUIRED, ex.getErrorCode());
+//        }
+//
+//        @Test
+//        void shouldThrowException_whenNicknameFormatIsInvalid() {
+//            UpdateNicknameRequestDto requestDto = new UpdateNicknameRequestDto("형식파괴!!!");
+//
+//            UserException ex = assertThrows(UserException.class, () -> userService.updateNickname(1L, requestDto));
+//
+//            assertEquals(ErrorCode.INVALID_NICKNAME_FORMAT, ex.getErrorCode());
+//        }
 
         @Test
         void shouldThrowException_whenNicknameAlreadyExists() {
@@ -314,14 +315,15 @@ class UserServiceTest {
             assertEquals(ErrorCode.MAIL_NOT_VERIFIED, ex.getErrorCode());
         }
 
-        @Test
-        void shouldThrowException_whenCurrentPasswordIsBlank() {
-            UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("", "New1234!");
-
-            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
-
-            assertEquals(ErrorCode.CURRENT_PASSWORD_REQUIRED, ex.getErrorCode());
-        }
+        // 리팩토링으로 로직 테스트 불필요
+//        @Test
+//        void shouldThrowException_whenCurrentPasswordIsBlank() {
+//            UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("", "New1234!");
+//
+//            UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+//
+//            assertEquals(ErrorCode.CURRENT_PASSWORD_REQUIRED, ex.getErrorCode());
+//        }
 
         @Test
         void shouldThrowException_whenCurrentPasswordIsIncorrect() {

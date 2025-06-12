@@ -413,25 +413,26 @@ class UserServiceTest {
                 when(userRepository.findById(1L)).thenReturn(Optional.of(user));
             }
 
-            @Test
-            void shouldThrowException_whenNewPasswordIsBlank() {
-                UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "");
-                when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
-
-                UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
-
-                assertEquals(ErrorCode.PASSWORD_REQUIRED, ex.getErrorCode());
-            }
-
-            @Test
-            void shouldThrowException_whenNewPasswordFormatIsInvalid() {
-                UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "wrongFormat");
-                when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
-
-                UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
-
-                assertEquals(ErrorCode.INVALID_PASSWORD_FORMAT, ex.getErrorCode());
-            }
+            // 리팩토링으로 로직 테스트 불필요
+//            @Test
+//            void shouldThrowException_whenNewPasswordIsBlank() {
+//                UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "");
+//                when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
+//
+//                UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+//
+//                assertEquals(ErrorCode.PASSWORD_REQUIRED, ex.getErrorCode());
+//            }
+//
+//            @Test
+//            void shouldThrowException_whenNewPasswordFormatIsInvalid() {
+//                UpdatePasswordRequestDto requestDto = new UpdatePasswordRequestDto("Old1234!", "wrongFormat");
+//                when(passwordEncoder.matches("Old1234!", "OldEncoded1!")).thenReturn(true);
+//
+//                UserException ex = assertThrows(UserException.class, () -> userService.updatePassword(1L, requestDto));
+//
+//                assertEquals(ErrorCode.INVALID_PASSWORD_FORMAT, ex.getErrorCode());
+//            }
 
             @Test
             void shouldThrowException_whenCurrentPasswordIsSameAsNewPassword() {

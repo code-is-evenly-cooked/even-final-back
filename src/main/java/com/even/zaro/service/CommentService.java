@@ -11,7 +11,6 @@ import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.post.PostException;
-import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
@@ -33,6 +32,8 @@ public class CommentService {
     private final CommentRepository commentRepository;
     private final PostRepository postRepository;
     private final UserRepository userRepository;
+    private final PostService postService;
+    private final UserService userService;
 
     @Transactional
     public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
@@ -41,10 +42,8 @@ public class CommentService {
             throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
         }
 
-        Post post = postRepository.findById(postId)
-                .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-        User user = userRepository.findById(currentUserId)
-                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        Post post = postService.findPostOrThrow(postId);
+        User user = userService.findUserById(currentUserId);
 
         User mentionedUser = null;
         String mentionedNickname = requestDto.getMentionedNickname();

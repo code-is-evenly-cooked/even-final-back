@@ -211,14 +211,8 @@ public class PostService {
     // 공통 로직 분리
     /// 게시글을 찾을 수 없을때
     public Post findPostOrThrow(Long postId) {
-        Post post =  postRepository.findById(postId)
+        return postRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-
-        if (post.isDeleted() || post.isReported()) {
-            throw new PostException(ErrorCode.POST_NOT_FOUND);
-        }
-
-        return post;
     }
 
     /// 게시글 찾을 없을때 - 삭제만 검사 (postLike)

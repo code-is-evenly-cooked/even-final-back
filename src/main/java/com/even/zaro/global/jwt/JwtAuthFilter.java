@@ -2,11 +2,13 @@ package com.even.zaro.global.jwt;
 
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
 import io.jsonwebtoken.Claims;
+import io.jsonwebtoken.ExpiredJwtException;
 import jakarta.servlet.FilterChain;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -14,7 +16,10 @@ import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.filter.OncePerRequestFilter;
 
 import java.io.IOException;
+import java.util.Set;
+import java.util.concurrent.ConcurrentHashMap;
 
+@Slf4j
 @RequiredArgsConstructor
 public class JwtAuthFilter extends OncePerRequestFilter {
 
@@ -32,22 +37,27 @@ public class JwtAuthFilter extends OncePerRequestFilter {
         }
 
         // 토큰 유효성 검사
-        if (token != null && jwtUtil.validateAccessToken(token)) {
+        try {
+            if (token != null && jwtUtil.validateAccessToken(token)) {
 
-            // 로그아웃(블랙리스트) 체크
-            if (redisTemplate.hasKey("BL:" + token)) {
-                throw new AuthenticationException("BLACKLISTED") {};
+                // 로그아웃(블랙리스트) 체크
+                if (redisTemplate.hasKey("BL:" + token)) {
+                    throw new AuthenticationException("BLACKLISTED") {
+                    };
+                }
+
+                Claims claims = jwtUtil.parseClaims(token);
+                Long userId = Long.valueOf(claims.getSubject());
+
+                // 인증 객체 생성
+                JwtUserInfoDto userInfo = new JwtUserInfoDto(userId);
+                UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userInfo, null, null);
+
+                // 시큐리티 컨텍스트에 저장
+                SecurityContextHolder.getContext().setAuthentication(auth);
             }
-
-            Claims claims = jwtUtil.parseClaims(token);
-            Long userId = Long.valueOf(claims.getSubject());
-
-            // 인증 객체 생성
-            JwtUserInfoDto userInfo = new JwtUserInfoDto(userId);
-            UsernamePasswordAuthenticationToken auth = new UsernamePasswordAuthenticationToken(userInfo, null, null);
-
-            // 시큐리티 컨텍스트에 저장
-            SecurityContextHolder.getContext().setAuthentication(auth);
+        } catch (ExpiredJwtException e) {
+            log.warn("만료된 JWT: {}", e.getMessage());
         }
 
         filterChain.doFilter(request,response);

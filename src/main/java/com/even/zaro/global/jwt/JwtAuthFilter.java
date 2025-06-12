@@ -48,6 +48,7 @@ public class JwtAuthFilter extends OncePerRequestFilter {
 
                 // 로그아웃(블랙리스트) 체크
                 if (redisTemplate.hasKey("BL:" + token)) {
+                    log.warn("블랙리스트 토큰 접근 시도: {}", token);
                     throw new AuthenticationException("BLACKLISTED") {
                     };
                 }

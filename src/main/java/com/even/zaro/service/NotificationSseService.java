@@ -7,6 +7,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
+import jakarta.annotation.PostConstruct;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
 import java.util.Map;
@@ -19,6 +21,28 @@ public class NotificationSseService {
 
     private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
     private final NotificationMapper notificationMapper;
+
+    // 주기적으로 ping을 보내는 작업 시작 (초기화)
+    @PostConstruct
+    public void startPingTask() {
+        log.info("[SSE] Ping 작업 초기화 완료");
+    }
+
+    // 30초마다 모든 클라이언트에게 ping 이벤트 전송
+    @Scheduled(fixedRate = 30000) // 30초마다 실행
+    public void sendPingToAllClients() {
+        for (Map.Entry<Long, SseEmitter> entry : emitters.entrySet()) {
+            Long userId = entry.getKey();
+            SseEmitter emitter = entry.getValue();
+            try {
+                emitter.send(SseEmitter.event().name("ping").data("keep-alive"));
+                log.debug("[SSE] 유저 {} 에게 ping 전송", userId);
+            } catch (IOException e) {
+                log.warn("[SSE] 유저 {} ping 전송 실패. 연결 제거", userId);
+                emitters.remove(userId);
+            }
+        }
+    }
 
     public SseEmitter connect(Long userId) {
         log.info("[SSE] 유저 {} 연결 시도", userId);

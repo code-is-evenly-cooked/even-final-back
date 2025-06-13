@@ -53,24 +53,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<SignInResponseDto>> signIn(@RequestBody SignInRequestDto requestDto) {
         SignInResponseDto responseDto = authService.signIn(requestDto);
 
-        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", responseDto.getAccessToken())
-                .httpOnly(true)
-                .secure(true) // HTTPS(배포) 환경에서만 작동, 로컬에서는 false로 바꿔야함
-                .sameSite("None") // 크로스도메인 허용
-                .path("/")
-                .build();
-
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", responseDto.getRefreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(ApiResponse.success("로그인에 성공했습니다.", responseDto));
+        return ResponseEntity.ok(ApiResponse.success("로그인에 성공했습니다.", responseDto));
     }
 
     @Operation(summary = "카카오 회원가입/로그인", description = "카카오 access token을 받아 회원가입/로그인 처리합니다.")
@@ -78,25 +61,7 @@ public class AuthController {
     public ResponseEntity<ApiResponse<SignInResponseDto>> signInWithKakao(
             @RequestBody @Parameter(description = "카카오 access token") KakaoSignInRequestDto requestDto) {
         SignInResponseDto responseDto = authService.SignInWithKakao(requestDto.getAccessToken());
-
-        ResponseCookie accessTokenCookie = ResponseCookie.from("access_token", responseDto.getAccessToken())
-                .httpOnly(true)
-                .secure(true) // HTTPS(배포) 환경에서만 작동, 로컬에서는 false로 바꿔야함
-                .sameSite("None") // 크로스도메인 허용
-                .path("/")
-                .build();
-
-        ResponseCookie refreshTokenCookie = ResponseCookie.from("refresh_token", responseDto.getRefreshToken())
-                .httpOnly(true)
-                .secure(true)
-                .sameSite("None")
-                .path("/")
-                .build();
-
-        return ResponseEntity.ok()
-                .header(HttpHeaders.SET_COOKIE, accessTokenCookie.toString())
-                .header(HttpHeaders.SET_COOKIE, refreshTokenCookie.toString())
-                .body(ApiResponse.success("카카오 로그인에 성공했습니다.", responseDto));
+        return ResponseEntity.ok(ApiResponse.success("카카오 로그인에 성공했습니다.", responseDto));
     }
 
     @Operation(summary = "Access Token 재발급", description = "Refresh 토큰을 입력해 Access Token을 재발급 받습니다. 상단 Authorize에 Refresh Token을 입력하세요.",

@@ -7,13 +7,28 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.dao.DataAccessException;
 import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.FieldError;
+import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 
+import java.util.Comparator;
+import java.util.List;
+
 @Slf4j
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+    private static final List<String> PRIORITY = List.of(
+            "CURRENT_PASSWORD_REQUIRED",
+            "EMAIL_REQUIRED",
+            "INVALID_EMAIL_FORMAT",
+            "PASSWORD_REQUIRED",
+            "INVALID_PASSWORD_FORMAT",
+            "NICKNAME_REQUIRED",
+            "INVALID_NICKNAME_FORMAT"
+    );
+
     // 커스텀 처리
     @ExceptionHandler(CustomException.class)
     public ResponseEntity<ErrorResponse> handleCustom(CustomException ex) {
@@ -26,6 +41,18 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(ex.getStatus())
                 .body(ErrorResponse.fail(ex.getCode(), ex.getMessage()));
+    }
+
+    // ValidException  처리
+    @ExceptionHandler(MethodArgumentNotValidException.class)
+    public ResponseEntity<ErrorResponse> handleValidation(MethodArgumentNotValidException ex) {
+        ErrorCode errorCode = ex.getBindingResult().getFieldErrors().stream()
+                .map(error -> ErrorCode.valueOf(error.getDefaultMessage()))
+                .min(Comparator.comparingInt(e -> PRIORITY.indexOf(e.name())))
+                .orElseThrow();
+
+        return ResponseEntity.badRequest()
+                .body(new ErrorResponse(errorCode.getCode(), errorCode.getDefaultMessage()));
     }
 
     // 기타 예외 처리

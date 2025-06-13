@@ -17,13 +17,10 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.time.ZoneOffset;
 import java.time.format.DateTimeFormatter;
-import java.util.regex.Pattern;
 
 @Service
 @RequiredArgsConstructor
 public class UserService {
-    private static final String PASSWORD_REGEX = "^(?=.*[A-Z])(?=.*[a-z])(?=.*\\d)(?=.*[_!@#$%^&*])[A-Za-z\\d_!@#$%^&*]{6,}$";
-    private static final String NICKNAME_REGEX = "^[a-zA-Z0-9가-힣_-]{2,12}$";
 
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
@@ -67,14 +64,6 @@ public class UserService {
         validateNotPending(user);
 
         String newNickname = requestDto.getNewNickname();
-
-        if (newNickname == null || newNickname.isBlank()) {
-            throw new UserException(ErrorCode.NEW_NICKNAME_REQUIRED);
-        }
-
-        if (!Pattern.matches(NICKNAME_REGEX, newNickname)) {
-            throw new UserException(ErrorCode.INVALID_NICKNAME_FORMAT);
-        }
 
         if (userRepository.existsByNickname(newNickname)) {
             throw new UserException(ErrorCode.NICKNAME_ALREADY_EXISTED);
@@ -132,15 +121,13 @@ public class UserService {
         String currentPassword = requestDto.getCurrentPassword();
         String newPassword = requestDto.getNewPassword();
 
-        if (currentPassword == null || currentPassword.isBlank()) {
-            throw new UserException(ErrorCode.CURRENT_PASSWORD_REQUIRED);
-        }
-
         if (!passwordEncoder.matches(currentPassword, user.getPassword())) {
             throw new UserException(ErrorCode.CURRENT_PASSWORD_WRONG);
         }
 
-        validateNewPassword(currentPassword, newPassword);
+        if (currentPassword.equals(newPassword)) {
+            throw new UserException(ErrorCode.CURRENT_PASSWORD_EQUALS_NEW_PASSWORD);
+        }
 
         user.updatePassword(passwordEncoder.encode(newPassword));
     }
@@ -183,20 +170,6 @@ public class UserService {
     public void validateNotPending(User user) {
         if (user.getStatus() == Status.PENDING) {
             throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
-        }
-    }
-
-    private void validateNewPassword(String currentPassword, String newPassword) {
-        if (newPassword == null || newPassword.isBlank()) {
-            throw new UserException(ErrorCode.PASSWORD_REQUIRED);
-        }
-
-        if (!Pattern.matches(PASSWORD_REGEX, newPassword)) {
-            throw new UserException(ErrorCode.INVALID_PASSWORD_FORMAT);
-        }
-
-        if (currentPassword.equals(newPassword)) {
-            throw new UserException(ErrorCode.CURRENT_PASSWORD_EQUALS_NEW_PASSWORD);
         }
     }
 }

@@ -3,9 +3,11 @@ package com.even.zaro.service;
 import com.even.zaro.dto.group.GroupCreateRequest;
 import com.even.zaro.dto.group.GroupEditRequest;
 import com.even.zaro.dto.group.GroupResponse;
+import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.FavoriteGroup;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
+import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.mapper.GroupMapper;
@@ -73,6 +75,9 @@ public class GroupService {
         if (group.isDeleted()) {
             throw new GroupException(ErrorCode.GROUP_ALREADY_DELETE);
         }
+
+        // 그룹 내의 즐겨찾기 전부 삭제 처리
+        favoriteRepository.findAllByGroup(group).forEach(Favorite::setDeleteTrue);
 
         group.setIsDeleted();
 

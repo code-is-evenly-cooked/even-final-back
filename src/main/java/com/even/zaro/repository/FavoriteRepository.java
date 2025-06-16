@@ -17,4 +17,6 @@ public interface FavoriteRepository extends JpaRepository<Favorite, Long> {
     List<Favorite> findAllByGroupAndDeletedFalse(FavoriteGroup group);
 
     boolean existsByPlaceAndUser(Place place, User user);
+
+    List<Favorite> findAllByGroup(FavoriteGroup group);
 }

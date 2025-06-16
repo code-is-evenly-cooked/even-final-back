@@ -51,7 +51,7 @@ public class UserService {
     @Transactional
     public UpdateProfileImageResponseDto updateProfileImage(Long userId, UpdateProfileImageRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         user.updateProfileImage(requestDto.getProfileImage());
 
@@ -61,7 +61,7 @@ public class UserService {
     @Transactional
     public UpdateNicknameResponseDto updateNickname(Long userId, UpdateNicknameRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         String newNickname = requestDto.getNewNickname();
 
@@ -98,7 +98,7 @@ public class UserService {
     @Transactional
     public UpdateProfileResponseDto updateProfile(Long userId, UpdateProfileRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         user.updateBirthday(requestDto.getBirthday());
         user.updateLiveAloneDate(requestDto.getLiveAloneDate());
@@ -116,7 +116,7 @@ public class UserService {
     @Transactional
     public void updatePassword(Long userId, UpdatePasswordRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         String currentPassword = requestDto.getCurrentPassword();
         String newPassword = requestDto.getNewPassword();

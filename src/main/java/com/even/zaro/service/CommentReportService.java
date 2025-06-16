@@ -35,7 +35,7 @@ public class CommentReportService {
         request.validateReasonTextOrThrow();
 
        User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         if (commentReportRepository.existsByCommentAndUser(comment, user)) {
             throw new CommentException(ErrorCode.ALREADY_REPORTED_COMMENT);

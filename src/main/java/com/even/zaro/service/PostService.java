@@ -43,7 +43,7 @@ public class PostService {
         validateTagForCategory(category, tag);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         String thumbnailImage = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
@@ -68,7 +68,7 @@ public class PostService {
         Post post = findPostOrThrow(postId);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         validatePostNotOwner(post, user);
 
@@ -130,7 +130,7 @@ public class PostService {
         Post post = findPostOrThrow(postId);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         validatePostNotOwner(post, user);
 

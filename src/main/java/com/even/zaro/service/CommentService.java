@@ -73,12 +73,11 @@ public class CommentService {
     public CommentPageResponse readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
 
-        Post post = postService.findPostOrThrow(postId);
-
-        int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
-
         Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalse(postId, pageable)
                 .map(comment -> commentMapper.toListDto(comment, currentUserId));
+
+        int totalComments = (int) page.getTotalElements();
+
         return new CommentPageResponse(page, totalComments);
     }
 

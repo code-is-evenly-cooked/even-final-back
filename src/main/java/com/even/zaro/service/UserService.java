@@ -167,6 +167,15 @@ public class UserService {
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
+    public User findActiveUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new UserException(ErrorCode.USER_NOT_FOUND);
+        }
+        return user;
+    }
+
     public void validateActiveUser(User user) {
         if (user.getStatus() == Status.PENDING) {
             throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);

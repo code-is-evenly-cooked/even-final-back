@@ -38,9 +38,6 @@ public class CommentService {
     @Transactional
     public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
         Long currentUserId = userInfoDto.getUserId();
-        if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
-            throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
-        }
 
         Post post = postService.findPostOrThrow(postId);
         User user = userService.findUserById(currentUserId);
@@ -88,9 +85,6 @@ public class CommentService {
     @Transactional
     public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
-        if (requestDto.getContent() == null || requestDto.getContent().isBlank()) {
-            throw new CommentException(ErrorCode.COMMENT_CONTENT_BLANK);
-        }
 
         Comment comment = commentRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));

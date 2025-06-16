@@ -19,6 +19,7 @@ public class CommentResponseDto {
     private Long id;
 
     @Schema(description = "댓글 내용", example = "너무 좋네요!!")
+    @NotBlank(message = "COMMENT_CONTENT_BLANK")
     private String content;
 
     @Schema(description = "작성자 ID", example = "2")

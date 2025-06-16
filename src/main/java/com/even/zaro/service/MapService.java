@@ -49,12 +49,6 @@ public class MapService {
 
         List<Place> placeByCoordinate = mapQueryRepository.findPlaceByCoordinate(lat, lng, distanceKm);
 
-        // 조회된 장소가 없을 때
-        if (placeByCoordinate.isEmpty()) {
-//            throw new MapException(ErrorCode.BY_COORDINATE_NOT_FOUND_PLACE_LIST);
-            return null;
-        }
-
         List<PlaceResponse.PlaceInfo> placeInfos =  placeByCoordinate.stream()
                 .sorted(Comparator.comparingInt(Place::getFavoriteCount).reversed()) // 내림차순 정렬
                 .map(place -> PlaceResponse.PlaceInfo.builder()

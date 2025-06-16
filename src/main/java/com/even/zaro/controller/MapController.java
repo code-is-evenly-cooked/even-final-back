@@ -50,10 +50,9 @@ public class MapController {
 
         PlaceResponse placesByCoordinate = mapService.getPlacesByCoordinate(lat, lng, distanceKm);
 
-        if (placesByCoordinate == null) {
-            return ResponseEntity.ok(ApiResponse.success("인근에 조회된 장소가 없습니다."));
+        if (placesByCoordinate.getTotalCount() == 0) {
+            return ResponseEntity.ok(ApiResponse.success("인근에 조회된 장소가 없습니다.", placesByCoordinate));
         }
-
         return ResponseEntity.ok(ApiResponse.success("인근 장소 리스트를 성공적으로 조회했습니다.", placesByCoordinate));
     }
 

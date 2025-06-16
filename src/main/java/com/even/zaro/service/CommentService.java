@@ -68,7 +68,7 @@ public class CommentService {
 
         int commentLocatedPage = calculateTotalPages(post, pageSize);
 
-        return toDto(comment, currentUserId, commentLocatedPage);
+        return commentMapper.toCreateDto(comment, currentUserId, commentLocatedPage);
     }
 
     @Transactional(readOnly = true)

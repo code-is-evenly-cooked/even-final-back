@@ -8,7 +8,6 @@ import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.profile.ProfileException;
-import com.even.zaro.global.exception.user.UserException;
 
 import lombok.AllArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -95,12 +94,16 @@ public class ProfileService {
     public PageResponse<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
         User user = userService.findUserById(userId);
 
-        Page<UserCommentDto> page = commentRepository.findByUserAndIsDeletedFalseAndIsReportedFalse(user, pageable)
+        Page<UserCommentDto> page = commentRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(comment -> {
                     Post post = comment.getPost();
                     if (post == null) {
                         throw new CommentException(ErrorCode.COMMENT_NO_ASSOCIATED_POST);
                     }
+
+                    String content = comment.isReported()
+                            ? "신고 처리된 댓글입니다."
+                            : comment.getContent();
 
                     return UserCommentDto.builder()
                             .postId(post.getId())
@@ -109,7 +112,7 @@ public class ProfileService {
                             .tag(post.getTag() != null ? post.getTag().name() : null)
                             .likeCount(post.getLikeCount())
                             .commentCount(post.getCommentCount())
-                            .commentContent(comment.getContent())
+                            .commentContent(content)
                             .commentCreatedAt(comment.getCreatedAt().atOffset(ZoneOffset.UTC))
                             .build();
                 });

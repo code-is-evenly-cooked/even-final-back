@@ -14,7 +14,7 @@ import java.util.Optional;
 @Repository
 public interface CommentRepository extends JpaRepository<Comment, Long> {
 
-    Page<Comment> findByUserAndIsDeletedFalseAndIsReportedFalse(User user, Pageable pageable);
+    Page<Comment> findByUserAndIsDeletedFalse(User user, Pageable pageable);
 
     @EntityGraph(attributePaths = {"user"})
     Page<Comment> findByPostIdAndIsDeletedFalse(Long postId, Pageable pageable);

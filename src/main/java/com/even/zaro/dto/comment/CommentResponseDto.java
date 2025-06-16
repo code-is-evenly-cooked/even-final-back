@@ -2,8 +2,10 @@ package com.even.zaro.dto.comment;
 
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
+import jakarta.validation.constraints.NotBlank;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 
@@ -19,6 +21,7 @@ public class CommentResponseDto {
     private Long id;
 
     @Schema(description = "댓글 내용", example = "너무 좋네요!!")
+    @NotBlank(message = "COMMENT_CONTENT_BLANK")
     private String content;
 
     @Schema(description = "작성자 ID", example = "2")
@@ -67,6 +70,7 @@ public class CommentResponseDto {
     private MentionedUserDto mentionedUser;
 
     @Schema(description = "댓글이 위치한 페이지 번호", example = "2", nullable = true)
+    @JsonInclude(JsonInclude.Include.NON_NULL)
     private Integer commentLocatedPage;
 
     @JsonIgnore

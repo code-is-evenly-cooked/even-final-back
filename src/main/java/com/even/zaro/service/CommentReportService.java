@@ -4,9 +4,7 @@ import com.even.zaro.dto.post.ReportRequestDTO;
 import com.even.zaro.dto.post.ReportResponseDto;
 import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
-import com.even.zaro.global.exception.CustomException;
 import com.even.zaro.global.exception.comment.CommentException;
-import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.CommentReportRepository;
 import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.UserRepository;
@@ -27,7 +25,7 @@ public class CommentReportService {
 
     @Transactional
     public ReportResponseDto reportComment(Long commentId, ReportRequestDTO request, Long userId) {
-        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
+        Comment comment = commentRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (comment.getUser().getId().equals(userId)) {

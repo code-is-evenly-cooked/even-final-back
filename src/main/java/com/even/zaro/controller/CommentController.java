@@ -1,6 +1,7 @@
 package com.even.zaro.controller;
 
 import com.even.zaro.dto.PageResponse;
+import com.even.zaro.dto.comment.CommentPageResponse;
 import com.even.zaro.dto.comment.CommentRequestDto;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;
@@ -13,6 +14,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +47,7 @@ public class CommentController {
     public ResponseEntity<ApiResponse<CommentResponseDto>> createComment(
             @Parameter(description = "게시글 ID", example = "1") @PathVariable Long postId,
             @RequestParam(defaultValue = "10") int pageSize,
-            @RequestBody CommentRequestDto requestDto,
+            @Valid @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userInfoDto, pageSize);
         return ResponseEntity
@@ -56,12 +58,12 @@ public class CommentController {
     @Operation(summary = "댓글 리스트 조회", description = "{postId} 게시글에 댓글 리스트를 조회합니다.",
             security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<ApiResponse<PageResponse<CommentResponseDto>>> readAllComments(
+    public ResponseEntity<ApiResponse<CommentPageResponse>> readAllComments(
             @Parameter(description = "게시글 ID", example = "1") @PathVariable Long postId,
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
-        PageResponse<CommentResponseDto> responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
+        CommentPageResponse responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글 리스트를 불러왔습니다.", responseDto));
     }
 
@@ -70,7 +72,7 @@ public class CommentController {
     @PatchMapping("comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
             @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
-            @RequestBody CommentRequestDto requestDto,
+            @Valid @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
         CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userInfoDto);

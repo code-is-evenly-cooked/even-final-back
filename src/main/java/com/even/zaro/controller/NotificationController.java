@@ -8,6 +8,7 @@ import com.even.zaro.service.NotificationSseService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.MediaType;
@@ -65,8 +66,17 @@ public class NotificationController {
     }
 
     @GetMapping(value = "/subscribe", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public SseEmitter subscribe(@AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
+    public SseEmitter subscribe(
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto, HttpServletResponse response
+    ) {
         log.info("[SSE] /subscribe 진입: userId = {}", userInfoDto.getUserId());
+
+        // SSE 관련 헤더 세팅
+        response.setContentType("text/event-stream;charset=UTF-8");
+        response.setHeader("Cache-Control", "no-cache");
+        response.setHeader("Connection", "keep-alive");
+        response.setHeader("X-Accel-Buffering", "no"); // 버퍼링 방지
+
         return notificationSseService.connect(userInfoDto.getUserId());
     }
 }

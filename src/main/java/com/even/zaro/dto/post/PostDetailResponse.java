@@ -62,5 +62,6 @@ public class PostDetailResponse {
         private String nickname;
         private String profileImage;
         private LocalDate liveAloneDate;
+        private boolean following;
     }
 }

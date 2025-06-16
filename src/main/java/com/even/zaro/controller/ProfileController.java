@@ -132,7 +132,7 @@ public class ProfileController {
     public ResponseEntity<?> getUserFollowings(
             @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        List<FollowerFollowingListDto> followings = profileService.getUserFollowings(userId);
+        List<FollowerFollowingListDto> followings = profileService.getUserFollowings(userId, userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("유저의 팔로잉 목록 조회 성공 !", followings));
     }
 
@@ -145,7 +145,7 @@ public class ProfileController {
     public ResponseEntity<?> getUserFollowers(
             @Parameter(description = "조회할 유저의 ID") @PathVariable Long userId,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userId);
+        List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userId, userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("유저의 팔로워 목록 조회 성공 !", followers));
     }
 }

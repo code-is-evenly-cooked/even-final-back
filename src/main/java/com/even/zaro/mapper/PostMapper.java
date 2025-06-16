@@ -24,6 +24,7 @@ public interface PostMapper {
     @Mapping(source = "user.id", target = "user.userId")
     @Mapping(source = "user.nickname", target = "user.nickname")
     @Mapping(source = "user.profileImage", target = "user.profileImage")
+    @Mapping(source = "user.liveAloneDate", target = "user.liveAloneDate")
     PostDetailResponse toPostDetailDto(Post post);
 
     @Mapping(source = "id", target = "postId")

@@ -21,6 +21,9 @@ public class CommentResponseDto {
     @Schema(description = "댓글 내용", example = "너무 좋네요!!")
     private String content;
 
+    @Schema(description = "작성자 ID", example = "2")
+    private Long userId;
+
     @Schema(description = "작성자 닉네임", example = "이브니")
     private String nickname;
 

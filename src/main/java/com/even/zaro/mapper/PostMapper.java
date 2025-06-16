@@ -24,11 +24,13 @@ public interface PostMapper {
     @Mapping(source = "user.id", target = "user.userId")
     @Mapping(source = "user.nickname", target = "user.nickname")
     @Mapping(source = "user.profileImage", target = "user.profileImage")
+    @Mapping(source = "user.liveAloneDate", target = "user.liveAloneDate")
     PostDetailResponse toPostDetailDto(Post post);
 
     @Mapping(source = "id", target = "postId")
     @Mapping(source = "user.nickname", target = "writerNickname")
     @Mapping(source = "user.profileImage", target = "writerProfileImage")
+    @Mapping(target = "content", expression = "java(stripHtmlTags(post.getContent()))")
     PostPreviewDto toPostPreviewDto(Post post);
 
     @Mapping(source = "id", target = "postId")
@@ -49,9 +51,14 @@ public interface PostMapper {
     HomePostPreviewResponse.RandomBuyPostDto toRandomBuyDto(Post post);
 
 
-    @Mapping(source = "id", target = "postId")
-    @Mapping(source = "title", target = "title")
-    @Mapping(source = "likeCount", target = "likeCount")
-    @Mapping(source = "commentCount", target = "commentCount")
-    PostRankResponseDto toRankDto(Post post);
+    default String stripHtmlTags(String html) {
+        if (html == null) return "";
+        html = html.replace("&lt;", "<").replace("&gt;", ">");
+        return html
+                .replaceAll("(?i)<br\\s*/?>", "")
+                .replaceAll("<[^>]*>", "")
+                .replaceAll("\\\\","")
+                .replaceAll("\\s+", " ")
+                .trim();
+    }
 }

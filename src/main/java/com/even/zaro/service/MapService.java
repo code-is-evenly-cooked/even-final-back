@@ -6,17 +6,16 @@ import com.even.zaro.entity.Favorite;
 import com.even.zaro.entity.Place;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.map.MapException;
-import com.even.zaro.global.exception.place.PlaceException;
 import com.even.zaro.mapper.MapMapper;
 import com.even.zaro.repository.FavoriteRepository;
 import com.even.zaro.repository.MapQueryRepository;
 import com.even.zaro.repository.PlaceRepository;
-import lombok.AllArgsConstructor;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.Comparator;
 import java.util.List;
 
 @Service
@@ -56,6 +55,7 @@ public class MapService {
         }
 
         List<PlaceResponse.PlaceInfo> placeInfos =  placeByCoordinate.stream()
+                .sorted(Comparator.comparingInt(Place::getFavoriteCount).reversed()) // 내림차순 정렬
                 .map(place -> PlaceResponse.PlaceInfo.builder()
                         .placeId(place.getId())
                         .name(place.getName())
@@ -68,6 +68,36 @@ public class MapService {
                 ).toList();
 
         int totalCount = placeByCoordinate.size();
+
+        PlaceResponse placeResponse = PlaceResponse.builder()
+                .totalCount(totalCount)
+                .placeInfos(placeInfos)
+                .build();
+
+        return placeResponse;
+    }
+
+    public PlaceResponse getPlaceAll() {
+        List<Place> all = placeRepository.findAll();
+
+        // 조회된 장소가 없을 때
+        if (all.isEmpty()) {
+            throw new MapException(ErrorCode.BY_COORDINATE_NOT_FOUND_PLACE_LIST);
+        }
+
+        List<PlaceResponse.PlaceInfo> placeInfos =  all.stream()
+                .map(place -> PlaceResponse.PlaceInfo.builder()
+                        .placeId(place.getId())
+                        .name(place.getName())
+                        .address(place.getAddress())
+                        .lat(place.getLat())
+                        .lng(place.getLng())
+                        .category(place.getCategory())
+                        .favoriteCount(place.getFavoriteCount())
+                        .build()
+                ).toList();
+
+        int totalCount = all.size();
 
         PlaceResponse placeResponse = PlaceResponse.builder()
                 .totalCount(totalCount)

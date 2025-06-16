@@ -152,6 +152,7 @@ public class CommentService {
         return new CommentResponseDto(
                 comment.getId(),
                 content,
+                writer.getId(),
                 writer.getNickname(),
                 writer.getProfileImage(),
                 writer.getLiveAloneDate(),

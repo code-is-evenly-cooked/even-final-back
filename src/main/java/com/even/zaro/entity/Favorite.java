@@ -47,10 +47,10 @@ public class Favorite {
     private LocalDateTime updatedAt;
 
     @Column(name = "is_deleted", nullable = false)
-    private boolean isDeleted;
+    private boolean deleted;
 
     public void setDeleteTrue() {
-        isDeleted = true;
+        deleted = true;
     }
 
     public void editMemo(String memo) {

@@ -1,6 +1,6 @@
 package com.even.zaro.entity;
 
-import com.even.zaro.listener.FollowListener;
+import com.even.zaro.global.event.listener.FollowListener;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

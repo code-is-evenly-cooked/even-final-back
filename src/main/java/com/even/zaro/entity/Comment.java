@@ -1,6 +1,6 @@
 package com.even.zaro.entity;
 
-import com.even.zaro.listener.CommentListener;
+import com.even.zaro.global.event.listener.CommentListener;
 import jakarta.persistence.*;
 import lombok.*;
 import org.hibernate.annotations.CreationTimestamp;

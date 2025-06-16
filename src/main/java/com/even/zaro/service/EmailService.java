@@ -38,9 +38,18 @@ public class EmailService {
     public void sendPasswordResetEmail(String email, String token) {
 
         String linkDev = "http://localhost:3000/password-reset?token=" + token; // 개발용 프론트 작업 완료 후 삭제 예정
-        String verifyLink = frontendUrl + "/password-reset?token=" + token;
+        String frontLink = frontendUrl + "/password-reset?token=" + token;
         String subject = "[ZARO] 비밀번호 재설정";
-        String html = loadTemplate("email/password-reset-template.html", verifyLink, linkDev);
+        String html = loadTemplate("email/password-reset-template.html", frontLink, linkDev);
+
+        sendHtml(email, subject, html);
+    }
+
+    public void sendDormancyPendingEmail(String email) {
+
+        String frontLink = frontendUrl + "/login";
+        String subject = "[ZARO] 30일 후 휴면 예정 안내드립니다";
+        String html = loadTemplate("email/dormancy-pending-template.html", frontLink);
 
         sendHtml(email, subject, html);
     }

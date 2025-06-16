@@ -12,6 +12,7 @@ import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.favorite.FavoriteException;
 import com.even.zaro.global.exception.group.GroupException;
 import com.even.zaro.global.exception.map.MapException;
+import com.even.zaro.global.exception.place.PlaceException;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.mapper.FavoriteMapper;
 import com.even.zaro.repository.FavoriteGroupRepository;
@@ -49,11 +50,11 @@ public class FavoriteService {
         // 해당 장소가 이미 저장되어있는지 없다면 장소 추가
         Place place = checkDuplicateByKakoPlaceId(request);
 
-        // 해당 유저가 이미 그 장소를 추가했는지 확인하고 저장
-        List<Favorite> placeList = favoriteRepository.findByPlaceAndUser(place, user);
+        // 해당 유저가 이미 그 장소를 추가했는지 확인
+        boolean check = favoriteRepository.existsByPlaceAndUser(place, user);
 
         // 해당 유저가 placeId가 일치하는 장소가 이미 추가되어있다면
-        if (placeList.size() > 0) {
+        if (check) {
             throw new FavoriteException(ErrorCode.FAVORITE_ALREADY_EXISTS);
         }
 
@@ -62,11 +63,14 @@ public class FavoriteService {
                 .group(group)
                 .place(place)
                 .memo(request.getMemo())
-                .isDeleted(false)
+                .deleted(false)
                 .build();
 
         // 즐겨찾기 개수 1 증가
         place.incrementFavoriteCount();
+
+        // 그룹의 즐겨찾기 개수 1 증가
+        group.incrementFavoriteCount();
 
         favoriteRepository.save(favorite);
 
@@ -78,13 +82,14 @@ public class FavoriteService {
         FavoriteGroup group = favoriteGroupRepository.findById(groupId)
                 .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
 
-        List<Favorite> favoriteList = favoriteRepository.findAllByGroup(group);
+        // 삭제된 데이터 제외하고 조회
+        List<Favorite> activeFavoriteList = favoriteRepository.findAllByGroupAndDeletedFalse(group);
 
-        if (favoriteList.isEmpty()) {
+        if (activeFavoriteList.isEmpty()) {
             throw new FavoriteException(ErrorCode.FAVORITE_LIST_NOT_FOUND);
         }
 
-        return favoriteMapper.toFavoriteResponseList(favoriteList);
+        return favoriteMapper.toFavoriteResponseList(activeFavoriteList);
     }
 
     // 해당 즐겨찾기의 메모를 수정
@@ -117,9 +122,18 @@ public class FavoriteService {
 
         // 즐겨찾기 개수 1 감소
         place.decrementFavoriteCount();
+
+        // 해당 즐겨찾기가 포함된 그룹
+        FavoriteGroup group = favoriteGroupRepository.findById(favorite.getGroup().getId())
+                .orElseThrow(() -> new GroupException(ErrorCode.GROUP_NOT_FOUND));
+
+        // 그룹의 즐겨찾기 개수 1 감소
+        group.decrementFavoriteCount();
+
         // 삭제 상태 변경
         favorite.setDeleteTrue();
     }
+
 
     // Place 테이블에 해당 kakaoPlaceId를 가진 데이터 존재 여부 검증
     Place checkDuplicateByKakoPlaceId(FavoriteAddRequest request) {
@@ -138,4 +152,17 @@ public class FavoriteService {
         );
     }
 
+    public boolean checkFavorite(long userId, long placeId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+
+        Place place = placeRepository.findById(placeId)
+                .orElseThrow(() -> new PlaceException(ErrorCode.PLACE_NOT_FOUND));
+
+
+        // 해당 유저가 이미 그 장소를 추가했는지 확인
+        boolean check = favoriteRepository.existsByPlaceAndUser(place, user);
+
+        return check;
+    }
 }

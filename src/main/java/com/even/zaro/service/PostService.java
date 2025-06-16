@@ -4,8 +4,8 @@ import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.User;
-import com.even.zaro.event.PostDeletedEvent;
-import com.even.zaro.event.PostSavedEvent;
+import com.even.zaro.global.event.event.PostDeletedEvent;
+import com.even.zaro.global.event.event.PostSavedEvent;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.mapper.PostMapper;
@@ -13,10 +13,15 @@ import com.even.zaro.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
+import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
 import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicInteger;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +31,7 @@ public class PostService {
     private final ApplicationEventPublisher eventPublisher;
     private final UserService userService;
     private final PostMapper postMapper;
+    private final PostRankBaselineMemoryStore postRankBaselineMemoryStore;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
@@ -160,11 +166,41 @@ public class PostService {
 
     @Transactional
     public List<PostRankResponseDto> getRankedPosts() {
-        List<Post> posts = postRepository.findTop10ByIsDeletedFalseAndIsReportedFalseOrderByScoreDescCreatedAtDesc();
+        List<Post> posts = postRepository.findTopPosts(0, PageRequest.of(0, 5));
 
-        return posts.stream()
-                .map(postMapper::toRankDto)
+        // 최초 baseline 순위 등록 (처음 진입 시 기준 순위 기록용)
+        if (postRankBaselineMemoryStore.getBaselineRankIndexMap().isEmpty()) {
+            postRankBaselineMemoryStore.updateBaselineRank(posts);
+        }
+
+        // 최초 prevRank 등록 (처음 진입 시 이전 순위 기록용)
+        if (postRankBaselineMemoryStore.getPrevRankIndexMap().isEmpty()) {
+            postRankBaselineMemoryStore.updatePrevRank(posts);
+        }
+
+        // 직전 순위 기준으로 rankChange 계산해야하므로 prevRankIndexMap 복사본을 확보
+        Map<Long, Integer> prevRankMapBeforeUpdate = new ConcurrentHashMap<>(postRankBaselineMemoryStore.getPrevRankIndexMap());
+
+        // 현재 순위 계산( 1 ~ 5 순위 )
+        AtomicInteger currentIndex = new AtomicInteger(1);
+
+        Map<Long, Integer> baselineMap = postRankBaselineMemoryStore.getBaselineRankIndexMap();
+
+        List<PostRankResponseDto> result =  posts.stream()
+                .map(post -> {
+                    int currentRankIndex = currentIndex.getAndIncrement();
+                    int baselineRankIndex = baselineMap.getOrDefault(post.getId(), currentRankIndex);
+                    int prevRankIndex = prevRankMapBeforeUpdate.getOrDefault(post.getId(), currentRankIndex);
+
+                    // 직전순위 - 현재순위
+                    int rankChange = prevRankIndex - currentRankIndex;
+
+                    return PostRankResponseDto.from(post,baselineRankIndex,currentRankIndex,rankChange);
+                })
                 .toList();
+
+        postRankBaselineMemoryStore.updatePrevRank(posts);
+        return result;
     }
 
     @Transactional
@@ -175,14 +211,8 @@ public class PostService {
     // 공통 로직 분리
     /// 게시글을 찾을 수 없을때
     public Post findPostOrThrow(Long postId) {
-        Post post =  postRepository.findById(postId)
+        return postRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(postId)
                 .orElseThrow(() -> new PostException(ErrorCode.POST_NOT_FOUND));
-
-        if (post.isDeleted() || post.isReported()) {
-            throw new PostException(ErrorCode.POST_NOT_FOUND);
-        }
-
-        return post;
     }
 
     /// 게시글 찾을 없을때 - 삭제만 검사 (postLike)

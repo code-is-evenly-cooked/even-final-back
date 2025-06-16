@@ -1,4 +1,8 @@
 pipeline {
+  options {
+    disableConcurrentBuilds()
+  }
+
   agent any
 
   environment {
@@ -20,18 +24,29 @@ pipeline {
           string(credentialsId: 'discord-webhook', variable: 'WEBHOOK_URL')
         ]) {
           script {
-            try {
-              sh """
-                echo "프록시를 B 서버로 전환 중..."
-                ssh -i "$PEM_FILE" -o StrictHostKeyChecking=no ubuntu@${A_IP} 'sudo bash /home/ubuntu/swap_proxy.sh'
-              """
-            } catch (err) {
-              def msg = err.getMessage().replaceAll('"', '\\"').take(200)
-              sh """
-                curl -H "Content-Type: application/json" -X POST \
-                  -d '{"content": "🅱️❌ B 프록시 전환 실패\\n${msg}"}' $WEBHOOK_URL
-              """
-              error("프록시 전환 실패")
+            def isB = sh(
+              script: """
+                ssh -i "$PEM_FILE" -o StrictHostKeyChecking=no ubuntu@${A_IP} 'grep -q "proxy_pass http://${B_IP}:8080;" /etc/nginx/sites-enabled/default && echo true || echo false'
+              """,
+              returnStdout: true
+            ).trim()
+
+            if (isB == "true") {
+              echo "이미 B 프록시입니다. 전환 생략."
+            } else {
+              try {
+                sh """
+                  echo "프록시를 B 서버로 전환 중..."
+                  ssh -i "$PEM_FILE" -o StrictHostKeyChecking=no ubuntu@${A_IP} 'sudo bash /home/ubuntu/swap_proxy.sh'
+                """
+              } catch (err) {
+                def msg = err.getMessage().replaceAll('"', '\\"').take(200)
+                sh """
+                  curl -H "Content-Type: application/json" -X POST \
+                    -d '{"content": "🅱️❌ B 프록시 전환 실패\\n${msg}"}' $WEBHOOK_URL
+                """
+                error("프록시 전환 실패")
+              }
             }
           }
         }
@@ -65,6 +80,9 @@ pipeline {
           withCredentials([string(credentialsId: 'discord-webhook', variable: 'WEBHOOK_URL')]) {
             script {
               try {
+                sh 'echo "🧹 불필요한 Docker 리소스 정리 중..."'
+                sh 'docker system prune -f'
+
                 sh 'echo "🔨 Docker 이미지 빌드 중..."'
                 sh 'docker-compose -f docker-compose.prod.yml stop app'
                 sh 'docker-compose -f docker-compose.prod.yml rm -f app'
@@ -123,7 +141,6 @@ pipeline {
               echo "📦 B 서버에 파일 전송 중..."
               sh """
                 scp -i "$PEM_FILE" -o StrictHostKeyChecking=no "$PROJECT_DIR"/app.tar ubuntu@${B_IP}:/home/ubuntu/
-                scp -i "$PEM_FILE" -o StrictHostKeyChecking=no "$PROJECT_DIR"/.env ubuntu@${B_IP}:/home/ubuntu/
               """
             } catch (err) {
               def msg = err.getMessage().replaceAll('"', '\\"').take(200)

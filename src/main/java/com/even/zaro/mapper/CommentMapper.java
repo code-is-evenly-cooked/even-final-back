@@ -48,5 +48,17 @@ public interface CommentMapper {
     @Mapping(target = "isMine", expression = "java(com.even.zaro.mapper.CommentMapper.isMine(comment.getUser(), currentUserId))")
     @Mapping(target = "mentionedUser", expression = "java(com.even.zaro.mapper.CommentMapper.toMentionedUserDto(comment.getMentionedUser()))")
     @Mapping(target = "commentLocatedPage", ignore = true)
+    CommentResponseDto toListDto(Comment comment, Long currentUserId);
+
+    @Mapping(source = "comment.user.id", target = "userId")
+    @Mapping(source = "comment.user.nickname", target = "nickname")
+    @Mapping(source = "comment.user.profileImage", target = "profileImage")
+    @Mapping(source = "comment.user.liveAloneDate", target = "liveAloneDate")
+    @Mapping(target = "createdAt", source = "comment.createdAt")
+    @Mapping(target = "updatedAt", source = "comment.updatedAt")
+    @Mapping(target = "isEdited", expression = "java(com.even.zaro.mapper.CommentMapper.isEdited(comment.getCreatedAt(), comment.getUpdatedAt()))")
+    @Mapping(target = "isMine", expression = "java(com.even.zaro.mapper.CommentMapper.isMine(comment.getUser(), currentUserId))")
+    @Mapping(target = "mentionedUser", expression = "java(com.even.zaro.mapper.CommentMapper.toMentionedUserDto(comment.getMentionedUser()))")
+    @Mapping(target = "commentLocatedPage", ignore = true)
     CommentResponseDto toUpdateDto(Comment comment, Long currentUserId);
 }

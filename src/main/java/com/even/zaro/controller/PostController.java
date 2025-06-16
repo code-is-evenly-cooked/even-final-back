@@ -76,7 +76,7 @@ public class PostController {
     public ResponseEntity<ApiResponse<PostDetailResponse>> getPostDetail(
             @PathVariable Long postId,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
-        PostDetailResponse response = postService.getPostDetail(postId);
+        PostDetailResponse response = postService.getPostDetail(postId, userInfoDto.getUserId());
         return ResponseEntity.ok(ApiResponse.success("게시글 상세 조회가 성공 했습니다.", response));
     }
 

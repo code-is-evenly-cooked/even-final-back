@@ -20,4 +20,7 @@ public class FollowerFollowingListDto {
 
     @Schema(description = "사용자 프로필 이미지 URL", example = "/images/profile/2-uuid.png")
     private String profileImage;
+
+    @Schema(description = "팔로잉 여부", example = "true")
+    private boolean following;
 }

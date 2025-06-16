@@ -175,28 +175,42 @@ public class ProfileService {
     }
 
     // 팔로잉 목록 조회
-    public List<FollowerFollowingListDto> getUserFollowings(Long userId) {
-        User user = userService.findUserById(userId);
+    public List<FollowerFollowingListDto> getUserFollowings(Long userId, Long currentUserId) {
+        User targetUser = userService.findUserById(userId);
+        User loginUser = userService.findUserById(currentUserId);
 
-        return followRepository.findByFollower(user).stream()
-                .map(follow -> FollowerFollowingListDto.builder()
+        return followRepository.findByFollower(targetUser).stream()
+                .map(follow -> {
+                    User followee = follow.getFollowee();
+                    boolean isFollowing = followRepository.existsByFollowerAndFollowee(loginUser, followee);
+
+                        return FollowerFollowingListDto.builder()
                         .userId(follow.getFollowee().getId())
                         .userName(follow.getFollowee().getNickname())
                         .profileImage(follow.getFollowee().getProfileImage())
-                        .build())
+                        .following(isFollowing)
+                        .build();
+                })
                 .toList();
     }
 
     // 팔로워 목록 조회
-    public List<FollowerFollowingListDto> getUserFollowers(Long userId) {
-        User user = userService.findUserById(userId);
+    public List<FollowerFollowingListDto> getUserFollowers(Long userId, Long currentUserId) {
+        User targetUser = userService.findUserById(userId);
+        User loginUser = userService.findUserById(currentUserId);
 
-        return followRepository.findByFollowee(user).stream()
-                .map(follow -> FollowerFollowingListDto.builder()
+        return followRepository.findByFollowee(targetUser).stream()
+                .map(follow -> {
+                    User follower = follow.getFollower();
+                    boolean isFollowing = followRepository.existsByFollowerAndFollowee(loginUser, targetUser);
+
+                    return     FollowerFollowingListDto.builder()
                         .userId(follow.getFollower().getId())
                         .userName(follow.getFollower().getNickname())
                         .profileImage(follow.getFollower().getProfileImage())
-                        .build())
+                            .following(isFollowing)
+                        .build();
+                })
                 .toList();
     }
 }

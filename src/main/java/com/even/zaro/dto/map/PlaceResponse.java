@@ -17,6 +17,7 @@ public class PlaceResponse {
     @Getter
     static public class PlaceInfo {
         long placeId;
+        long kakaoPlaceId;
         String name;
         String address;
         String category;

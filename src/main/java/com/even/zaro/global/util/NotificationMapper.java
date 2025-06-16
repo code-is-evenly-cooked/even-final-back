@@ -13,6 +13,8 @@ import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
+import java.time.ZoneOffset;
+
 @Component
 @RequiredArgsConstructor
 public class NotificationMapper {
@@ -36,7 +38,7 @@ public class NotificationMapper {
                 .type(type)
                 .targetId(notification.getTargetId())
                 .isRead(notification.isRead())
-                .createdAt(notification.getCreatedAt())
+                .createdAt(notification.getCreatedAt().atOffset(ZoneOffset.UTC))
                 .actorId(actor.getId())
                 .actorName(actor.getNickname())
                 .actorProfileImage(actor.getProfileImage());

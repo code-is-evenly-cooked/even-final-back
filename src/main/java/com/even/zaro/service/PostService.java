@@ -136,6 +136,7 @@ public class PostService {
                 .userId(response.getUser().getUserId())
                 .nickname(response.getUser().getNickname())
                 .profileImage(response.getUser().getProfileImage())
+                .liveAloneDate(response.getUser().getLiveAloneDate())
                 .following(isFollowing)
                 .build();
 

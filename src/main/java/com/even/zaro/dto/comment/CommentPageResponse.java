@@ -12,7 +12,7 @@ import java.util.List;
 public class CommentPageResponse extends PageResponse<CommentResponseDto> {
 
     @Schema(description = "전체 댓글 개수", example = "10")
-    private Integer totalComments;
+    private int totalComments;
 
     public CommentPageResponse(Page<CommentResponseDto> page, int totalComments) {
         super(page);

@@ -52,7 +52,7 @@ public class UserScheduler {
     @Scheduled(cron = "0 45 3 * * *") // 매일 3시 45분
     @Transactional
     public void deleteWithdrawnUsers() {
-        LocalDateTime threshold = LocalDateTime.now().minusDays(30);
+        LocalDateTime threshold = LocalDateTime.now().minusYears(3);
         List<User> users = userRepository.findByStatusAndDeletedAtBefore(Status.DELETED, threshold);
         userRepository.deleteAll(users);
         log.info("[Scheduler] 탈퇴 회원 영구 삭제 ! (withdrawal date = {})", threshold);

@@ -13,6 +13,7 @@ import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -122,14 +123,14 @@ public class UserSchedulerIntegrationTest {
     @Nested
     class DeleteUserTest {
         @Test
-        void shouldDeleteUsersWithdrawnOver30DaysAgo_fromDatabase() {
+        void shouldDeleteUsersWithdrawnOver3yearsAgo_fromDatabase() {
             User user = User.builder()
                     .email("test@even.com")
                     .nickname("이브니")
                     .password("Password1!")
                     .provider(Provider.LOCAL)
                     .status(Status.DELETED)
-                    .deletedAt(LocalDateTime.now().minusDays(31))
+                    .deletedAt(LocalDateTime.now().minusYears(3).minusDays(1))
                     .build();
 
             userRepository.save(user);
@@ -138,6 +139,27 @@ public class UserSchedulerIntegrationTest {
 
             assertThat(userRepository.findById(user.getId())).isEmpty();
         }
+    }
+
+    @Test
+    @Rollback(false)
+    void shouldAnonymizeUsersWithdrawnOver30DaysAgo() {
+        User user = User.builder()
+                .email("test@even.com")
+                .nickname("이브니")
+                .password("Password1!")
+                .provider(Provider.LOCAL)
+                .status(Status.DELETED)
+                .deletedAt(LocalDateTime.now().minusDays(31))
+                .build();
+        userRepository.saveAndFlush(user);
+
+        userScheduler.anonymizeWithdrawnUsers();
+
+        User updatedUser = userRepository.findById(user.getId()).orElseThrow();
+        assertThat(updatedUser.getNickname()).isEqualTo("삭제된 사용자");
+        assertThat(updatedUser.getProfileImage()).isNull();
+        assertThat(updatedUser.getEmail()).startsWith("deleted_").endsWith("@anonymized.even.com");
     }
 
     @Nested

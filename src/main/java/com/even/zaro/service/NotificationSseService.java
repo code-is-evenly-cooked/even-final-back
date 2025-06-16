@@ -3,14 +3,16 @@ package com.even.zaro.service;
 import com.even.zaro.dto.notification.NotificationDto;
 import com.even.zaro.entity.Notification;
 import com.even.zaro.global.util.NotificationMapper;
+import jakarta.annotation.PostConstruct;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
-import jakarta.annotation.PostConstruct;
-import org.springframework.scheduling.annotation.Scheduled;
 
 import java.io.IOException;
+import java.time.Instant;
+import java.util.Iterator;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -19,10 +21,27 @@ import java.util.concurrent.ConcurrentHashMap;
 @RequiredArgsConstructor
 public class NotificationSseService {
 
-    private final Map<Long, SseEmitter> emitters = new ConcurrentHashMap<>();
+    private static class EmitterInfo {
+        private final SseEmitter emitter;
+        private Instant lastEventTime;
+
+        public EmitterInfo(SseEmitter emitter) {
+            this.emitter = emitter;
+            this.lastEventTime = Instant.now();
+        }
+
+        public SseEmitter getEmitter() {
+            return emitter;
+        }
+
+        public void updateLastEventTime() {
+            this.lastEventTime = Instant.now();
+        }
+    }
+
+    private final Map<Long, EmitterInfo> emitters = new ConcurrentHashMap<>();
     private final NotificationMapper notificationMapper;
 
-    // 주기적으로 ping을 보내는 작업 시작 (초기화)
     @PostConstruct
     public void startPingTask() {
         log.info("[SSE] Ping 작업 초기화 완료");
@@ -31,15 +50,17 @@ public class NotificationSseService {
     // 30초마다 모든 클라이언트에게 ping 이벤트 전송
     @Scheduled(fixedRate = 30000) // 30초마다 실행
     public void sendPingToAllClients() {
-        for (Map.Entry<Long, SseEmitter> entry : emitters.entrySet()) {
+        for (Iterator<Map.Entry<Long, EmitterInfo>> it = emitters.entrySet().iterator(); it.hasNext();) {
+            Map.Entry<Long, EmitterInfo> entry = it.next();
             Long userId = entry.getKey();
-            SseEmitter emitter = entry.getValue();
+            EmitterInfo info = entry.getValue();
             try {
-                emitter.send(SseEmitter.event().name("ping").data("keep-alive"));
+                info.getEmitter().send(SseEmitter.event().name("ping").data("keep-alive"));
+                info.updateLastEventTime();
                 log.debug("[SSE] 유저 {} 에게 ping 전송", userId);
             } catch (IOException e) {
-                log.warn("[SSE] 유저 {} ping 전송 실패. 연결 제거", userId);
-                emitters.remove(userId);
+                log.warn("[SSE] 유저 {} ping 전송 실패 → emitter 제거", userId);
+                it.remove();
             }
         }
     }
@@ -47,7 +68,8 @@ public class NotificationSseService {
     public SseEmitter connect(Long userId) {
         log.info("[SSE] 유저 {} 연결 시도", userId);
         SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
-        emitters.put(userId, emitter);
+        EmitterInfo emitterInfo = new EmitterInfo(emitter);
+        emitters.put(userId, emitterInfo);
 
         emitter.onCompletion(() -> {
             log.info("[SSE] 유저 {} 연결 종료 (onCompletion)", userId);
@@ -77,14 +99,13 @@ public class NotificationSseService {
 
     public void send(Long userId, Notification notification) {
         log.info("[SSE] 유저 {} 에게 알림 전송 시도", userId);
-        SseEmitter emitter = emitters.get(userId);
+        EmitterInfo info = emitters.get(userId);
 
-        if (emitter != null) {
+        if (info != null) {
             try {
                 NotificationDto dto = notificationMapper.toDto(notification);
-                emitter.send(SseEmitter.event()
-                        .name("notification")
-                        .data(dto));
+                info.getEmitter().send(SseEmitter.event().name("notification").data(dto));
+                info.updateLastEventTime();
                 log.info("[SSE] 유저 {} 에게 알림 전송 성공: {}", userId, dto);
             } catch (IOException e) {
                 log.error("[SSE] 유저 {} 에게 알림 전송 실패: {}", userId, e.getMessage());
@@ -95,4 +116,3 @@ public class NotificationSseService {
         }
     }
 }
-

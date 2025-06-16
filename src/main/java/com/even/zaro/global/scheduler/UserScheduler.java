@@ -48,7 +48,7 @@ public class UserScheduler {
         log.info("[Scheduler] Dormant 1년 경과 -> 탈퇴 처리 ! (Dormant starting date = {})", now.minusYears(1));
     }
 
-    // 탈퇴 30일 경과 -> 회원 정보 영구 삭제
+    // 탈퇴 3년 경과 -> 회원 정보 영구 삭제
     @Scheduled(cron = "0 45 3 * * *") // 매일 3시 45분
     @Transactional
     public void deleteWithdrawnUsers() {
@@ -56,6 +56,17 @@ public class UserScheduler {
         List<User> users = userRepository.findByStatusAndDeletedAtBefore(Status.DELETED, threshold);
         userRepository.deleteAll(users);
         log.info("[Scheduler] 탈퇴 회원 영구 삭제 ! (withdrawal date = {})", threshold);
+    }
+
+    // 탈퇴 30일 경과 -> 회원 정보 임의 값 변경
+    @Scheduled(cron = "0 0 4 * * *") // 매일 4시
+    @Transactional
+    public void anonymizeWithdrawnUsers() {
+        LocalDateTime threshold = LocalDateTime.now().minusDays(30);
+        List<User> users = userRepository.findByStatusAndDeletedAtBefore(Status.DELETED, threshold);
+        users.forEach(User::anonymize);
+        userRepository.saveAll(users);
+        log.info("[Scheduler] 탈퇴 회원 익명화 ! (withdrawal date = {})", threshold);
     }
 
     // 휴면 예정 메일 전송

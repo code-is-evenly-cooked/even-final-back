@@ -15,8 +15,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-
 @RestController
 @RequestMapping("/api/map")
 @Slf4j
@@ -52,6 +50,9 @@ public class MapController {
 
         PlaceResponse placesByCoordinate = mapService.getPlacesByCoordinate(lat, lng, distanceKm);
 
+        if (placesByCoordinate.getTotalCount() == 0) {
+            return ResponseEntity.ok(ApiResponse.success("인근에 조회된 장소가 없습니다.", placesByCoordinate));
+        }
         return ResponseEntity.ok(ApiResponse.success("인근 장소 리스트를 성공적으로 조회했습니다.", placesByCoordinate));
     }
 

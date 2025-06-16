@@ -1,6 +1,7 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.PageResponse;
+import com.even.zaro.dto.comment.CommentPageResponse;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.comment.CommentRequestDto;
 import com.even.zaro.dto.comment.MentionedUserDto;
@@ -11,6 +12,7 @@ import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.comment.CommentException;
 import com.even.zaro.global.exception.post.PostException;
+import com.even.zaro.mapper.CommentMapper;
 import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostRepository;
 import com.even.zaro.repository.UserRepository;
@@ -34,6 +36,7 @@ public class CommentService {
     private final UserRepository userRepository;
     private final PostService postService;
     private final UserService userService;
+    private final CommentMapper commentMapper;
 
     @Transactional
     public CommentResponseDto createComment(Long postId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto, int pageSize) {
@@ -69,17 +72,16 @@ public class CommentService {
     }
 
     @Transactional(readOnly = true)
-    public PageResponse<CommentResponseDto> readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
+    public CommentPageResponse readAllComments(Long postId, Pageable pageable, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
 
-        // 게시글 존재 여부 확인
-        if (!postRepository.existsByIdAndIsDeletedFalseAndIsReportedFalse(postId)) {
-            throw new PostException(ErrorCode.POST_NOT_FOUND);
-        }
+        Post post = postService.findPostOrThrow(postId);
+
+        int totalComments = commentRepository.countByPostAndIsDeletedFalseAndIsReportedFalse(post);
 
         Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalseAndIsReportedFalse(postId, pageable)
-                .map(comment -> toDto(comment, currentUserId, null));
-        return new PageResponse<>(page);
+                .map(comment -> commentMapper.toListDto(comment, currentUserId));
+        return new CommentPageResponse(page, totalComments);
     }
 
     @Transactional

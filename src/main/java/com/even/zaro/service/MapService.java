@@ -58,6 +58,7 @@ public class MapService {
                 .sorted(Comparator.comparingInt(Place::getFavoriteCount).reversed()) // 내림차순 정렬
                 .map(place -> PlaceResponse.PlaceInfo.builder()
                         .placeId(place.getId())
+                        .kakaoPlaceId(place.getKakaoPlaceId())
                         .name(place.getName())
                         .address(place.getAddress())
                         .lat(place.getLat())

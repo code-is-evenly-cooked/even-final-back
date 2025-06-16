@@ -120,47 +120,6 @@ public class CommentService {
         postRepository.save(post);
     }
 
-    // 공통 응답
-    private CommentResponseDto toDto(Comment comment, Long currentUserId, Integer commentLocatedPage) {
-        User writer = comment.getUser();
-
-        boolean isMine = writer.getId().equals(currentUserId);
-        LocalDateTime createdAt = comment.getCreatedAt();
-        LocalDateTime updatedAt = comment.getUpdatedAt();
-
-        OffsetDateTime createdAtUtc = createdAt.atOffset(ZoneOffset.UTC);
-        OffsetDateTime updatedAtUtc = updatedAt.atOffset(ZoneOffset.UTC);
-
-        boolean isEdited = !createdAt.truncatedTo(ChronoUnit.SECONDS)
-                .isEqual(updatedAt.truncatedTo(ChronoUnit.SECONDS));
-
-
-        User mentioned = comment.getMentionedUser();
-        MentionedUserDto mentionedUser = null;
-        if (mentioned != null) {
-            mentionedUser = new MentionedUserDto(mentioned.getId(), mentioned.getNickname());
-        }
-
-        String content = comment.isReported()
-                ? "신고로 삭제된 댓글입니다."
-                : comment.getContent();
-
-        return new CommentResponseDto(
-                comment.getId(),
-                content,
-                writer.getId(),
-                writer.getNickname(),
-                writer.getProfileImage(),
-                writer.getLiveAloneDate(),
-                createdAtUtc,
-                updatedAtUtc,
-                isEdited,
-                isMine,
-                mentionedUser,
-                commentLocatedPage
-        );
-    }
-
     private void validateCommentLength(String content) {
         if (content.length() > 500) {
             throw new CommentException(ErrorCode.COMMENT_TOO_LONG);

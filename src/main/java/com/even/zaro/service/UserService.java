@@ -167,9 +167,13 @@ public class UserService {
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public void validateNotPending(User user) {
+    public void validateActiveUser(User user) {
         if (user.getStatus() == Status.PENDING) {
             throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
+        } else if (user.getStatus() == Status.DORMANT) {
+            throw new UserException(ErrorCode.DORMANT_USER);
+        } else if (user.getStatus() == Status.DELETED) {
+            throw new UserException(ErrorCode.DELETED_USER);
         }
     }
 }

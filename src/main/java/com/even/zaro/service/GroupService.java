@@ -57,10 +57,6 @@ public class GroupService {
         // userId 값이 일치하고, 삭제된 데이터를 제외하고 조회
         List<FavoriteGroup> activeGroups = favoriteGroupRepository.findAllByUserAndDeletedFalse(user);
 
-        if (activeGroups.isEmpty()) {
-            throw new GroupException(ErrorCode.GROUP_LIST_NOT_FOUND);
-        }
-
         return groupMapper.toGroupResponseList(activeGroups);
     }
 

@@ -1,6 +1,7 @@
 package com.even.zaro.controller;
 
 import com.even.zaro.dto.PageResponse;
+import com.even.zaro.dto.comment.CommentPageResponse;
 import com.even.zaro.dto.comment.CommentRequestDto;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.jwt.JwtUserInfoDto;

@@ -97,7 +97,7 @@ public class CommentService {
 
         comment.updateContent(requestDto.getContent());
 
-        return toDto(comment, currentUserId, null);
+        return commentMapper.toUpdateDto(comment, currentUserId);
     }
 
     @Transactional

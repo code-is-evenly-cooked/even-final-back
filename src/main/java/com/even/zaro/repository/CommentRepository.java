@@ -17,9 +17,11 @@ public interface CommentRepository extends JpaRepository<Comment, Long> {
     Page<Comment> findByUserAndIsDeletedFalseAndIsReportedFalse(User user, Pageable pageable);
 
     @EntityGraph(attributePaths = {"user"})
-    Page<Comment> findByPostIdAndIsDeletedFalseAndIsReportedFalse(Long postId, Pageable pageable);
+    Page<Comment> findByPostIdAndIsDeletedFalse(Long postId, Pageable pageable);
+
+    Optional<Comment> findByIdAndIsDeletedFalse(Long commentId);
 
     Optional<Comment> findByIdAndIsDeletedFalseAndIsReportedFalse(Long commentId);
 
-    int countByPostAndIsDeletedFalseAndIsReportedFalse(Post post);
+    int countByPostAndIsDeletedFalse(Post post);
 }

@@ -1,6 +1,5 @@
 package com.even.zaro.service;
 
-import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.comment.CommentPageResponse;
 import com.even.zaro.dto.comment.CommentResponseDto;
 import com.even.zaro.dto.comment.CommentRequestDto;
@@ -11,7 +10,6 @@ import com.even.zaro.entity.Post;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.comment.CommentException;
-import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.mapper.CommentMapper;
 import com.even.zaro.repository.CommentRepository;
 import com.even.zaro.repository.PostRepository;
@@ -77,9 +75,9 @@ public class CommentService {
 
         Post post = postService.findPostOrThrow(postId);
 
-        int totalComments = commentRepository.countByPostAndIsDeletedFalseAndIsReportedFalse(post);
+        int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
 
-        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalseAndIsReportedFalse(postId, pageable)
+        Page<CommentResponseDto> page = commentRepository.findByPostIdAndIsDeletedFalse(postId, pageable)
                 .map(comment -> commentMapper.toListDto(comment, currentUserId));
         return new CommentPageResponse(page, totalComments);
     }
@@ -88,8 +86,12 @@ public class CommentService {
     public CommentResponseDto updateComment(Long commentId, CommentRequestDto requestDto, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
 
-        Comment comment = commentRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(commentId)
+        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
+
+        if (comment.isReported()) {
+            throw new CommentException(ErrorCode.COMMENT_REPORTED_CANNOT_EDIT);
+        }
 
         if (!comment.getUser().getId().equals(currentUserId)) {
             throw new CommentException(ErrorCode.NOT_COMMENT_OWNER);
@@ -105,7 +107,7 @@ public class CommentService {
     @Transactional
     public void softDeleteComment(Long commentId, JwtUserInfoDto userInfoDto) {
         Long currentUserId = userInfoDto.getUserId();
-        Comment comment = commentRepository.findByIdAndIsDeletedFalseAndIsReportedFalse(commentId)
+        Comment comment = commentRepository.findByIdAndIsDeletedFalse(commentId)
                 .orElseThrow(() -> new CommentException(ErrorCode.COMMENT_NOT_FOUND));
 
         if (!comment.getUser().getId().equals(currentUserId)) {
@@ -127,7 +129,7 @@ public class CommentService {
     }
 
     private int calculateTotalPages(Post post, int pageSize) {
-        int totalComments = commentRepository.countByPostAndIsDeletedFalseAndIsReportedFalse(post);
+        int totalComments = commentRepository.countByPostAndIsDeletedFalse(post);
         return (int) Math.ceil((double) totalComments / pageSize);
     }
 }

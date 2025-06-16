@@ -57,12 +57,12 @@ public class CommentController {
     @Operation(summary = "댓글 리스트 조회", description = "{postId} 게시글에 댓글 리스트를 조회합니다.",
             security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/posts/{postId}/comments")
-    public ResponseEntity<ApiResponse<PageResponse<CommentResponseDto>>> readAllComments(
+    public ResponseEntity<ApiResponse<CommentPageResponse>> readAllComments(
             @Parameter(description = "게시글 ID", example = "1") @PathVariable Long postId,
             @ParameterObject @PageableDefault(size = 10, sort = "createdAt", direction = Sort.Direction.ASC) Pageable pageable,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
-        PageResponse<CommentResponseDto> responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
+        CommentPageResponse responseDto = commentService.readAllComments(postId, pageable, userInfoDto);
         return ResponseEntity.ok(ApiResponse.success("댓글 리스트를 불러왔습니다.", responseDto));
     }
 

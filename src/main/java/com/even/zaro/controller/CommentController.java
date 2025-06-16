@@ -13,6 +13,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Pageable;
@@ -45,7 +46,7 @@ public class CommentController {
     public ResponseEntity<ApiResponse<CommentResponseDto>> createComment(
             @Parameter(description = "게시글 ID", example = "1") @PathVariable Long postId,
             @RequestParam(defaultValue = "10") int pageSize,
-            @RequestBody CommentRequestDto requestDto,
+            @Valid @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         CommentResponseDto responseDto = commentService.createComment(postId, requestDto, userInfoDto, pageSize);
         return ResponseEntity
@@ -70,7 +71,7 @@ public class CommentController {
     @PatchMapping("comments/{commentId}")
     public ResponseEntity<ApiResponse<CommentResponseDto>> updateComment(
             @Parameter(description = "댓글 ID", example = "1") @PathVariable Long commentId,
-            @RequestBody CommentRequestDto requestDto,
+            @Valid @RequestBody CommentRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
         CommentResponseDto responseDto = commentService.updateComment(commentId, requestDto, userInfoDto);

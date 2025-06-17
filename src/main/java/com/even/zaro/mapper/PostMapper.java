@@ -28,8 +28,8 @@ public interface PostMapper {
     PostDetailResponse toPostDetailDto(Post post);
 
     @Mapping(source = "id", target = "postId")
-    @Mapping(source = "user.nickname", target = "writerNickname")
-    @Mapping(source = "user.profileImage", target = "writerProfileImage")
+    @Mapping(target = "writerNickname", expression = "java(post.getUser().getStatus() == com.even.zaro.entity.Status.DELETED ? \"알 수 없는 사용자\" : post.getUser().getNickname())")
+    @Mapping(target = "writerProfileImage", expression = "java(post.getUser().getStatus() == com.even.zaro.entity.Status.DELETED ? null : post.getUser().getProfileImage())")
     @Mapping(target = "content", expression = "java(stripHtmlTags(post.getContent()))")
     PostPreviewDto toPostPreviewDto(Post post);
 

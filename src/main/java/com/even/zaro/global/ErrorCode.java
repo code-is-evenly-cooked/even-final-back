@@ -60,6 +60,8 @@ public enum ErrorCode {
 
         // 계정
     MAIL_NOT_VERIFIED(HttpStatus.FORBIDDEN, "이메일 인증이 필요합니다. 메일함을 확인해주세요."),
+    DORMANT_USER(HttpStatus.FORBIDDEN, "휴면 계정입니다."),
+    DELETED_USER(HttpStatus.FORBIDDEN, "탈퇴한 회원입니다."),
     CURRENT_PASSWORD_REQUIRED(HttpStatus.BAD_REQUEST, "현재 비밀번호는 필수 입력 값입니다."),
     CURRENT_PASSWORD_WRONG(HttpStatus.FORBIDDEN, "현재 비밀번호가 올바르지 않습니다."),
     CURRENT_PASSWORD_EQUALS_NEW_PASSWORD(HttpStatus.BAD_REQUEST,"이전과 다른 비밀번호를 입력해주세요."),

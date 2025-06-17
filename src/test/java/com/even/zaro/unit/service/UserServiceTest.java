@@ -390,7 +390,7 @@ class UserServiceTest {
         void shouldThrowException_whenUserStatusIsPending() {
             User user = User.builder().status(Status.PENDING).build();
 
-            UserException ex = assertThrows(UserException.class, () -> userService.validateNotPending(user));
+            UserException ex = assertThrows(UserException.class, () -> userService.validateActiveUser(user));
 
             assertEquals(ErrorCode.MAIL_NOT_VERIFIED, ex.getErrorCode());
         }

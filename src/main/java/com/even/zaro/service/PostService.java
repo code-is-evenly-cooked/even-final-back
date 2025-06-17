@@ -3,6 +3,7 @@ package com.even.zaro.service;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
+import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.event.event.PostDeletedEvent;
 import com.even.zaro.global.event.event.PostSavedEvent;
@@ -19,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -45,7 +47,7 @@ public class PostService {
         validateTagForCategory(category, tag);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         String thumbnailImage = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
@@ -70,7 +72,7 @@ public class PostService {
         Post post = findPostOrThrow(postId);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         validatePostNotOwner(post, user);
 
@@ -129,14 +131,20 @@ public class PostService {
         User postOwner  = post.getUser();
         User loginUser = userService.findUserById(currentUserId);
 
+        boolean isDeleted = postOwner.getStatus() == Status.DELETED;
+
+        String nickname =  isDeleted ? "알 수 없는 사용자" : response.getUser().getNickname();
+        String profileImage = isDeleted ? null : response.getUser().getProfileImage();
+        LocalDate liveAloneDate = isDeleted ? null : response.getUser().getLiveAloneDate();
+
         boolean isFollowing = !loginUser.equals(postOwner) &&
                 followRepository.existsByFollowerAndFollowee(loginUser, postOwner);
 
         PostDetailResponse.UserInfo followUser = PostDetailResponse.UserInfo.builder()
                 .userId(response.getUser().getUserId())
-                .nickname(response.getUser().getNickname())
-                .profileImage(response.getUser().getProfileImage())
-                .liveAloneDate(response.getUser().getLiveAloneDate())
+                .nickname(nickname)
+                .profileImage(profileImage)
+                .liveAloneDate(liveAloneDate)
                 .following(isFollowing)
                 .build();
 
@@ -160,7 +168,7 @@ public class PostService {
         Post post = findPostOrThrow(postId);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         validatePostNotOwner(post, user);
 

@@ -11,6 +11,7 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.UUID;
 
 @Entity
 @Getter
@@ -138,5 +139,11 @@ public class User {
     public void softDeleted() {
          this.status = Status.DELETED;
          this.deletedAt = LocalDateTime.now();
+    }
+
+    public void anonymize() {
+        this.nickname = "삭제된 사용자";
+        this.profileImage = null;
+        this.email = "deleted_" + UUID.randomUUID() + "@anonymized.even.com";
     }
 }

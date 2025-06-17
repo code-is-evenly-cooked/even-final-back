@@ -25,7 +25,7 @@ public class PostReportService {
         Post post = postService.findPostOrThrow(postId);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         post.validateNotOwner(user);
         request.validateReasonTextOrThrow();

@@ -2,13 +2,11 @@ package com.even.zaro.service;
 
 import com.even.zaro.entity.Post;
 import com.even.zaro.entity.PostLike;
-import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.repository.PostLikeRepository;
 import com.even.zaro.repository.PostRepository;
-import com.even.zaro.repository.UserRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -29,7 +27,7 @@ public class PostLikeService {
         }
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         Post post = postService.findUndeletedPostOrThrow(postId);
 
@@ -45,7 +43,7 @@ public class PostLikeService {
     @Transactional
     public void unlikePost(Long postId, Long userId) {
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
         Post post = postService.findUndeletedPostOrThrow(postId);
 
         PostLike postLike = postLikeRepository.findByUserIdAndPostId(userId, postId)

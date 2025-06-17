@@ -52,8 +52,8 @@ public interface CommentMapper {
 
     @Mapping(target = "content", expression = "java(comment.isReported() ? \"신고로 삭제된 댓글입니다.\" : comment.getContent())")
     @Mapping(source = "comment.user.id", target = "userId")
-    @Mapping(source = "comment.user.nickname", target = "nickname")
-    @Mapping(source = "comment.user.profileImage", target = "profileImage")
+    @Mapping(target = "nickname", expression = "java(comment.getUser().getStatus() == com.even.zaro.entity.Status.DELETED ? \"알 수 없는 사용자\" : comment.getUser().getNickname())")
+    @Mapping(target = "profileImage", expression = "java(comment.getUser().getStatus() == com.even.zaro.entity.Status.DELETED ? null : comment.getUser().getProfileImage())")
     @Mapping(source = "comment.user.liveAloneDate", target = "liveAloneDate")
     @Mapping(target = "createdAt", source = "comment.createdAt")
     @Mapping(target = "updatedAt", source = "comment.updatedAt")

@@ -179,14 +179,18 @@ public class ProfileService {
         User targetUser = userService.findUserById(userId);
         User loginUser = userService.findUserById(currentUserId);
 
-        return followRepository.findByFollower(user).stream()
+        return followRepository.findByFollower(targetUser).stream()
                 .map(Follow::getFollowee)
                 .filter(followee -> followee.getStatus() != Status.DELETED)
-                .map(followee -> FollowerFollowingListDto.builder()
-                        .userId(followee.getId())
-                        .userName(followee.getNickname())
-                        .profileImage(followee.getProfileImage())
-                        .build())
+                .map(followee -> {
+                    boolean isFollowing = followRepository.existsByFollowerAndFollowee(loginUser, followee);
+                    return FollowerFollowingListDto.builder()
+                            .userId(followee.getId())
+                            .userName(followee.getNickname())
+                            .profileImage(followee.getProfileImage())
+                            .following(isFollowing)
+                            .build();
+                })
                 .toList();
     }
 
@@ -196,18 +200,17 @@ public class ProfileService {
         User loginUser = userService.findUserById(currentUserId);
 
         return followRepository.findByFollowee(targetUser).stream()
-                .map(follow -> {
-                    User follower = follow.getFollower();
-                    boolean isFollowing = followRepository.existsByFollowerAndFollowee(loginUser, targetUser);
-
-        return followRepository.findByFollowee(user).stream()
                 .map(Follow::getFollower)
                 .filter(follower -> follower.getStatus() != Status.DELETED)
-                .map(follower -> FollowerFollowingListDto.builder()
-                        .userId(follower.getId())
-                        .userName(follower.getNickname())
-                        .profileImage(follower.getProfileImage())
-                        .build())
+                .map(follower -> {
+                    boolean isFollowing = followRepository.existsByFollowerAndFollowee(loginUser, follower);
+                    return FollowerFollowingListDto.builder()
+                            .userId(follower.getId())
+                            .userName(follower.getNickname())
+                            .profileImage(follower.getProfileImage())
+                            .following(isFollowing)
+                            .build();
+                })
                 .toList();
     }
 }

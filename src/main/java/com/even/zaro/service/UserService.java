@@ -1,9 +1,7 @@
 package com.even.zaro.service;
 
 import com.even.zaro.dto.user.*;
-import com.even.zaro.entity.Status;
-import com.even.zaro.entity.User;
-import com.even.zaro.entity.WithdrawalHistory;
+import com.even.zaro.entity.*;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.user.UserException;
 import com.even.zaro.repository.UserRepository;
@@ -102,8 +100,8 @@ public class UserService {
 
         user.updateBirthday(requestDto.getBirthday());
         user.updateLiveAloneDate(requestDto.getLiveAloneDate());
-        user.updateGender(requestDto.getGender());
-        user.updateMbti(requestDto.getMbti());
+        user.updateGender(Gender.valueOf(requestDto.getGender()));
+        user.updateMbti(Mbti.valueOf(requestDto.getMbti()));
 
         return new UpdateProfileResponseDto(
                 user.getBirthday(),

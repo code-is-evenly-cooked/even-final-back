@@ -21,9 +21,9 @@ public class UpdateProfileRequestDto {
 
     @Schema(description = "성별", example = "MALE", nullable = true)
     @ValidEnum(enumClass = Gender.class)
-    private Gender gender;
+    private String gender;
 
     @Schema(description = "MBTI", example = "INFP", nullable = true)
     @ValidEnum(enumClass = Mbti.class)
-    private Mbti mbti;
+    private String mbti;
 }

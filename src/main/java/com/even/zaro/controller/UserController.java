@@ -57,7 +57,7 @@ public class UserController {
     @Operation(summary = "프로필 변경", description = "로그인한 사용자의 프로필(생일, 자취 시작일, 성별, mbti를 변경합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PatchMapping("/me/profile")
     public ResponseEntity<ApiResponse<UpdateProfileResponseDto>> updateProfile(
-            @RequestBody UpdateProfileRequestDto requestDto,
+            @RequestBody @Valid UpdateProfileRequestDto requestDto,
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto
     ) {
         UpdateProfileResponseDto responseDto = userService.updateProfile(userInfoDto.getUserId(), requestDto);

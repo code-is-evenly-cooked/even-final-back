@@ -179,10 +179,12 @@ public class ProfileService {
         User user = userService.findUserById(userId);
 
         return followRepository.findByFollower(user).stream()
-                .map(follow -> FollowerFollowingListDto.builder()
-                        .userId(follow.getFollowee().getId())
-                        .userName(follow.getFollowee().getNickname())
-                        .profileImage(follow.getFollowee().getProfileImage())
+                .map(Follow::getFollowee)
+                .filter(followee -> followee.getStatus() != Status.DELETED)
+                .map(followee -> FollowerFollowingListDto.builder()
+                        .userId(followee.getId())
+                        .userName(followee.getNickname())
+                        .profileImage(followee.getProfileImage())
                         .build())
                 .toList();
     }
@@ -192,10 +194,12 @@ public class ProfileService {
         User user = userService.findUserById(userId);
 
         return followRepository.findByFollowee(user).stream()
-                .map(follow -> FollowerFollowingListDto.builder()
-                        .userId(follow.getFollower().getId())
-                        .userName(follow.getFollower().getNickname())
-                        .profileImage(follow.getFollower().getProfileImage())
+                .map(Follow::getFollower)
+                .filter(follower -> follower.getStatus() != Status.DELETED)
+                .map(follower -> FollowerFollowingListDto.builder()
+                        .userId(follower.getId())
+                        .userName(follower.getNickname())
+                        .profileImage(follower.getProfileImage())
                         .build())
                 .toList();
     }

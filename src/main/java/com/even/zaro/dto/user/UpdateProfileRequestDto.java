@@ -2,6 +2,7 @@ package com.even.zaro.dto.user;
 
 import com.even.zaro.entity.Gender;
 import com.even.zaro.entity.Mbti;
+import com.even.zaro.global.validator.annotation.ValidEnum;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
@@ -19,8 +20,10 @@ public class UpdateProfileRequestDto {
     private LocalDate liveAloneDate;
 
     @Schema(description = "성별", example = "MALE", nullable = true)
-    private Gender gender;
+    @ValidEnum(enumClass = Gender.class)
+    private String gender;
 
     @Schema(description = "MBTI", example = "INFP", nullable = true)
-    private Mbti mbti;
+    @ValidEnum(enumClass = Mbti.class)
+    private String mbti;
 }

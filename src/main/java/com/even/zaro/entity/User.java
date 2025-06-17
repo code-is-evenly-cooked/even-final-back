@@ -48,16 +48,13 @@ public class User {
     @Column(name = "live_alone_date")
     private LocalDate liveAloneDate;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "gender")
+    @Column(name = "gender", length = 10)
     private Gender gender;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "mbti",  length = 4)
+    @Column(name = "mbti",  length = 10)
     private Mbti mbti;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "status", nullable = false)
+    @Column(name = "status", nullable = false, length = 10)
     private Status status;
 
     @CreationTimestamp
@@ -82,8 +79,7 @@ public class User {
     @Builder.Default
     private int followingCount = 0;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "provider", nullable = false)
+    @Column(name = "provider", nullable = false, length = 10)
     private Provider provider;
 
     @Column(name = "provider_id")

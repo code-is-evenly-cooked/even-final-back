@@ -33,9 +33,6 @@ public class GroupController {
             @PathVariable("userId") long userId) {
         List<GroupResponse> groupList = groupService.getFavoriteGroups(userId);
 
-        if (groupList.isEmpty()) {
-            return ResponseEntity.ok(ApiResponse.success("그룹 리스트가 아직 추가되지 않았습니다.", groupList));
-        }
         return ResponseEntity.ok(ApiResponse.success("해당 유저의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));
     }
 
@@ -45,9 +42,6 @@ public class GroupController {
             @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         List<GroupResponse> groupList = groupService.getFavoriteGroups(userInfoDto.getUserId());
 
-        if (groupList.isEmpty()) {
-            return ResponseEntity.ok(ApiResponse.success("그룹 리스트가 아직 추가되지 않았습니다.", groupList));
-        }
         return ResponseEntity.ok(ApiResponse.success("나의 즐겨찾기 그룹 리스트를 조회했습니다.", groupList));
     }
 

@@ -100,8 +100,18 @@ public class UserService {
 
         user.updateBirthday(requestDto.getBirthday());
         user.updateLiveAloneDate(requestDto.getLiveAloneDate());
-        user.updateGender(Gender.valueOf(requestDto.getGender()));
-        user.updateMbti(Mbti.valueOf(requestDto.getMbti()));
+
+        if (requestDto.getGender() != null) {
+            user.updateGender(Gender.valueOf(requestDto.getGender()));
+        } else {
+            user.updateGender(null);
+        }
+
+        if (requestDto.getMbti() != null) {
+            user.updateMbti(Mbti.valueOf(requestDto.getMbti()));
+        } else {
+            user.updateMbti(null);
+        }
 
         return new UpdateProfileResponseDto(
                 user.getBirthday(),

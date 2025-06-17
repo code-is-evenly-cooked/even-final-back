@@ -16,6 +16,7 @@ public enum ErrorCode {
 
     // 공통
     INTERNAL_SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "서버에서 알 수 없는 오류가 발생했습니다."),
+    INVALID_ENUM(HttpStatus.BAD_REQUEST, "지원하지 않는 enum 입니다."),
     INVALID_USER_ID(HttpStatus.BAD_REQUEST,  "userId는 필수입니다."),
     UNAUTHORIZED_IMAGE_UPLOAD(HttpStatus.UNAUTHORIZED, "이미지 업로드 권한이 있는 사용자가 아닙니다."),
     INVALID_POST_ID(HttpStatus.BAD_REQUEST,  "postId는 필수입니다."),

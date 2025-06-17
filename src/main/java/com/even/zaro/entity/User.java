@@ -81,8 +81,7 @@ public class User {
     @Builder.Default
     private int followingCount = 0;
 
-    @Enumerated(EnumType.STRING)
-    @Column(name = "provider", nullable = false)
+    @Column(name = "provider", nullable = false, length = 10)
     private Provider provider;
 
     @Column(name = "provider_id")

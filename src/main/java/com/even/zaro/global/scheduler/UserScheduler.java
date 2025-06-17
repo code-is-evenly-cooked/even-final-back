@@ -25,16 +25,16 @@ public class UserScheduler {
     private final EmailService emailService;
 
     // PENDING 회원 삭제
-    @Scheduled(cron = "0 15 3 * * *") // 매일 3시 15분
+    @Scheduled(cron = "0 15 18 * * *") // 매일 3시 15분(kst)
     @Transactional
     public void deleteExpiredPendingUsers() {
         LocalDateTime threshold = LocalDateTime.now().minusDays(1);
-        userRepository.deleteByStatusAndCreatedAtBefore(Status.PENDING, threshold);
-        log.info("[Scheduler] PENDING 회원 삭제 ! (PENDING for 1day = {})", threshold);
+        int deletedCount = userRepository.deleteByStatusAndCreatedAtBefore(Status.PENDING, threshold);
+        log.info("[Scheduler] PENDING 회원 삭제! (기준일: {}, 삭제 수: {})", threshold, deletedCount);
     }
 
     // 휴면 처리, 탈퇴 처리
-    @Scheduled(cron = "0 30 3 * * *")// 매일 3시 30분
+    @Scheduled(cron = "0 30 18 * * *") // 매일 3시 30분(kst)
     @Transactional
     public void handleDormantAndSoftDelete() {
         LocalDateTime now = LocalDateTime.now();
@@ -49,7 +49,7 @@ public class UserScheduler {
     }
 
     // 탈퇴 3년 경과 -> 회원 정보 영구 삭제
-    @Scheduled(cron = "0 45 3 * * *") // 매일 3시 45분
+    @Scheduled(cron = "0 45 18 * * *") // 매일 3시 45분(kst)
     @Transactional
     public void deleteWithdrawnUsers() {
         LocalDateTime threshold = LocalDateTime.now().minusYears(3);
@@ -59,7 +59,7 @@ public class UserScheduler {
     }
 
     // 탈퇴 30일 경과 -> 회원 정보 임의 값 변경
-    @Scheduled(cron = "0 0 4 * * *") // 매일 4시
+    @Scheduled(cron = "0 0 19 * * *") // 매일 4시(kst)
     @Transactional
     public void anonymizeWithdrawnUsers() {
         LocalDateTime threshold = LocalDateTime.now().minusDays(30);
@@ -70,7 +70,7 @@ public class UserScheduler {
     }
 
     // 휴면 예정 메일 전송
-    @Scheduled(cron = "0 0 14 * * *") // 매일 오후 2시
+    @Scheduled(cron = "0 0 5 * * *") // 매일 오후 2시(kst)
     @Transactional
     public void sendDormancyPendingEmail() {
         LocalDateTime now = LocalDateTime.now();

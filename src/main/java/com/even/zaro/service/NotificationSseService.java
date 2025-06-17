@@ -67,7 +67,9 @@ public class NotificationSseService {
 
     public SseEmitter connect(Long userId) {
         log.info("[SSE] 유저 {} 연결 시도", userId);
-        SseEmitter emitter = new SseEmitter(Long.MAX_VALUE);
+        long timeout = 10800000L; // 클라이언트와 동일하게 timeout 3시간으로 설정
+
+        SseEmitter emitter = new SseEmitter(timeout);
         EmitterInfo emitterInfo = new EmitterInfo(emitter);
         emitters.put(userId, emitterInfo);
 

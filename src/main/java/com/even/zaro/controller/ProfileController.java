@@ -38,12 +38,17 @@ public class ProfileController {
   
     // 유저 기본 프로필 조회 (Profile 기능들 중 유일하게 인증 불필요 !)
     @Operation(
-            summary = "유저 기본 프로필 조회 (인증 불필요)",
-            description = "특정 유저의 프로필 정보를 조회합니다.")
+            summary = "유저 기본 프로필 조회 (인증 '불'필요, 로그인 해도 됨)",
+            description = "특정 유저의 프로필 정보를 조회합니다.",
+            security = {@SecurityRequirement(name = "bearer-key")})
     @GetMapping("/{userId}")
-    public ResponseEntity<?> getUserProfile(
-            @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId) {
-        UserProfileDto profile = profileService.getUserProfile(userId);
+    public ResponseEntity<ApiResponse<UserProfileDto>> getUserProfile(
+            @Parameter(description = "조회할 유저의 ID") @PathVariable("userId") Long userId,
+            @AuthenticationPrincipal JwtUserInfoDto userInfoDto
+    ) {
+        Long currentUserId = userInfoDto != null ? userInfoDto.getUserId() : null;
+
+        UserProfileDto profile = profileService.getUserProfile(userId, currentUserId);
         return ResponseEntity.ok(ApiResponse.success("유저 프로필 정보 조회 성공 !", profile));
     }
 

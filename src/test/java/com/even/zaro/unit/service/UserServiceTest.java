@@ -213,8 +213,8 @@ class UserServiceTest {
             UpdateProfileRequestDto requestDto = new UpdateProfileRequestDto(
                     LocalDate.parse("2000-10-10"),
                     LocalDate.parse("2024-02-04"),
-                    Gender.MALE,
-                    Mbti.ENFP);
+                    "MALE",
+                    "ENFP");
 
             userService.updateProfile(1L, requestDto);
 
@@ -230,7 +230,7 @@ class UserServiceTest {
                     null,
                     LocalDate.parse("2024-02-04"),
                     null,
-                    Mbti.ENFP);
+                    "ENFP");
 
             userService.updateProfile(1L, requestDto);
 
@@ -246,7 +246,7 @@ class UserServiceTest {
                     null,
                     LocalDate.parse("2024-02-04"),
                     null,
-                    Mbti.ENFP);
+                    "ENFP");
             when(userRepository.findById(1L)).thenReturn(Optional.empty());
 
             UserException ex = assertThrows(UserException.class, () -> userService.updateProfile(1L, requestDto));
@@ -262,7 +262,7 @@ class UserServiceTest {
                     null,
                     LocalDate.parse("2024-02-04"),
                     null,
-                    Mbti.ENFP);
+                    "ENFP");
 
             UserException ex = assertThrows(UserException.class, () -> userService.updateProfile(1L, requestDto));
 

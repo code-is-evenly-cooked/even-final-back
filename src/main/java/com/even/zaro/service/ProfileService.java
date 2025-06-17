@@ -33,20 +33,24 @@ public class ProfileService {
     private final UserService userService;
 
     // 유저 기본 프로필 조회
-    public UserProfileDto getUserProfile(Long userId) {
-        User user = userService.findActiveUserById(userId);
+    public UserProfileDto getUserProfile(Long profileUserId, Long currentUserId) {
+        User profileOwner = userService.findActiveUserById(profileUserId);
+        boolean isMine = profileUserId.equals(currentUserId);
+        boolean isFollowing = currentUserId != null && !isMine && followRepository.existsByFollower_IdAndFollowee_Id(currentUserId, profileUserId);
 
-        int postCount = postRepository.countByUserAndIsDeletedFalse(user);
+        int postCount = postRepository.countByUserAndIsDeletedFalse(profileOwner);
 
         return UserProfileDto.builder()
-                .userId(user.getId())
-                .nickname(user.getNickname())
-                .profileImage(user.getProfileImage())
-                .liveAloneDate(user.getLiveAloneDate())
-                .mbti(user.getMbti())
+                .userId(profileOwner.getId())
+                .nickname(profileOwner.getNickname())
+                .profileImage(profileOwner.getProfileImage())
+                .liveAloneDate(profileOwner.getLiveAloneDate())
+                .mbti(profileOwner.getMbti())
                 .postCount(postCount)
-                .followingCount(user.getFollowingCount())
-                .followerCount(user.getFollowerCount())
+                .followingCount(profileOwner.getFollowingCount())
+                .followerCount(profileOwner.getFollowerCount())
+                .isMine(isMine)
+                .isFollowing(isFollowing)
                 .build();
     }
 

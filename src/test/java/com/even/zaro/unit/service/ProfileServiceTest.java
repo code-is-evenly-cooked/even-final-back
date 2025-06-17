@@ -50,10 +50,10 @@ public class ProfileServiceTest {
 
         @Test
         void 유저_기본_프로필_조회_성공() {
-            when(userService.findUserById(1L)).thenReturn(user);
+            when(userService.findActiveUserById(1L)).thenReturn(user);
             when(postRepository.countByUserAndIsDeletedFalse(user)).thenReturn(3);
 
-            UserProfileDto dto = profileService.getUserProfile(1L);
+            UserProfileDto dto = profileService.getUserProfile(1L, null);
 
             assertThat(dto.getUserId()).isEqualTo(1L);
             assertThat(dto.getNickname()).isEqualTo("유저1닉");
@@ -62,10 +62,10 @@ public class ProfileServiceTest {
 
         @Test
         void 존재하지_않는_유저_프로필_조회_실패() {
-            when(userService.findUserById(9999L)).thenThrow(new UserException(ErrorCode.USER_NOT_FOUND));
+            when(userService.findActiveUserById(9999L)).thenThrow(new UserException(ErrorCode.USER_NOT_FOUND));
 
             UserException exception = assertThrows(UserException.class, () ->
-                    profileService.getUserProfile(9999L));
+                    profileService.getUserProfile(9999L, null));
 
             assertThat(exception.getErrorCode()).isEqualTo(ErrorCode.USER_NOT_FOUND);
         }

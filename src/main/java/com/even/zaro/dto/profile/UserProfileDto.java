@@ -1,6 +1,8 @@
 package com.even.zaro.dto.profile;
 
 import com.even.zaro.entity.Mbti;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -37,4 +39,22 @@ public class UserProfileDto {
 
     @Schema(description = "팔로워 수", example = "999")
     private int followerCount;
+
+    @Schema(description = "프로필 주인 여부", example = "true")
+    @JsonProperty("isMine")
+    private boolean isMine;
+
+    @Schema(description = "프로필 팔로우 여부", example = "false")
+    @JsonProperty("isFollowing")
+    private boolean isFollowing;
+
+    @JsonIgnore
+    public boolean getMine() {
+        return isMine;
+    }
+
+    @JsonIgnore
+    public boolean getFollowing() {
+        return isFollowing;
+    }
 }

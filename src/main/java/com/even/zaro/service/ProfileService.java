@@ -34,7 +34,7 @@ public class ProfileService {
 
     // 유저 기본 프로필 조회
     public UserProfileDto getUserProfile(Long userId) {
-        User user = userService.findUserById(userId);
+        User user = userService.findActiveUserById(userId);
 
         int postCount = postRepository.countByUserAndIsDeletedFalse(user);
 
@@ -52,7 +52,7 @@ public class ProfileService {
 
     // 유저가 쓴 게시물 list 조회
     public PageResponse<UserPostDto> getUserPosts(Long userId, Pageable pageable) {
-        User user = userService.findUserById(userId);
+        User user = userService.findActiveUserById(userId);
 
         Page<UserPostDto> page = postRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(post -> UserPostDto.builder()
@@ -72,7 +72,7 @@ public class ProfileService {
 
     // 유저가 좋아요 누른 게시물 list 조회
     public PageResponse<UserPostDto> getUserLikedPosts(Long userId, Pageable pageable) {
-        User user = userService.findUserById(userId);
+        User user = userService.findActiveUserById(userId);
 
         Page<UserPostDto> page = postLikeRepository.findByUser(user, pageable)
                 .map(postLike -> UserPostDto.builder()
@@ -92,7 +92,7 @@ public class ProfileService {
 
     // 유저가 작성한 댓글 list 조회
     public PageResponse<UserCommentDto> getUserComments(Long userId, Pageable pageable) {
-        User user = userService.findUserById(userId);
+        User user = userService.findActiveUserById(userId);
 
         Page<UserCommentDto> page = commentRepository.findByUserAndIsDeletedFalse(user, pageable)
                 .map(comment -> {
@@ -175,8 +175,9 @@ public class ProfileService {
     }
 
     // 팔로잉 목록 조회
-    public List<FollowerFollowingListDto> getUserFollowings(Long userId) {
-        User user = userService.findUserById(userId);
+    public List<FollowerFollowingListDto> getUserFollowings(Long userId, Long currentUserId) {
+        User targetUser = userService.findUserById(userId);
+        User loginUser = userService.findUserById(currentUserId);
 
         return followRepository.findByFollower(user).stream()
                 .map(Follow::getFollowee)
@@ -190,8 +191,14 @@ public class ProfileService {
     }
 
     // 팔로워 목록 조회
-    public List<FollowerFollowingListDto> getUserFollowers(Long userId) {
-        User user = userService.findUserById(userId);
+    public List<FollowerFollowingListDto> getUserFollowers(Long userId, Long currentUserId) {
+        User targetUser = userService.findUserById(userId);
+        User loginUser = userService.findUserById(currentUserId);
+
+        return followRepository.findByFollowee(targetUser).stream()
+                .map(follow -> {
+                    User follower = follow.getFollower();
+                    boolean isFollowing = followRepository.existsByFollowerAndFollowee(loginUser, targetUser);
 
         return followRepository.findByFollowee(user).stream()
                 .map(Follow::getFollower)

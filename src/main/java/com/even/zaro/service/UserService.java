@@ -51,7 +51,7 @@ public class UserService {
     @Transactional
     public UpdateProfileImageResponseDto updateProfileImage(Long userId, UpdateProfileImageRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         user.updateProfileImage(requestDto.getProfileImage());
 
@@ -61,7 +61,7 @@ public class UserService {
     @Transactional
     public UpdateNicknameResponseDto updateNickname(Long userId, UpdateNicknameRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         String newNickname = requestDto.getNewNickname();
 
@@ -98,7 +98,7 @@ public class UserService {
     @Transactional
     public UpdateProfileResponseDto updateProfile(Long userId, UpdateProfileRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         user.updateBirthday(requestDto.getBirthday());
         user.updateLiveAloneDate(requestDto.getLiveAloneDate());
@@ -116,7 +116,7 @@ public class UserService {
     @Transactional
     public void updatePassword(Long userId, UpdatePasswordRequestDto requestDto) {
         User user = findUserById(userId);
-        validateNotPending(user);
+        validateActiveUser(user);
 
         String currentPassword = requestDto.getCurrentPassword();
         String newPassword = requestDto.getNewPassword();
@@ -167,9 +167,22 @@ public class UserService {
                 .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
     }
 
-    public void validateNotPending(User user) {
+    public User findActiveUserById(Long userId) {
+        User user = userRepository.findById(userId)
+                .orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
+        if (user.getStatus() != Status.ACTIVE) {
+            throw new UserException(ErrorCode.USER_NOT_FOUND);
+        }
+        return user;
+    }
+
+    public void validateActiveUser(User user) {
         if (user.getStatus() == Status.PENDING) {
             throw new UserException(ErrorCode.MAIL_NOT_VERIFIED);
+        } else if (user.getStatus() == Status.DORMANT) {
+            throw new UserException(ErrorCode.DORMANT_USER);
+        } else if (user.getStatus() == Status.DELETED) {
+            throw new UserException(ErrorCode.DELETED_USER);
         }
     }
 }

@@ -50,6 +50,13 @@ public class FavoriteService {
         // 해당 장소가 이미 저장되어있는지 없다면 장소 추가
         Place place = checkDuplicateByKakoPlaceId(request);
 
+        // 해당 장소에 대해서 유저가 삭제한 즐겨찾기를 가지고 있는지 확인
+        List<Favorite> beforeDelete = favoriteRepository.findByPlaceAndUserAndDeletedTrue(place, user);
+        if (beforeDelete.size() > 0) {
+            favoriteRepository.deleteAll(beforeDelete); // 기존의 즐겨찾기 hard 삭제
+            log.info("이전에 삭제한 즐겨찾기입니다. Hard 삭제 후 다시 추가합니다. "); // 응답으로 내릴 필요 없음 추적용
+        }
+
         // 해당 유저가 이미 그 장소를 추가했는지 확인
         boolean check = favoriteRepository.existsByPlaceAndUser(place, user);
 

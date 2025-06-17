@@ -3,12 +3,14 @@ package com.even.zaro.service;
 import com.even.zaro.dto.PageResponse;
 import com.even.zaro.dto.post.*;
 import com.even.zaro.entity.Post;
+import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import com.even.zaro.global.event.event.PostDeletedEvent;
 import com.even.zaro.global.event.event.PostSavedEvent;
 import com.even.zaro.global.ErrorCode;
 import com.even.zaro.global.exception.post.PostException;
 import com.even.zaro.mapper.PostMapper;
+import com.even.zaro.repository.FollowRepository;
 import com.even.zaro.repository.PostRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
@@ -18,6 +20,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
@@ -32,6 +35,7 @@ public class PostService {
     private final UserService userService;
     private final PostMapper postMapper;
     private final PostRankBaselineMemoryStore postRankBaselineMemoryStore;
+    private final FollowRepository followRepository;
 
     @Transactional
     public PostDetailResponse createPost(PostCreateRequest request, Long userId) {
@@ -43,7 +47,7 @@ public class PostService {
         validateTagForCategory(category, tag);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         String thumbnailImage = resolveThumbnail(request.getThumbnailImage(), request.getPostImageList());
 
@@ -68,7 +72,7 @@ public class PostService {
         Post post = findPostOrThrow(postId);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         validatePostNotOwner(post, user);
 
@@ -120,9 +124,43 @@ public class PostService {
 
 
     @Transactional(readOnly = true)
-    public PostDetailResponse getPostDetail(Long postId) {
+    public PostDetailResponse getPostDetail(Long postId, Long currentUserId) {
         Post post = findPostOrThrow(postId);
-        return postMapper.toPostDetailDto(post);
+        PostDetailResponse response = postMapper.toPostDetailDto(post);
+
+        User postOwner  = post.getUser();
+        User loginUser = userService.findUserById(currentUserId);
+
+        boolean isDeleted = postOwner.getStatus() == Status.DELETED;
+
+        String nickname =  isDeleted ? "알 수 없는 사용자" : response.getUser().getNickname();
+        String profileImage = isDeleted ? null : response.getUser().getProfileImage();
+        LocalDate liveAloneDate = isDeleted ? null : response.getUser().getLiveAloneDate();
+
+        boolean isFollowing = !loginUser.equals(postOwner) &&
+                followRepository.existsByFollowerAndFollowee(loginUser, postOwner);
+
+        PostDetailResponse.UserInfo followUser = PostDetailResponse.UserInfo.builder()
+                .userId(response.getUser().getUserId())
+                .nickname(nickname)
+                .profileImage(profileImage)
+                .liveAloneDate(liveAloneDate)
+                .following(isFollowing)
+                .build();
+
+        return PostDetailResponse.builder()
+                .postId(response.getPostId())
+                .title(response.getTitle())
+                .content(response.getContent())
+                .thumbnailImage(response.getThumbnailImage())
+                .category(response.getCategory())
+                .tag(response.getTag())
+                .likeCount(response.getLikeCount())
+                .commentCount(response.getCommentCount())
+                .postImageList(response.getPostImageList())
+                .createdAt(response.getCreatedAt())
+                .user(followUser)
+                .build();
     }
 
     @Transactional
@@ -130,7 +168,7 @@ public class PostService {
         Post post = findPostOrThrow(postId);
 
         User user = userService.findUserById(userId);
-        userService.validateNotPending(user);
+        userService.validateActiveUser(user);
 
         validatePostNotOwner(post, user);
 

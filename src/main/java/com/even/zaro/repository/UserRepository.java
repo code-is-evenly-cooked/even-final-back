@@ -5,6 +5,7 @@ import com.even.zaro.entity.Status;
 import com.even.zaro.entity.User;
 import io.lettuce.core.dynamic.annotation.Param;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
@@ -25,7 +26,9 @@ public interface UserRepository extends JpaRepository<User, Long> {
 
     Optional<User> findByNickname(String nickname);
 
-    List<User> deleteByStatusAndCreatedAtBefore(Status status, LocalDateTime threshold);
+    @Modifying(clearAutomatically = true)
+    @Query("DELETE FROM User u WHERE u.status = :status AND u.createdAt < :threshold")
+    int deleteByStatusAndCreatedAtBefore(@Param("status") Status status, @Param("threshold") LocalDateTime threshold);
     List<User> findByStatusAndLastLoginAtBefore(Status status, LocalDateTime time);
     List<User> findByStatusAndUpdatedAtBefore(Status status, LocalDateTime time);
     List<User> findByStatusAndDeletedAtBefore(Status status, LocalDateTime threshold);

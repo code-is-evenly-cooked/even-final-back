@@ -98,8 +98,8 @@ public class ProfileIntegrationTest {
         profileService.followUser(follower.getId(), followee.getId());
 
         // then
-        assertThat(profileService.getUserFollowings(follower.getId())).hasSize(1);
-        assertThat(profileService.getUserFollowers(followee.getId())).hasSize(1);
+        assertThat(profileService.getUserFollowings(follower.getId(), followee.getId())).hasSize(1);
+        assertThat(profileService.getUserFollowers(followee.getId(), followee.getId())).hasSize(1);
     }
 
     @Test
@@ -113,8 +113,8 @@ public class ProfileIntegrationTest {
         profileService.unfollowUser(follower.getId(), followee.getId());
 
         // then
-        assertThat(profileService.getUserFollowings(follower.getId())).isEmpty();
-        assertThat(profileService.getUserFollowers(followee.getId())).isEmpty();
+        assertThat(profileService.getUserFollowings(follower.getId(), followee.getId())).isEmpty();
+        assertThat(profileService.getUserFollowers(followee.getId(), followee.getId())).isEmpty();
     }
 
     @Test
@@ -128,7 +128,7 @@ public class ProfileIntegrationTest {
         profileService.followUser(userA.getId(), userC.getId());
 
         // when
-        List<FollowerFollowingListDto> followings = profileService.getUserFollowings(userA.getId());
+        List<FollowerFollowingListDto> followings = profileService.getUserFollowings(userA.getId(), userB.getId());
 
         // then
         assertThat(followings).hasSize(2);
@@ -147,7 +147,7 @@ public class ProfileIntegrationTest {
         profileService.followUser(userC.getId(), userA.getId());
 
         // when
-        List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userA.getId());
+        List<FollowerFollowingListDto> followers = profileService.getUserFollowers(userA.getId(), userB.getId());
 
         // then
         assertThat(followers).hasSize(2);

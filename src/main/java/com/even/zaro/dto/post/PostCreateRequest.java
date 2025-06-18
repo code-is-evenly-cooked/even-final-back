@@ -34,4 +34,14 @@ public class PostCreateRequest {
 
     @Schema(description = "썸네일 이미지 key", example = "/images/post/uuid1.png")
     private String thumbnailImage;
+
+    public PostCreateRequest(String title, String content, String category, String tag,
+                             List<String> postImageList, String thumbnailImage) {
+        this.title = title;
+        this.content = content;
+        this.category = category;
+        this.tag = tag;
+        this.postImageList = postImageList;
+        this.thumbnailImage = thumbnailImage;
+    }
 }

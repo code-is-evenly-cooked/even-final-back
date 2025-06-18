@@ -31,7 +31,7 @@ public class GroupService {
     private final GroupMapper groupMapper;
     private final FavoriteRepository favoriteRepository;
 
-    public void createGroup(GroupCreateRequest request, long userid) {
+    public GroupResponse createGroup(GroupCreateRequest request, long userid) {
 
         User user = userRepository.findById(userid).orElseThrow(() -> new UserException(ErrorCode.USER_NOT_FOUND));
 
@@ -46,8 +46,9 @@ public class GroupService {
                 .user(user) // 유저 설정
                 .name(request.getGroupName()) // Group 이름 설정
                 .build();
-
         favoriteGroupRepository.save(favoriteGroup);
+
+        return groupMapper.toGroupResponse(favoriteGroup);
     }
 
     @Transactional(readOnly = true)

@@ -33,6 +33,9 @@ public class PostRankResponseDto {
     @Schema(description = "순위 변화량", example = "직전순위 - 현재순위")
     private int rankChange;
 
+    @Schema(description = "카테고리", example = "DAILY_LIFE")
+    private String category;
+
     public static PostRankResponseDto from(Post post, int baselineRankIndex, int currentRankIndex, int rankChange) {
         return PostRankResponseDto.builder()
                 .postId(post.getId())
@@ -42,6 +45,7 @@ public class PostRankResponseDto {
                 .baselineRankIndex(baselineRankIndex)
                 .currentRankIndex(currentRankIndex)
                 .rankChange(rankChange)
+                .category(post.getCategory().name())
                 .build();
     }
 }

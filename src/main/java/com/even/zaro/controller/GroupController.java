@@ -47,12 +47,12 @@ public class GroupController {
 
     @Operation(summary = "그룹 추가", description = "그룹 이름을 입력받고 그룹을 생성합니다.", security = {@SecurityRequirement(name = "bearer-key")})
     @PostMapping
-    public ResponseEntity<ApiResponse<String>> createGroup(@RequestBody GroupCreateRequest request,
+    public ResponseEntity<ApiResponse<GroupResponse>> createGroup(@RequestBody GroupCreateRequest request,
                                                            @AuthenticationPrincipal JwtUserInfoDto userInfoDto) {
         long userId = userInfoDto.getUserId();
-        groupService.createGroup(request, userId);
+        GroupResponse response = groupService.createGroup(request, userId);
 
-        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹이 생성되었습니다."));
+        return ResponseEntity.ok(ApiResponse.success("성공적으로 그룹이 생성되었습니다.", response));
     }
 
     @Operation(summary = "그룹 삭제", description = "그룹을 삭제합니다.", security = {@SecurityRequirement(name = "bearer-key")})

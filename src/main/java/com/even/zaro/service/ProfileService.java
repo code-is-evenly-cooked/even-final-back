@@ -62,7 +62,7 @@ public class ProfileService {
                 .map(post -> UserPostDto.builder()
                         .postId(post.getId())
                         .title(post.getTitle())
-                        .content(post.getContent())
+                        .content(stripHtmlTags(post.getContent()))
                         .category(post.getCategory().name())
                         .tag(post.getTag() != null ? post.getTag().name() : null)
                         .thumbnailImage(post.getThumbnailImage())
@@ -82,7 +82,7 @@ public class ProfileService {
                 .map(postLike -> UserPostDto.builder()
                         .postId(postLike.getPost().getId())
                         .title(postLike.getPost().getTitle())
-                        .content(postLike.getPost().getContent())
+                        .content(stripHtmlTags(postLike.getPost().getContent()))
                         .category(postLike.getPost().getCategory().name())
                         .tag(postLike.getPost().getTag() != null ? postLike.getPost().getTag().name() : null)
                         .thumbnailImage(postLike.getPost().getThumbnailImage())
@@ -216,5 +216,17 @@ public class ProfileService {
                             .build();
                 })
                 .toList();
+    }
+
+    /// 태그 및 특수문자 제거
+    private String stripHtmlTags(String html) {
+        if (html == null) return "";
+        html = html.replace("&lt;", "<").replace("&gt;", ">");
+        return html
+                .replaceAll("(?i)<br\\s*/?>", "")
+                .replaceAll("<[^>]*>", "")
+                .replaceAll("\\\\","")
+                .replaceAll("\\s+", " ")
+                .trim();
     }
 }

@@ -52,6 +52,7 @@ public class SecurityConfig {
                                 .requestMatchers("/api/profile/{userId}").permitAll()
                                 .requestMatchers("/api/es/reindex").permitAll()
                                 .requestMatchers(HttpMethod.GET, "/api/favorite/{groupId}/items").permitAll() // 그룹, 즐겨찾기 조회는 인증 필요 x
+                                .requestMatchers(HttpMethod.GET, "/api/map/place").permitAll() // 그룹, 즐겨찾기 조회는 인증 필요 x
                                 .requestMatchers(HttpMethod.GET, "/api/group/user/{userId}/group").permitAll()
 //                        .requestMatchers("/**").permitAll() // 전체 인증 없이 개발용
                         .anyRequest().authenticated()

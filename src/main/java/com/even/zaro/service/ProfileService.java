@@ -226,6 +226,7 @@ public class ProfileService {
                 .replaceAll("(?i)<br\\s*/?>", "")
                 .replaceAll("<[^>]*>", "")
                 .replaceAll("\\\\","")
+                .replaceAll("[*_`~>]", "")
                 .replaceAll("\\s+", " ")
                 .trim();
     }

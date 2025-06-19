@@ -3,11 +3,11 @@ package com.even.zaro.mapper;
 import com.even.zaro.dto.post.HomePostPreviewResponse;
 import com.even.zaro.dto.post.PostDetailResponse;
 import com.even.zaro.dto.post.PostPreviewDto;
-import com.even.zaro.dto.post.PostRankResponseDto;
 import com.even.zaro.entity.Post;
 import org.mapstruct.Mapper;
 import org.mapstruct.Mapping;
 import org.mapstruct.Mappings;
+import org.mapstruct.Named;
 
 import java.time.LocalDateTime;
 import java.time.OffsetDateTime;
@@ -21,6 +21,7 @@ public interface PostMapper {
     }
 
     @Mapping(source = "id", target = "postId")
+    @Mapping(source = "content", target = "content")
     @Mapping(source = "user.id", target = "user.userId")
     @Mapping(source = "user.nickname", target = "user.nickname")
     @Mapping(source = "user.profileImage", target = "user.profileImage")
@@ -30,7 +31,7 @@ public interface PostMapper {
     @Mapping(source = "id", target = "postId")
     @Mapping(target = "writerNickname", expression = "java(post.getUser().getStatus() == com.even.zaro.entity.Status.DELETED ? \"알 수 없는 사용자\" : post.getUser().getNickname())")
     @Mapping(target = "writerProfileImage", expression = "java(post.getUser().getStatus() == com.even.zaro.entity.Status.DELETED ? null : post.getUser().getProfileImage())")
-    @Mapping(target = "content", expression = "java(stripHtmlTags(post.getContent()))")
+    @Mapping(target = "content", source = "content", qualifiedByName = "stripHtmlTags")
     PostPreviewDto toPostPreviewDto(Post post);
 
     @Mapping(source = "id", target = "postId")
@@ -51,6 +52,7 @@ public interface PostMapper {
     HomePostPreviewResponse.RandomBuyPostDto toRandomBuyDto(Post post);
 
 
+    @Named("stripHtmlTags")
     default String stripHtmlTags(String html) {
         if (html == null) return "";
         html = html.replace("&lt;", "<").replace("&gt;", ">");
@@ -58,6 +60,7 @@ public interface PostMapper {
                 .replaceAll("(?i)<br\\s*/?>", "")
                 .replaceAll("<[^>]*>", "")
                 .replaceAll("\\\\","")
+                .replaceAll("[*_`~>]", "")
                 .replaceAll("\\s+", " ")
                 .trim();
     }

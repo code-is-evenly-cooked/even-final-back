@@ -5,6 +5,7 @@ import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 
 import java.time.LocalDate;
 import java.time.OffsetDateTime;
@@ -13,6 +14,7 @@ import java.util.List;
 @Getter
 @AllArgsConstructor
 @Builder
+@NoArgsConstructor
 @Schema(description = "게시글 상세 조회 응답 DTO")
 public class PostDetailResponse {
 

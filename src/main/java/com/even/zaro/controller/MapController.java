@@ -35,7 +35,7 @@ public class MapController {
     }
 
 
-    @Operation(summary = "사용자 위치 기반 인근 맛집? 조회", description = "사용자의 위치를 이용해 인근 맛집 또는 장소를 조회합니다.", security = {@SecurityRequirement(name = "bearer-key")})
+    @Operation(summary = "사용자 위치 기반 인근 맛집? 조회", description = "사용자의 위치를 이용해 인근 맛집 또는 장소를 조회합니다.")
     @GetMapping("/place")
     public ResponseEntity<ApiResponse<PlaceResponse>> getPlacesByCoordinate(
             @Parameter(description = "사용자의 현재 위도", example = "37.554722")

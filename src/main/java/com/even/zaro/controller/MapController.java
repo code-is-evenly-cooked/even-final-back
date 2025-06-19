@@ -45,8 +45,7 @@ public class MapController {
             @RequestParam double lng,
 
             @Parameter(description = "조회 반경 (단위: km)", example = "1.0")
-            @RequestParam double distanceKm,
-            @AuthenticationPrincipal JwtUserInfoDto userInfo) {
+            @RequestParam double distanceKm) {
 
         PlaceResponse placesByCoordinate = mapService.getPlacesByCoordinate(lat, lng, distanceKm);
 

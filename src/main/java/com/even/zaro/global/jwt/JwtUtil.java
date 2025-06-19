@@ -32,7 +32,7 @@ public class JwtUtil {
                    @Value("${jwt.refresh_secret}") String refreshSecretKey) {
         this.accessKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(accessSecretKey));
         this.refreshKey = Keys.hmacShaKeyFor(Base64.getDecoder().decode(refreshSecretKey));
-        this.accessTokenExpireTime = 15 * MINUTE;
+        this.accessTokenExpireTime = 30 * MINUTE;
         this.refreshTokenExpireTime = 7 * DAY;
     }
 

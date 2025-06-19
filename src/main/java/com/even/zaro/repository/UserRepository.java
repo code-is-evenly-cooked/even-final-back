@@ -40,8 +40,8 @@ public interface UserRepository extends JpaRepository<User, Long> {
             AND NOT EXISTS (
                 SELECT l.user_id FROM dormancy_notice_log l
                 WHERE l.user_id = u.id
-                AND l.last_checked_login_date = DATE(u.last_login_at)
+                AND l.last_checked_login_date = CAST(u.last_login_at AS DATE)
             )
             """, nativeQuery = true)
-    List<User> findDormancyNoticeTargetsNative(@Param("status") Status status, @Param("time") LocalDateTime time);
+    List<User> findDormancyNoticeTargetsNative(@Param("status") String status, @Param("time") LocalDateTime time);
 }

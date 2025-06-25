@@ -1,0 +1,36 @@
+version: '3.8'
+
+services:
+  ngrinder-controller:
+    image: ngrinder/controller:latest
+    container_name: ngrinder-controller
+    platform: linux/amd64  # Apple Silicon (M1/M2) 사용 시 필요. Intel/AMD 환경이면 주석
+    ports:
+      - "8081:80"          # http://localhost:8081
+      - "16001:16001"
+      - "12002:12002"
+    environment:
+      - TZ=Asia/Seoul
+    volumes:
+      - ngrinder-controller-data:/opt/ngrinder-controller
+    networks:
+      - ngrinder-net
+
+  ngrinder-agent:
+    image: ngrinder/agent:latest
+    container_name: ngrinder-agent
+    depends_on:
+      - ngrinder-controller
+    platform: linux/amd64  # Apple Silicon (M1/M2) 사용 시 필요. Intel/AMD 환경이면 주석
+    environment:
+      - TZ=Asia/Seoul
+      - NGRINDER_CONTROLLER=ngrinder-controller:80
+    networks:
+      - ngrinder-net
+
+volumes:
+  ngrinder-controller-data:
+
+networks:
+  ngrinder-net:
+
